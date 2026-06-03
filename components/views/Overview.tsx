@@ -2,6 +2,7 @@
 import { useFarm, useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
+import { AreaChart } from "@/components/Charts";
 import { formatMoney, formatTemp } from "@/lib/format";
 import { MARKET } from "@/data/farms";
 
@@ -21,8 +22,8 @@ export function Overview() {
     <div className="fade-in">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         {farm.kpis.map((k) => (
-          <div key={k.label} className="card p-5">
-            <p className="text-xs text-muted">{t(k.label)}</p>
+          <div key={k.label} className="card card-hover p-5">
+            <p className="kpi-label">{t(k.label)}</p>
             <p className={`mono text-2xl font-bold mt-2 ${k.highlight ? "text-green" : ""}`}>{k.value}</p>
             <p className="text-xs mt-1 text-muted">{t(k.sub)}</p>
           </div>
@@ -73,15 +74,7 @@ export function Overview() {
         <div className="card p-6 lg:col-span-2">
           <h4 className="text-[15px] font-bold mb-1">{t("Season margin")}</h4>
           <p className="text-xs mb-4 text-muted">{t("Cumulative recovered, by month")}</p>
-          <div className="flex items-end gap-2 h-32">
-            {SEASON.map((v, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1 h-full">
-                <span className="text-[10px] mono font-semibold text-muted">${v}k</span>
-                <div className="w-full rounded-t-lg" style={{ height: `${(v / 42) * 88}%`, minHeight: 6, background: i === 5 ? "var(--green)" : "var(--mint)" }} />
-                <span className="text-[10px] mono text-muted">{t(MONTHS[i])}</span>
-              </div>
-            ))}
-          </div>
+          <AreaChart data={SEASON} labels={MONTHS.map((m) => t(m))} height={150} />
         </div>
       </div>
     </div>

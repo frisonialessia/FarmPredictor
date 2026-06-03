@@ -1,6 +1,7 @@
 "use client";
 import { useFarm, useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
+import { AreaChart } from "@/components/Charts";
 import { formatMoney } from "@/lib/format";
 
 const FINK = [
@@ -25,24 +26,22 @@ export function Financial() {
     <div className="fade-in">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         {FINK.map((k) => (
-          <div key={k.l} className="card p-5"><p className="text-xs text-muted">{t(k.l)}</p><p className={`mono text-2xl font-bold mt-2 ${k.hl ? "text-green" : ""}`}>{formatMoney(k.base, currency)}</p><p className="text-xs mt-1 text-muted">{t(k.s)}</p></div>
+          <div key={k.l} className="card card-hover p-5"><p className="kpi-label">{t(k.l)}</p><p className={`mono text-2xl font-bold mt-2 ${k.hl ? "text-green" : ""}`}>{formatMoney(k.base, currency)}</p><p className="text-xs mt-1 text-muted">{t(k.s)}</p></div>
         ))}
-        <div className="card p-5"><p className="text-xs text-muted">{t("Committed")}</p><p className="mono text-2xl font-bold mt-2">68%</p><p className="text-xs mt-1 text-muted">{t("in sales contracts")}</p></div>
+        <div className="card card-hover p-5"><p className="kpi-label">{t("Committed")}</p><p className="mono text-2xl font-bold mt-2">68%</p><p className="text-xs mt-1 text-muted">{t("in sales contracts")}</p></div>
       </div>
       <div className="grid lg:grid-cols-5 gap-5 mb-5">
         <div className="lg:col-span-3 card p-6">
           <h4 className="text-[15px] font-bold mb-1">{t("Margin by parcel")}</h4><p className="text-xs mb-4 text-muted">{t("Estimated net profit per acre")}</p>
           <div className="space-y-3">
             {[...farm.parcels].sort((a, b) => b.marginPerAcre - a.marginPerAcre).map((p) => (
-              <div key={p.id}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium">{p.name}</span><span className="mono text-sm font-bold">{formatMoney(p.marginPerAcre, currency)}/ac</span></div><div className="h-2.5 rounded-full" style={{ background: "var(--mint)" }}><div className="h-full rounded-full" style={{ width: `${(p.marginPerAcre / maxM) * 100}%`, background: "var(--green)" }} /></div></div>
+              <div key={p.id}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium">{p.name}</span><span className="mono text-sm font-bold">{formatMoney(p.marginPerAcre, currency)}/ac</span></div><div className="h-2.5 rounded-full" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${(p.marginPerAcre / maxM) * 100}%`, background: "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>
             ))}
           </div>
         </div>
         <div className="lg:col-span-2 card p-6">
           <h4 className="text-[15px] font-bold mb-1">{t("Projected cash flow")}</h4><p className="text-xs mb-4 text-muted">{t("Next 6 weeks")}</p>
-          <div className="flex items-end gap-2 h-40 mt-2">
-            {CF.map((v, i) => (<div key={i} className="flex-1 flex flex-col items-center justify-end gap-1 h-full"><span className="text-[10px] mono font-semibold text-muted">${v}k</span><div className="w-full rounded-t-lg" style={{ height: `${(v / 38) * 84}%`, minHeight: 6, background: i === 4 ? "var(--green)" : "var(--mint)" }} /><span className="text-[10px] mono text-muted">W{i + 1}</span></div>))}
-          </div>
+          <AreaChart data={CF} labels={CF.map((_, i) => `W${i + 1}`)} height={160} />
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-line text-sm"><span className="text-muted">{t("Committed in contracts")}</span><span className="mono font-bold">68%</span></div>
         </div>
       </div>

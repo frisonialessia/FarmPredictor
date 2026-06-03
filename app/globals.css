@@ -3,14 +3,24 @@
 @tailwind utilities;
 
 :root {
-  --green:#52c871; --mint:#b4e8c5; --lime:#85df42; --ink:#0B0F0C;
-  --paper:#fff; --bg:#F3F6F2; --muted:#6B756C; --line:#E6EBE5; --warn:#C2410C;
+  --green:#52c871; --green-deep:#2f9e54; --mint:#b4e8c5; --lime:#85df42; --ink:#0B0F0C;
+  --paper:#fff; --bg:#F3F6F2; --muted:#6B756C; --line:#E6EBE5; --line-soft:#EEF1ED; --warn:#C2410C;
+  /* Layered elevation system — what gives the UI a "premium product" feel. */
+  --shadow-sm: 0 1px 2px rgba(11,15,12,.04), 0 1px 3px rgba(11,15,12,.05);
+  --shadow-md: 0 2px 6px rgba(11,15,12,.05), 0 6px 16px rgba(11,15,12,.06);
+  --shadow-lg: 0 12px 32px rgba(11,15,12,.10), 0 4px 10px rgba(11,15,12,.05);
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--ink); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-.mono { font-family: 'IBM Plex Mono', monospace; }
-.card { background:#fff; border:1px solid var(--line); border-radius:20px; }
+body { background: var(--bg); color: var(--ink); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.card { background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow: var(--shadow-sm); }
+/* Uppercase micro-label — the single biggest "grown-up" typographic upgrade. */
+.kpi-label { font-size:10.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+/* Refined pill: soft tint + hairline border instead of flat candy fill. */
+.pill { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--muted); }
+.pill-mint { background:rgba(82,200,113,.10); border-color:rgba(82,200,113,.22); color:var(--green-deep); }
+.pill-warn { background:rgba(194,65,12,.08); border-color:rgba(194,65,12,.18); color:var(--warn); }
 ::-webkit-scrollbar { width:8px; height:8px; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius:99px; }
 .setinput { font-size:14px; padding:9px 12px; border:1px solid var(--line); border-radius:11px; background:#fff; color:var(--ink); outline:none; transition:border-color .15s; width:100%; }
