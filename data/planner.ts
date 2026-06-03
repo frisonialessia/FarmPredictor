@@ -8,13 +8,16 @@ export const RESOURCE_ROWS: ResourceRow[] = [
   { id: "cb", label: "Crew B", icon: "crew" },
 ];
 
+// Harvest values are calibrated so the optimal plan sums to BASE_MARGIN
+// ($34,200) — the single weekly ceiling shared by the Planner and Simulator.
+// The Planner grid never shows these figures; they only feed the engine.
 export const OPTIMAL_PLAN: Harvest[] = [
-  { id: "h1", label: "North A", row: "m1", day: 0, window: [0, 1], value: 5400 },
-  { id: "h2", label: "West 2", row: "m1", day: 2, window: [2, 4], value: 3200 },
-  { id: "h3", label: "Greenhouse 1", row: "ca", day: 1, window: [1, 2], value: 2800 },
-  { id: "h4", label: "South B", row: "ca", day: 4, window: [4, 5], value: 1500 },
-  { id: "h5", label: "East 3", row: "cb", day: 5, window: [5, 6], value: 2400 },
-  { id: "h6", label: "River C", row: "m3", day: 3, window: [2, 4], value: 1900 },
+  { id: "h1", label: "North A", row: "m1", day: 0, window: [0, 1], value: 9800 },
+  { id: "h2", label: "West 2", row: "m1", day: 2, window: [2, 4], value: 6400 },
+  { id: "h3", label: "Greenhouse 1", row: "ca", day: 1, window: [1, 2], value: 5200 },
+  { id: "h4", label: "South B", row: "ca", day: 4, window: [4, 5], value: 3800 },
+  { id: "h5", label: "East 3", row: "cb", day: 5, window: [5, 6], value: 4800 },
+  { id: "h6", label: "River C", row: "m3", day: 3, window: [2, 4], value: 4200 },
 ];
 
 export const BLOCKED: BlockedSlot[] = [

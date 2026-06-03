@@ -5,8 +5,8 @@ import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { formatMoney } from "@/lib/format";
+import { evaluatePlan } from "@/lib/engine";
 import { RESOURCE_ROWS, OPTIMAL_PLAN, BLOCKED, DAYS7 } from "@/data/planner";
-import type { Harvest } from "@/lib/types";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "alert" }[]> = {
@@ -19,35 +19,20 @@ const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "
 };
 
 export function Planner() {
-  const { currency } = useApp();
+  // The plan lives in the shared store, so every edit here is instantly visible
+  // to the What-if Simulator through the same unified engine.
+  const { currency, plan, moveHarvest, resetPlan } = useApp();
   const t = useT();
-  const [harvests, setHarvests] = useState<Harvest[]>(() => JSON.parse(JSON.stringify(OPTIMAL_PLAN)));
   const [dragId, setDragId] = useState<string | null>(null);
   const [calMonth, setCalMonth] = useState(5);
   const [calYear, setCalYear] = useState(2026);
 
-  const computed = useMemo(() => {
-    const occ: Record<string, number> = {};
-    harvests.forEach((h) => { const k = `${h.row}:${h.day}`; occ[k] = (occ[k] || 0) + 1; });
-    let penalty = 0, inWindow = 0;
-    const list = harvests.map((h) => {
-      let conflict = false, outOfWindow = false;
-      if (occ[`${h.row}:${h.day}`] > 1) conflict = true;
-      BLOCKED.forEach((b) => { if (b.row === h.row && h.day >= b.day && h.day < b.day + b.len) conflict = true; });
-      if (h.day >= h.window[0] && h.day <= h.window[1]) inWindow++;
-      else { outOfWindow = true; penalty += Math.min(Math.abs(h.day - h.window[0]), Math.abs(h.day - h.window[1])) * 420; }
-      if (conflict) penalty += 900;
-      return { ...h, conflict, outOfWindow };
-    });
-    const optTotal = OPTIMAL_PLAN.reduce((s, h) => s + h.value, 0);
-    return { list, conflicts: list.filter((h) => h.conflict).length, inWindow, margin: optTotal - penalty, optTotal };
-  }, [harvests]);
-
-  const diff = computed.margin - computed.optTotal;
+  const result = useMemo(() => evaluatePlan(plan, BLOCKED), [plan]);
+  const diff = result.planMargin - result.grossOptimal;
 
   function drop(row: string, day: number) {
     if (!dragId) return;
-    setHarvests((prev) => prev.map((h) => (h.id === dragId ? { ...h, row, day } : h)));
+    moveHarvest(dragId, row, day);
     setDragId(null);
   }
 
@@ -58,10 +43,10 @@ export function Planner() {
   return (
     <div className="fade-in">
       <div className="grid lg:grid-cols-4 gap-5 mb-5">
-        <div className="card p-5"><p className="text-xs text-muted">{t("Plan margin")}</p><AnimatedNumber value={computed.margin} format={(n) => formatMoney(n, currency)} className="mono text-2xl font-bold mt-2 text-green block" /><p className="text-xs mt-1" style={{ color: diff < 0 ? "var(--warn)" : "var(--muted)" }}>{diff === 0 ? t("optimal plan") : `${formatMoney(diff, currency)} ${t("vs. optimal")}`}</p></div>
-        <div className="card p-5"><p className="text-xs text-muted">{t("Active conflicts")}</p><p className="mono text-2xl font-bold mt-2" style={{ color: computed.conflicts > 0 ? "var(--warn)" : "var(--ink)" }}>{computed.conflicts}</p><p className="text-xs mt-1 text-muted">{t("resource overlaps")}</p></div>
-        <div className="card p-5"><p className="text-xs text-muted">{t("In window")}</p><p className="mono text-2xl font-bold mt-2">{computed.inWindow} / {harvests.length}</p><p className="text-xs mt-1 text-muted">{t("at optimal point")}</p></div>
-        <div className="card p-5 flex flex-col justify-center"><button onClick={() => setHarvests(JSON.parse(JSON.stringify(OPTIMAL_PLAN)))} className="rounded-full py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Restore optimal plan")}</button></div>
+        <div className="card p-5"><p className="text-xs text-muted flex items-center gap-1.5">{t("Plan margin")}<span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>{t("Live → Simulator")}</span></p><AnimatedNumber value={result.planMargin} format={(n) => formatMoney(n, currency)} className="mono text-2xl font-bold mt-2 text-green block" /><p className="text-xs mt-1" style={{ color: diff < 0 ? "var(--warn)" : "var(--muted)" }}>{diff === 0 ? t("optimal plan") : `${formatMoney(diff, currency)} ${t("vs. optimal")}`}</p></div>
+        <div className="card p-5"><p className="text-xs text-muted">{t("Active conflicts")}</p><p className="mono text-2xl font-bold mt-2" style={{ color: result.conflictCount > 0 ? "var(--warn)" : "var(--ink)" }}>{result.conflictCount}</p><p className="text-xs mt-1 text-muted">{t("resource overlaps")}</p></div>
+        <div className="card p-5"><p className="text-xs text-muted">{t("In window")}</p><p className="mono text-2xl font-bold mt-2">{result.inWindow} / {plan.length}</p><p className="text-xs mt-1 text-muted">{t("at optimal point")}</p></div>
+        <div className="card p-5 flex flex-col justify-center"><button onClick={resetPlan} className="rounded-full py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Restore optimal plan")}</button></div>
       </div>
 
       <div className="card p-6 mb-5">
@@ -76,7 +61,7 @@ export function Planner() {
               <div className="grid grid-cols-7">
                 {Array.from({ length: 7 }).map((_, d) => {
                   const blk = BLOCKED.find((b) => b.row === r.id && d >= b.day && d < b.day + b.len);
-                  const chip = computed.list.find((h) => h.row === r.id && h.day === d);
+                  const chip = result.harvests.find((h) => h.row === r.id && h.day === d);
                   return (
                     <div key={d} onDragOver={(e) => e.preventDefault()} onDrop={() => drop(r.id, d)} className="border-l border-line relative" style={{ minHeight: 48, background: blk ? "repeating-linear-gradient(45deg,#f0e2dc,#f0e2dc 6px,#f6ece7 6px,#f6ece7 12px)" : undefined }}>
                       {blk && d === blk.day && <span className="text-[10px] font-semibold absolute top-1 left-1" style={{ color: "var(--warn)" }}>{t(blk.label)}</span>}
@@ -94,7 +79,7 @@ export function Planner() {
           ))}
         </div></div>
         <p className="text-xs mt-4 px-1 text-muted">
-          {computed.conflicts > 0 ? <><span style={{ color: "var(--warn)" }}>▲</span> {computed.conflicts} {t("conflict(s): two tasks compete for the same resource or fall on maintenance.")}</>
+          {result.conflictCount > 0 ? <><span style={{ color: "var(--warn)" }}>▲</span> {result.conflictCount} {t("conflict(s): two tasks compete for the same resource or fall on maintenance.")}</>
             : diff < 0 ? <>{t("No conflicts, but some harvests are outside their optimal window — that costs")} {formatMoney(Math.abs(diff), currency)} {t("in degradation.")}</>
             : <><span style={{ color: "var(--green)" }}>●</span> {t("Optimal plan: all in window, no conflicts.")}</>}
         </p>

@@ -1,12 +1,15 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import type { Currency, AreaUnit, TempUnit, Lang } from "./types";
+import type { Currency, AreaUnit, TempUnit, Lang, Harvest } from "./types";
 import { FARMS } from "@/data/farms";
+import { OPTIMAL_PLAN } from "@/data/planner";
 
 interface Toast {
   id: number;
   msg: string;
 }
+
+const clonePlan = () => JSON.parse(JSON.stringify(OPTIMAL_PLAN)) as Harvest[];
 
 interface AppState {
   farmId: string;
@@ -23,6 +26,15 @@ interface AppState {
   setLang: (l: Lang) => void;
   toasts: Toast[];
   toast: (msg: string) => void;
+  // Shared harvest plan + scenario — the single model the Planner and the
+  // Simulator both read from and write to.
+  plan: Harvest[];
+  moveHarvest: (id: string, row: string, day: number) => void;
+  resetPlan: () => void;
+  levers: Record<string, boolean>;
+  toggleLever: (id: string) => void;
+  delayDays: number;
+  setDelayDays: (d: number) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -36,6 +48,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // English is the primary language; Spanish is the secondary option.
   const [lang, setLang] = useState<Lang>("en");
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [plan, setPlan] = useState<Harvest[]>(clonePlan);
+  const [levers, setLevers] = useState<Record<string, boolean>>({});
+  const [delayDays, setDelayDays] = useState<number>(0);
+
+  const moveHarvest = useCallback((id: string, row: string, day: number) => {
+    setPlan((prev) => prev.map((h) => (h.id === id ? { ...h, row, day } : h)));
+  }, []);
+  const resetPlan = useCallback(() => setPlan(clonePlan()), []);
+  const toggleLever = useCallback((id: string) => setLevers((p) => ({ ...p, [id]: !p[id] })), []);
 
   // Restore the saved language after mount (avoids SSR/hydration mismatch).
   useEffect(() => {
@@ -55,7 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang: changeLang, toasts, toast }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang: changeLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, delayDays, setDelayDays }}>
       {children}
     </Ctx.Provider>
   );
