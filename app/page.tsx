@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
+import { DashboardMockup } from "@/components/DashboardMockup";
 
 export default function Landing() {
   return (
@@ -82,6 +83,17 @@ export default function Landing() {
           <div className="relative">
             <h2 className="text-white font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4.5vw,3.4rem)" }}>See your margin before<br />it walks off the field.</h2>
             <Link href="/dashboard" className="inline-block rounded-full px-8 py-4 text-sm font-semibold mt-8 btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>Open the live dashboard →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Product preview — the real dashboard, framed, as the closing proof. */}
+      <section className="bg-white border-t border-line py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-2xl mb-10"><p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">The product</p><h2 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>Your whole operation, on one screen.</h2><p className="text-muted mt-4 text-lg">Margin at risk, today&apos;s decisions and the season trend — in plain dollars, no jargon.</p></div>
+          <DashboardMockup />
+          <div className="text-center mt-10">
+            <Link href="/dashboard" className="inline-block rounded-full px-8 py-4 text-sm font-semibold btn-press" style={{ background: "var(--ink)", color: "#fff" }}>Open the live dashboard →</Link>
           </div>
         </div>
       </section>
