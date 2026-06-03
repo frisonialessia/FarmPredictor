@@ -280,6 +280,33 @@ export const ES: Record<string, string> = {
   "Tap to highlight · sorted by urgency": "Toca para resaltar · ordenadas por urgencia",
   "Schematic parcel map. Color shows harvest urgency; the ring shows optimal-window hours remaining. Live satellite layer connects in Phase 2.":
     "Mapa esquemático de parcelas. El color indica la urgencia de cosecha; el anillo muestra las horas restantes de la ventana óptima. La capa satélite en vivo se conecta en la Fase 2.",
+  // ── Guided tour ───────────────────────────────────────────────────
+  "60-sec tour": "Tour de 60 s",
+  "Guided tour": "Recorrido guiado",
+  Close: "Cerrar",
+  Pause: "Pausa",
+  Play: "Reproducir",
+  Back: "Atrás",
+  Next: "Siguiente",
+  Done: "Listo",
+  "Your week, in dollars": "Tu semana, en dólares",
+  "FarmPredictor turns every harvest decision into margin. This week, thousands are recoverable — let's see how.":
+    "FarmPredictor convierte cada decisión de cosecha en margen. Esta semana hay miles recuperables — veamos cómo.",
+  "Your optimal plan": "Tu plan óptimo",
+  "Every harvest sits inside its window, on a free machine. This is the ceiling — the most you can make.":
+    "Cada cosecha está dentro de su ventana, en una máquina libre. Este es el techo — lo máximo que puedes ganar.",
+  "But it's not when you should — it's when you can": "No es cuándo deberías — es cuándo puedes",
+  "Harvester #1 is overbooked, so North A lands on a rig in maintenance. Watch the plan margin drop the moment you move it.":
+    "La Cosechadora #1 está saturada, así que North A cae en un equipo en mantenimiento. Mira caer el margen en cuanto la mueves.",
+  "The cost shows up on its own": "El coste aparece solo",
+  "Same plan, one engine. The Simulator's net margin already fell — and the new conflict appeared here automatically, no clicks needed.":
+    "Mismo plan, un solo motor. El margen neto del Simulador ya cayó — y el conflicto nuevo apareció aquí automáticamente, sin tocar nada.",
+  "Close the gap": "Cierra el hueco",
+  "Spend a little to move the maintenance up, and you recover the margin North A was bleeding. The number climbs back.":
+    "Gasta un poco para adelantar el mantenimiento y recuperas el margen que North A perdía. El número vuelve a subir.",
+  "Optimal vs. executable": "Óptimo vs. ejecutable",
+  "The gap between the perfect plan and the one you can actually run is real money. FarmPredictor measures it — and helps you close it.":
+    "El hueco entre el plan perfecto y el que puedes ejecutar de verdad es dinero real. FarmPredictor lo mide — y te ayuda a cerrarlo.",
   // ── Toasts ────────────────────────────────────────────────────────
   "Demo prototype — this action isn't wired up yet.": "Prototipo demo — esta acción aún no está conectada.",
   "Exported demo farm data to CSV.": "Datos demo de la granja exportados a CSV.",

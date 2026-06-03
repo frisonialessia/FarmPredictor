@@ -33,6 +33,7 @@ interface AppState {
   resetPlan: () => void;
   levers: Record<string, boolean>;
   toggleLever: (id: string) => void;
+  setLevers: (l: Record<string, boolean>) => void;
   delayDays: number;
   setDelayDays: (d: number) => void;
 }
@@ -76,7 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang: changeLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, delayDays, setDelayDays }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang: changeLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays }}>
       {children}
     </Ctx.Provider>
   );

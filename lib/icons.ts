@@ -21,4 +21,7 @@ export const ICONS: Record<string, string> = {
   chevron: '<path d="M6 9l6 6 6-6"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   cloudsun: '<path d="M12 2v2M4.9 4.9l1.4 1.4M2 12h2M20 12h2M18 5l-1.4 1.4"/><circle cx="9" cy="9" r="3.2"/><path d="M13 16a4 4 0 0 0-7.5-2A3.5 3.5 0 1 0 6 21h7a3 3 0 0 0 0-5z"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  play: '<path d="M6 4.5v15l13-7.5z"/>',
+  pause: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
 };

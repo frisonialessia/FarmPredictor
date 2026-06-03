@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Toaster } from "@/components/Toaster";
+import { GuidedTour } from "@/components/GuidedTour";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { FARMS, FARM_IDS } from "@/data/farms";
@@ -57,6 +58,7 @@ function MobileFarmSwitcher() {
 
 function DashboardInner() {
   const [active, setActive] = useState("overview");
+  const [tourOpen, setTourOpen] = useState(false);
   const { toast } = useApp();
   const t = useT();
   const title = TITLES[active];
@@ -79,7 +81,10 @@ function DashboardInner() {
             <span className="text-xs mono px-3 py-1.5 rounded-full hidden sm:block" style={{ background: "var(--mint)" }}>{t("week of Jun 8")}</span>
             <LanguageToggle />
             <MobileFarmSwitcher />
-            <button onClick={() => { setActive("overview"); toast("Showing today's recommendations."); }} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Recommendations")}</button>
+            <button onClick={() => setTourOpen(true)} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press flex items-center gap-1.5" style={{ background: "var(--ink)", color: "#fff" }}>
+              <Icon name="play" size={12} style={{ color: "var(--lime)" }} /><span className="hidden sm:inline">{t("60-sec tour")}</span>
+            </button>
+            <button onClick={() => { setActive("overview"); toast("Showing today's recommendations."); }} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press hidden sm:block" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Recommendations")}</button>
           </div>
         </div>
         <div className="p-4 sm:p-6 pb-24 md:pb-6">
@@ -95,6 +100,7 @@ function DashboardInner() {
       </main>
       <MobileNav active={active} onNavigate={setActive} />
       <Toaster />
+      {tourOpen && <GuidedTour setView={setActive} onExit={() => setTourOpen(false)} />}
     </div>
   );
 }
