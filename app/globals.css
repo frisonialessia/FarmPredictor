@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green:#52c871; --mint:#b4e8c5; --lime:#85df42; --ink:#0B0F0C;
+  --paper:#fff; --bg:#F3F6F2; --muted:#6B756C; --line:#E6EBE5; --warn:#C2410C;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+.card { background:#fff; border:1px solid var(--line); border-radius:20px; }
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius:99px; }
+.setinput { font-size:14px; padding:9px 12px; border:1px solid var(--line); border-radius:11px; background:#fff; color:var(--ink); outline:none; transition:border-color .15s; width:100%; }
+.setinput:focus { border-color: var(--green); }
+select.setinput { cursor:pointer; -webkit-appearance:none; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B756C' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; background-size:16px; padding-right:34px; }
+input[type=range]{-webkit-appearance:none;height:6px;border-radius:99px;background:var(--mint);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:20px;width:20px;border-radius:50%;background:var(--ink);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+.fade-in { animation: fadeIn .25s ease; }
