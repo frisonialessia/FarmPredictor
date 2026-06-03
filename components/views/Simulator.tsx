@@ -92,7 +92,7 @@ export function Simulator() {
               return (
                 <div key={c.id}>
                   <div className="flex items-center justify-between mb-1"><span className={`text-xs font-semibold ${on ? "" : "opacity-60"}`}>{c.parcel} · {t(c.resource)}</span><span className="mono text-xs font-bold" style={{ color: on ? "var(--green)" : "var(--warn)" }}>{on ? "+" : "-"}{formatMoney(c.loss, currency)}</span></div>
-                  <div className="h-2 rounded-full" style={{ background: "var(--mint)" }}><div className="h-full rounded-full" style={{ width: on ? "100%" : "0%", background: "var(--green)", transition: "width .4s" }} /></div>
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: on ? "100%" : "0%", background: "linear-gradient(90deg,var(--green-deep),var(--green))", transition: "width .4s" }} /></div>
                 </div>
               );
             })}

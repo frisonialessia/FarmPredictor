@@ -1,5 +1,6 @@
 "use client";
 import { Icon } from "@/components/Icon";
+import { AreaChart } from "@/components/Charts";
 import { useT } from "@/lib/i18n";
 
 const FEED = [
@@ -23,8 +24,8 @@ export function Activity() {
           <p className="mono text-4xl font-bold mt-1" style={{ color: "var(--lime)" }}>+$3,120</p>
           <div className="flex items-center justify-between mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,.14)" }}><span className="text-xs" style={{ color: "rgba(255,255,255,.7)" }}>{tr("Decisions made")}</span><span className="mono font-bold">6</span></div>
         </div>
-        <div className="card p-5 mb-4"><p className="text-xs mb-2 text-muted">{tr("Season to date")}</p><p className="mono text-2xl font-bold">+$52,840</p><p className="text-[11px] mt-1 text-muted">{tr("margin recovered since March")}</p></div>
-        <div className="card p-5"><p className="text-xs mb-3 text-muted">{tr("Activity breakdown")}</p><div className="space-y-2">{STATS.map(([n, v, c]) => (<div key={n} className="flex items-center justify-between"><span className="text-sm">{tr(n as string)}</span><span className="mono text-sm font-bold" style={{ color: c }}>{v}</span></div>))}</div></div>
+        <div className="card p-5 mb-4"><p className="kpi-label mb-2">{tr("Season to date")}</p><p className="mono text-2xl font-bold">+$52,840</p><p className="text-[11px] mt-1 mb-3 text-muted">{tr("margin recovered since March")}</p><AreaChart data={[21, 34, 45, 53]} labels={[tr("Mar"), tr("Apr"), tr("May"), tr("Jun")]} height={96} /></div>
+        <div className="card p-5"><p className="kpi-label mb-3">{tr("Activity breakdown")}</p><div className="space-y-2">{STATS.map(([n, v, c]) => (<div key={n} className="flex items-center justify-between"><span className="text-sm">{tr(n as string)}</span><span className="mono text-sm font-bold" style={{ color: c }}>{v}</span></div>))}</div></div>
       </div>
       <div className="lg:col-span-2 card p-6">
         <h4 className="text-[15px] font-bold mb-4">{tr("Activity log")}</h4>
