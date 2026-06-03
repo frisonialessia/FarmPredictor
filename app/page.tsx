@@ -21,10 +21,10 @@ export default function Landing() {
       <header className="relative overflow-hidden pt-36 pb-28">
         {/* Layer 0: gradient base (also the graceful fallback if the photo is absent). */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#0B0F0C,#143b1f 58%,#1d5c2e)" }} />
-        {/* Layer 1: aerial farm photo — drop your image at public/hero.jpg. */}
-        <div className="absolute inset-0" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center" }} />
-        {/* Layer 2: dark overlay so the headline always stays legible. */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(120deg,rgba(11,15,12,.92) 0%,rgba(11,15,12,.72) 38%,rgba(20,59,31,.55) 70%,rgba(29,92,46,.35) 100%)" }} />
+        {/* Layer 1: aerial farm photo — toned down (less candy-green, richer) so it reads premium. */}
+        <div className="absolute inset-0" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center 42%", filter: "saturate(0.82) brightness(0.82) contrast(1.06)" }} />
+        {/* Layer 2: neutral dark overlay — strong on the left for text, soft on the right; plus a bottom fade. */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(11,15,12,.6) 0%, rgba(11,15,12,0) 42%), linear-gradient(110deg, rgba(11,15,12,.93) 0%, rgba(11,15,12,.66) 40%, rgba(11,15,12,.34) 70%, rgba(11,15,12,.16) 100%)" }} />
         {/* subtle grain for depth */}
         <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
 
