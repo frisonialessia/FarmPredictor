@@ -1,7 +1,12 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
-import type { Currency, AreaUnit, TempUnit } from "./types";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import type { Currency, AreaUnit, TempUnit, Lang } from "./types";
 import { FARMS } from "@/data/farms";
+
+interface Toast {
+  id: number;
+  msg: string;
+}
 
 interface AppState {
   farmId: string;
@@ -14,6 +19,10 @@ interface AppState {
   setTempUnit: (t: TempUnit) => void;
   userName: string;
   setUserName: (n: string) => void;
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  toasts: Toast[];
+  toast: (msg: string) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -24,9 +33,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [areaUnit, setAreaUnit] = useState<AreaUnit>("ac");
   const [tempUnit, setTempUnit] = useState<TempUnit>("F");
   const [userName, setUserName] = useState<string>("M. Alvarez");
+  // English is the primary language; Spanish is the secondary option.
+  const [lang, setLang] = useState<Lang>("en");
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Restore the saved language after mount (avoids SSR/hydration mismatch).
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? window.localStorage.getItem("fp_lang") : null;
+    if (saved === "en" || saved === "es") setLang(saved);
+  }, []);
+
+  const changeLang = useCallback((l: Lang) => {
+    setLang(l);
+    if (typeof window !== "undefined") window.localStorage.setItem("fp_lang", l);
+  }, []);
+
+  const toast = useCallback((msg: string) => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, msg }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 2600);
+  }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang: changeLang, toasts, toast }}>
       {children}
     </Ctx.Provider>
   );

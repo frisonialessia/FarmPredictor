@@ -4,6 +4,7 @@
 export type Currency = "USD" | "EUR" | "MXN" | "CAD";
 export type AreaUnit = "ac" | "ha";
 export type TempUnit = "F" | "C";
+export type Lang = "en" | "es";
 
 export interface Parcel {
   id: string;

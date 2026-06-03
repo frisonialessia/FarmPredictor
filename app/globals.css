@@ -20,3 +20,29 @@ input[type=range]{-webkit-appearance:none;height:6px;border-radius:99px;backgrou
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:20px;width:20px;border-radius:50%;background:var(--ink);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);}
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
 .fade-in { animation: fadeIn .25s ease; }
+
+/* Microinteractions ---------------------------------------------------- */
+.card { transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease; }
+/* Cards explicitly marked interactive lift slightly on hover. */
+.card-hover { cursor: pointer; }
+.card-hover:hover { box-shadow: 0 8px 24px rgba(11,15,12,.07); transform: translateY(-2px); border-color: var(--mint); }
+/* Rows that respond to clicks get a soft hover tint. */
+.row-hover { transition: background .15s ease; }
+.row-hover:hover { background: var(--bg); }
+/* Buttons get a subtle transition + tactile press. */
+button { transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .08s ease; }
+.btn-press:active { transform: scale(.96); }
+/* Accessible keyboard focus ring across interactive elements. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--green); outline-offset: 2px; border-radius: 6px;
+}
+/* Hide scrollbars on the mobile bottom nav while keeping it scrollable. */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+/* Toast entrance. */
+@keyframes toastIn { from{opacity:0;transform:translateY(10px) scale(.96);} to{opacity:1;transform:none;} }
+.toast-in { animation: toastIn .2s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .fade-in, .toast-in { animation: none; }
+  .card-hover:hover { transform: none; }
+}

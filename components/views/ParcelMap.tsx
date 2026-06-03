@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useFarm } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 
 function colorFor(hours: number) {
@@ -15,6 +16,7 @@ function label(hours: number) {
 
 export function ParcelMap() {
   const farm = useFarm();
+  const t = useT();
   const [active, setActive] = useState(0);
   const w = 520, h = 440;
   const grid: string[] = [];
@@ -27,10 +29,10 @@ export function ParcelMap() {
         <div className="card p-4">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <div className="flex gap-2">
-              <button className="text-xs font-semibold px-3 py-1.5 rounded-lg" style={{ background: "var(--ink)", color: "#fff" }}>Schematic</button>
+              <button className="text-xs font-semibold px-3 py-1.5 rounded-lg" style={{ background: "var(--ink)", color: "#fff" }}>{t("Schematic")}</button>
               <button disabled className="text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-not-allowed" style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--line)" }}>
-                <Icon name="map" size={14} /> Satellite
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>Phase 2</span>
+                <Icon name="map" size={14} /> {t("Satellite")}
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>{t("Phase 2")}</span>
               </button>
             </div>
             <div className="flex items-center gap-3 text-[11px] text-muted">
@@ -62,16 +64,16 @@ export function ParcelMap() {
             })}
           </svg>
         </div>
-        <p className="text-[11px] mt-2 px-1 text-muted">Schematic parcel map. Color shows harvest urgency; the ring shows optimal-window hours remaining. Live satellite layer connects in Phase 2.</p>
+        <p className="text-[11px] mt-2 px-1 text-muted">{t("Schematic parcel map. Color shows harvest urgency; the ring shows optimal-window hours remaining. Live satellite layer connects in Phase 2.")}</p>
       </div>
       <div className="card p-6">
-        <h4 className="text-[15px] font-bold mb-1">Parcels</h4>
-        <p className="text-xs mb-4 text-muted">Tap to highlight · sorted by urgency</p>
+        <h4 className="text-[15px] font-bold mb-1">{t("Parcels")}</h4>
+        <p className="text-xs mb-4 text-muted">{t("Tap to highlight · sorted by urgency")}</p>
         <div>
           {farm.parcels.map((p, i) => (
-            <div key={p.id} onClick={() => setActive(i)} className={`flex items-center gap-3 py-3 px-2 rounded-xl cursor-pointer ${i > 0 ? "border-t border-line" : ""}`} style={{ background: active === i ? "var(--bg)" : "transparent" }}>
+            <div key={p.id} onClick={() => setActive(i)} className={`flex items-center gap-3 py-3 px-2 rounded-xl cursor-pointer row-hover ${i > 0 ? "border-t border-line" : ""}`} style={{ background: active === i ? "var(--bg)" : "transparent" }}>
               <span className="h-3 w-3 rounded-full shrink-0" style={{ background: colorFor(p.hoursToWindowClose) }} />
-              <div className="flex-1"><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-muted">{p.crop} · {p.area}</p></div>
+              <div className="flex-1"><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-muted">{t(p.crop)} · {p.area}</p></div>
               <span className="mono text-sm font-bold" style={{ color: colorFor(p.hoursToWindowClose) }}>{label(p.hoursToWindowClose)}</span>
             </div>
           ))}

@@ -1,7 +1,9 @@
 "use client";
 import { useState, useMemo } from "react";
 import { useApp } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { formatMoney } from "@/lib/format";
 import { RESOURCE_ROWS, OPTIMAL_PLAN, BLOCKED, DAYS7 } from "@/data/planner";
 import type { Harvest } from "@/lib/types";
@@ -18,6 +20,7 @@ const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "
 
 export function Planner() {
   const { currency } = useApp();
+  const t = useT();
   const [harvests, setHarvests] = useState<Harvest[]>(() => JSON.parse(JSON.stringify(OPTIMAL_PLAN)));
   const [dragId, setDragId] = useState<string | null>(null);
   const [calMonth, setCalMonth] = useState(5);
@@ -55,28 +58,28 @@ export function Planner() {
   return (
     <div className="fade-in">
       <div className="grid lg:grid-cols-4 gap-5 mb-5">
-        <div className="card p-5"><p className="text-xs text-muted">Plan margin</p><p className="mono text-2xl font-bold mt-2 text-green">{formatMoney(computed.margin, currency)}</p><p className="text-xs mt-1" style={{ color: diff < 0 ? "var(--warn)" : "var(--muted)" }}>{diff === 0 ? "optimal plan" : `${formatMoney(diff, currency)} vs. optimal`}</p></div>
-        <div className="card p-5"><p className="text-xs text-muted">Active conflicts</p><p className="mono text-2xl font-bold mt-2" style={{ color: computed.conflicts > 0 ? "var(--warn)" : "var(--ink)" }}>{computed.conflicts}</p><p className="text-xs mt-1 text-muted">resource overlaps</p></div>
-        <div className="card p-5"><p className="text-xs text-muted">In window</p><p className="mono text-2xl font-bold mt-2">{computed.inWindow} / {harvests.length}</p><p className="text-xs mt-1 text-muted">at optimal point</p></div>
-        <div className="card p-5 flex flex-col justify-center"><button onClick={() => setHarvests(JSON.parse(JSON.stringify(OPTIMAL_PLAN)))} className="rounded-full py-2 text-sm font-semibold border border-line">Restore optimal plan</button></div>
+        <div className="card p-5"><p className="text-xs text-muted">{t("Plan margin")}</p><AnimatedNumber value={computed.margin} format={(n) => formatMoney(n, currency)} className="mono text-2xl font-bold mt-2 text-green block" /><p className="text-xs mt-1" style={{ color: diff < 0 ? "var(--warn)" : "var(--muted)" }}>{diff === 0 ? t("optimal plan") : `${formatMoney(diff, currency)} ${t("vs. optimal")}`}</p></div>
+        <div className="card p-5"><p className="text-xs text-muted">{t("Active conflicts")}</p><p className="mono text-2xl font-bold mt-2" style={{ color: computed.conflicts > 0 ? "var(--warn)" : "var(--ink)" }}>{computed.conflicts}</p><p className="text-xs mt-1 text-muted">{t("resource overlaps")}</p></div>
+        <div className="card p-5"><p className="text-xs text-muted">{t("In window")}</p><p className="mono text-2xl font-bold mt-2">{computed.inWindow} / {harvests.length}</p><p className="text-xs mt-1 text-muted">{t("at optimal point")}</p></div>
+        <div className="card p-5 flex flex-col justify-center"><button onClick={() => setHarvests(JSON.parse(JSON.stringify(OPTIMAL_PLAN)))} className="rounded-full py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Restore optimal plan")}</button></div>
       </div>
 
       <div className="card p-6 mb-5">
-        <p className="text-xs mb-4 text-muted"><b>Drag</b> any harvest to another day or machine. Conflicts and margin recalculate on drop.</p>
+        <p className="text-xs mb-4 text-muted"><b>{t("Drag")}</b> {t("any harvest to another day or machine. Conflicts and margin recalculate on drop.")}</p>
         <div className="overflow-x-auto"><div className="min-w-[820px]">
           <div className="grid items-center mb-2" style={{ gridTemplateColumns: "150px 1fr" }}>
-            <div /><div className="grid grid-cols-7 text-xs text-muted">{DAYS7.map((d) => <div key={d}>{d}</div>)}</div>
+            <div /><div className="grid grid-cols-7 text-xs text-muted">{DAYS7.map((d) => <div key={d}>{t(d)}</div>)}</div>
           </div>
           {RESOURCE_ROWS.map((r) => (
             <div key={r.id} className="grid items-stretch" style={{ gridTemplateColumns: "150px 1fr" }}>
-              <div className="flex items-center gap-2 pr-3 py-2"><Icon name={r.icon} size={15} /><span className="text-xs font-semibold">{r.label}</span></div>
+              <div className="flex items-center gap-2 pr-3 py-2"><Icon name={r.icon} size={15} /><span className="text-xs font-semibold">{t(r.label)}</span></div>
               <div className="grid grid-cols-7">
                 {Array.from({ length: 7 }).map((_, d) => {
                   const blk = BLOCKED.find((b) => b.row === r.id && d >= b.day && d < b.day + b.len);
                   const chip = computed.list.find((h) => h.row === r.id && h.day === d);
                   return (
                     <div key={d} onDragOver={(e) => e.preventDefault()} onDrop={() => drop(r.id, d)} className="border-l border-line relative" style={{ minHeight: 48, background: blk ? "repeating-linear-gradient(45deg,#f0e2dc,#f0e2dc 6px,#f6ece7 6px,#f6ece7 12px)" : undefined }}>
-                      {blk && d === blk.day && <span className="text-[10px] font-semibold absolute top-1 left-1" style={{ color: "var(--warn)" }}>{blk.label}</span>}
+                      {blk && d === blk.day && <span className="text-[10px] font-semibold absolute top-1 left-1" style={{ color: "var(--warn)" }}>{t(blk.label)}</span>}
                       {chip && (
                         <div draggable onDragStart={() => setDragId(chip.id)} className="absolute rounded-lg flex items-center justify-center text-[11px] font-bold text-center"
                           style={{ inset: 3, cursor: "grab", background: chip.conflict ? "var(--warn)" : chip.outOfWindow ? "#fff" : "var(--ink)", color: chip.outOfWindow ? "var(--ink)" : "#fff", border: chip.outOfWindow ? "2px dashed var(--green)" : "none", padding: "0 4px", lineHeight: 1.1 }}>
@@ -91,22 +94,22 @@ export function Planner() {
           ))}
         </div></div>
         <p className="text-xs mt-4 px-1 text-muted">
-          {computed.conflicts > 0 ? <><span style={{ color: "var(--warn)" }}>▲</span> {computed.conflicts} conflict(s): two tasks compete for the same resource or fall on maintenance.</>
-            : diff < 0 ? <>No conflicts, but some harvests are outside their optimal window — that costs {formatMoney(Math.abs(diff), currency)} in degradation.</>
-            : <><span style={{ color: "var(--green)" }}>●</span> Optimal plan: all in window, no conflicts.</>}
+          {computed.conflicts > 0 ? <><span style={{ color: "var(--warn)" }}>▲</span> {computed.conflicts} {t("conflict(s): two tasks compete for the same resource or fall on maintenance.")}</>
+            : diff < 0 ? <>{t("No conflicts, but some harvests are outside their optimal window — that costs")} {formatMoney(Math.abs(diff), currency)} {t("in degradation.")}</>
+            : <><span style={{ color: "var(--green)" }}>●</span> {t("Optimal plan: all in window, no conflicts.")}</>}
         </p>
       </div>
 
       <div className="card p-6">
         <div className="flex items-center justify-between mb-4">
-          <div><h4 className="text-[15px] font-bold">Harvest calendar</h4><p className="text-xs text-muted">Scheduled harvests and optimal windows</p></div>
+          <div><h4 className="text-[15px] font-bold">{t("Harvest calendar")}</h4><p className="text-xs text-muted">{t("Scheduled harvests and optimal windows")}</p></div>
           <div className="flex items-center gap-2">
             <button onClick={() => { let m = calMonth - 1, y = calYear; if (m < 0) { m = 11; y--; } setCalMonth(m); setCalYear(y); }} className="h-8 w-8 rounded-lg border border-line grid place-items-center"><Icon name="chevron" size={14} style={{ transform: "rotate(90deg)" }} /></button>
-            <span className="text-sm font-semibold w-32 text-center">{MONTHS[calMonth]} {calYear}</span>
+            <span className="text-sm font-semibold w-32 text-center">{t(MONTHS[calMonth])} {calYear}</span>
             <button onClick={() => { let m = calMonth + 1, y = calYear; if (m > 11) { m = 0; y++; } setCalMonth(m); setCalYear(y); }} className="h-8 w-8 rounded-lg border border-line grid place-items-center"><Icon name="chevron" size={14} style={{ transform: "rotate(-90deg)" }} /></button>
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-1 text-[11px] font-semibold mb-1 text-muted">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d) => <div key={d}>{d}</div>)}</div>
+        <div className="grid grid-cols-7 gap-1 text-[11px] font-semibold mb-1 text-muted">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d) => <div key={d}>{t(d)}</div>)}</div>
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: startDow }).map((_, i) => <div key={`e${i}`} className="rounded-lg" style={{ background: "var(--bg)", opacity: 0.4, minHeight: 74 }} />)}
           {Array.from({ length: days }).map((_, idx) => {
@@ -119,7 +122,7 @@ export function Planner() {
                 {ev.map((e, i) => {
                   const bg = e.type === "harvest" ? "var(--ink)" : e.type === "alert" ? "rgba(194,65,12,.12)" : "var(--mint)";
                   const col = e.type === "harvest" ? "#fff" : e.type === "alert" ? "var(--warn)" : "var(--ink)";
-                  return <div key={i} className="text-[9px] font-semibold rounded px-1 py-0.5 mt-0.5 truncate" style={{ background: bg, color: col }}>{e.label}</div>;
+                  return <div key={i} className="text-[9px] font-semibold rounded px-1 py-0.5 mt-0.5 truncate" style={{ background: bg, color: col }}>{t(e.label)}</div>;
                 })}
               </div>
             );
