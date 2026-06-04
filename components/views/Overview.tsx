@@ -25,14 +25,14 @@ export function Overview() {
   // Start with the simulated forecast (SSR-safe), then swap in a real one from
   // Open-Meteo once mounted. Falls back silently to demo data on any failure.
   const [weather, setWeather] = useState<WeatherDay[]>(farm.weather);
-  const [live, setLive] = useState(false);
+  const [status, setStatus] = useState<"loading" | "live" | "demo">("loading");
   useEffect(() => {
     setWeather(farm.weather);
-    setLive(false);
+    setStatus("loading");
     let cancelled = false;
     fetchWeather(farm.lat, farm.lon)
-      .then((w) => { if (!cancelled && w.length) { setWeather(w); setLive(true); } })
-      .catch(() => {});
+      .then((w) => { if (!cancelled && w.length) { setWeather(w); setStatus("live"); } else if (!cancelled) setStatus("demo"); })
+      .catch(() => { if (!cancelled) setStatus("demo"); });
     return () => { cancelled = true; };
   }, [farm.id, farm.lat, farm.lon, farm.weather]);
 
@@ -64,9 +64,9 @@ export function Overview() {
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-[15px] font-bold">{t("Weather · 7 days")}</h4>
-            <span className={live ? "pill pill-mint" : "pill"}>
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: live ? "var(--green)" : "var(--muted)" }} />
-              {live ? t("Live · Open-Meteo") : t("Demo")}
+            <span className={status === "live" ? "pill pill-mint" : "pill"}>
+              <span className={`h-1.5 w-1.5 rounded-full ${status === "loading" ? "pulse-dot" : ""}`} style={{ background: status === "live" ? "var(--green)" : status === "loading" ? "var(--green)" : "var(--muted)" }} />
+              {status === "live" ? t("Live · Open-Meteo") : status === "loading" ? t("Updating…") : t("Demo")}
             </span>
           </div>
           <div className="space-y-2">
