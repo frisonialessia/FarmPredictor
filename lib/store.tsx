@@ -11,6 +11,23 @@ interface Toast {
 
 const clonePlan = () => JSON.parse(JSON.stringify(OPTIMAL_PLAN)) as Harvest[];
 
+// Persisted preference state: starts at a default (SSR-safe), hydrates from
+// localStorage after mount, and writes back on every change.
+function usePersisted<T extends string>(key: string, initial: T) {
+  const [value, setValue] = useState<T>(initial);
+  useEffect(() => {
+    try {
+      const s = window.localStorage.getItem(key);
+      if (s != null) setValue(s as T);
+    } catch { /* ignore */ }
+  }, [key]);
+  const set = useCallback((v: T) => {
+    setValue(v);
+    try { window.localStorage.setItem(key, v); } catch { /* ignore */ }
+  }, [key]);
+  return [value, set] as const;
+}
+
 interface AppState {
   farmId: string;
   setFarmId: (id: string) => void;
@@ -36,39 +53,43 @@ interface AppState {
   setLevers: (l: Record<string, boolean>) => void;
   delayDays: number;
   setDelayDays: (d: number) => void;
+  // Guided-tour spotlight target, e.g. "harvest:h1", "lever:sched-h1", "net".
+  spotlight: string | null;
+  setSpotlight: (s: string | null) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [farmId, setFarmId] = useState<string>("rio_verde");
-  const [currency, setCurrency] = useState<Currency>("USD");
-  const [areaUnit, setAreaUnit] = useState<AreaUnit>("ac");
-  const [tempUnit, setTempUnit] = useState<TempUnit>("F");
-  const [userName, setUserName] = useState<string>("M. Alvarez");
+  const [farmId, setFarmId] = usePersisted<string>("fp_farm", "rio_verde");
+  const [currency, setCurrency] = usePersisted<Currency>("fp_currency", "USD");
+  const [areaUnit, setAreaUnit] = usePersisted<AreaUnit>("fp_area", "ac");
+  const [tempUnit, setTempUnit] = usePersisted<TempUnit>("fp_temp", "F");
+  const [userName, setUserNameRaw] = useState<string>("M. Alvarez");
   // English is the primary language; Spanish is the secondary option.
-  const [lang, setLang] = useState<Lang>("en");
+  const [lang, setLang] = usePersisted<Lang>("fp_lang", "en");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [plan, setPlan] = useState<Harvest[]>(clonePlan);
   const [levers, setLevers] = useState<Record<string, boolean>>({});
   const [delayDays, setDelayDays] = useState<number>(0);
+  const [spotlight, setSpotlight] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const s = window.localStorage.getItem("fp_user");
+      if (s) setUserNameRaw(s);
+    } catch { /* ignore */ }
+  }, []);
+  const setUserName = useCallback((n: string) => {
+    setUserNameRaw(n);
+    try { window.localStorage.setItem("fp_user", n); } catch { /* ignore */ }
+  }, []);
 
   const moveHarvest = useCallback((id: string, row: string, day: number) => {
     setPlan((prev) => prev.map((h) => (h.id === id ? { ...h, row, day } : h)));
   }, []);
   const resetPlan = useCallback(() => setPlan(clonePlan()), []);
   const toggleLever = useCallback((id: string) => setLevers((p) => ({ ...p, [id]: !p[id] })), []);
-
-  // Restore the saved language after mount (avoids SSR/hydration mismatch).
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? window.localStorage.getItem("fp_lang") : null;
-    if (saved === "en" || saved === "es") setLang(saved);
-  }, []);
-
-  const changeLang = useCallback((l: Lang) => {
-    setLang(l);
-    if (typeof window !== "undefined") window.localStorage.setItem("fp_lang", l);
-  }, []);
 
   const toast = useCallback((msg: string) => {
     const id = Date.now() + Math.random();
@@ -77,7 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang: changeLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight }}>
       {children}
     </Ctx.Provider>
   );

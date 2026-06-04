@@ -54,6 +54,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .toast-in { animation: toastIn .2s ease; }
 @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.35;transform:scale(.8);} }
 .pulse-dot { animation: pulseDot 1s ease-in-out infinite; }
+/* Guided-tour spotlight: a pulsing lime ring drawing the eye to the element. */
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 0 0 3px var(--lime), 0 0 0 10px rgba(133,223,66,.22); }
+  50%     { box-shadow: 0 0 0 3px var(--lime), 0 0 0 17px rgba(133,223,66,.05); }
+}
+.tour-glow { border-radius: 12px; position: relative; z-index: 30; animation: glowPulse 1.5s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .fade-in, .toast-in, .pulse-dot { animation: none; }
   .card-hover:hover { transform: none; }

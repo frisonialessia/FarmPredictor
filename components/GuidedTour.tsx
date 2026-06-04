@@ -12,6 +12,7 @@ interface Actions {
   moveHarvest: (id: string, row: string, day: number) => void;
   setLevers: (l: Record<string, boolean>) => void;
   setDelayDays: (d: number) => void;
+  setSpotlight: (s: string | null) => void;
 }
 
 type MetricKind = "planMargin" | "net" | "vsDoNothing" | null;
@@ -33,49 +34,49 @@ const STEPS: Step[] = [
     title: "Your week, in dollars",
     body: "FarmPredictor turns every harvest decision into margin. This week, thousands are recoverable — let's see how.",
     metric: null,
-    apply: (a) => { a.resetPlan(); a.setLevers({}); a.setDelayDays(0); },
+    apply: (a) => { a.resetPlan(); a.setLevers({}); a.setDelayDays(0); a.setSpotlight(null); },
   },
   {
     view: "planner",
     title: "Your optimal plan",
     body: "Every harvest sits inside its window, on a free machine. This is the ceiling — the most you can make.",
     metric: "planMargin",
-    apply: (a) => { a.resetPlan(); a.setLevers({}); a.setDelayDays(0); },
+    apply: (a) => { a.resetPlan(); a.setLevers({}); a.setDelayDays(0); a.setSpotlight("kpi:planMargin"); },
   },
   {
     view: "planner",
     title: "But it's not when you should — it's when you can",
     body: "Harvester #1 is overbooked, so North A lands on a rig in maintenance. Watch the plan margin drop the moment you move it.",
     metric: "planMargin",
-    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({}); },
+    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({}); a.setSpotlight("harvest:h1"); },
   },
   {
     view: "whatif",
     title: "The cost shows up on its own",
     body: "Same plan, one engine. The Simulator's net margin already fell — and the new conflict appeared here automatically, no clicks needed.",
     metric: "net",
-    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({}); },
+    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({}); a.setSpotlight("net"); },
   },
   {
     view: "whatif",
     title: "Close the gap",
     body: "Spend a little to move the maintenance up, and you recover the margin North A was bleeding. The number climbs back.",
     metric: "net",
-    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({ "sched-h1": true }); },
+    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({ "sched-h1": true }); a.setSpotlight("lever:sched-h1"); },
   },
   {
     view: "whatif",
     title: "Optimal vs. executable",
     body: "The gap between the perfect plan and the one you can actually run is real money. FarmPredictor measures it — and helps you close it.",
     metric: "vsDoNothing",
-    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({ "sched-h1": true }); },
+    apply: (a) => { a.resetPlan(); a.moveHarvest("h1", "m2", 0); a.setLevers({ "sched-h1": true }); a.setSpotlight("net"); },
   },
 ];
 
 const AUTO_MS = 4200;
 
 export function GuidedTour({ setView, onExit }: { setView: (v: string) => void; onExit: () => void }) {
-  const { currency, plan, levers, delayDays, resetPlan, moveHarvest, setLevers, setDelayDays } = useApp();
+  const { currency, plan, levers, delayDays, resetPlan, moveHarvest, setLevers, setDelayDays, setSpotlight } = useApp();
   const t = useT();
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -85,7 +86,7 @@ export function GuidedTour({ setView, onExit }: { setView: (v: string) => void; 
   // Apply the step's world state and switch to its view whenever the step changes.
   useEffect(() => {
     setView(step.view);
-    step.apply({ resetPlan, moveHarvest, setLevers, setDelayDays });
+    step.apply({ resetPlan, moveHarvest, setLevers, setDelayDays, setSpotlight });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -112,6 +113,7 @@ export function GuidedTour({ setView, onExit }: { setView: (v: string) => void; 
     resetPlan();
     setLevers({});
     setDelayDays(0);
+    setSpotlight(null);
     onExit();
   }
 

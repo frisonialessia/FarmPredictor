@@ -11,7 +11,7 @@ import { CONFLICTS, BLOCKED, DELAY_PENALTY } from "@/data/planner";
 export function Simulator() {
   // Reads the SAME shared plan as the Planner. Editing a harvest there flows
   // straight into this margin through the unified engine.
-  const { currency, plan, levers, toggleLever, delayDays, setDelayDays } = useApp();
+  const { currency, plan, levers, toggleLever, delayDays, setDelayDays, spotlight } = useApp();
   const t = useT();
 
   const planEval = useMemo(() => evaluatePlan(plan, BLOCKED), [plan]);
@@ -43,7 +43,7 @@ export function Simulator() {
             <span className="inline-block text-[11px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full mb-3" style={{ background: "var(--lime)", color: "var(--ink)" }}>{t("Live scenario")}</span>
             <h3 className="text-2xl font-extrabold">{t("Weekly net margin")}</h3>
             <div className="flex items-end gap-6 mt-4">
-              <div><p className="text-[11px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,.6)" }}>{t("Projected")}</p><AnimatedNumber value={scenario.net} format={(n) => formatMoney(n, currency)} className="mono text-5xl font-bold block" style={{ color: "var(--lime)" }} /></div>
+              <div className={spotlight === "net" ? "tour-glow" : ""} style={{ padding: spotlight === "net" ? "6px 12px" : undefined, margin: spotlight === "net" ? "-6px -12px" : undefined }}><p className="text-[11px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,.6)" }}>{t("Projected")}</p><AnimatedNumber value={scenario.net} format={(n) => formatMoney(n, currency)} className="mono text-4xl sm:text-5xl font-bold block" style={{ color: "var(--lime)" }} /></div>
               <div className="pb-1"><p className="text-[11px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,.6)" }}>{t("vs. doing nothing")}</p><p className="mono text-xl font-bold" style={{ color: scenario.vsDoNothing >= 0 ? "var(--lime)" : "#ff9f7a" }}>{scenario.vsDoNothing >= 0 ? "+" : "-"}{formatMoney(Math.abs(scenario.vsDoNothing), currency)}</p></div>
             </div>
             {planEval.conflictCount > 0 && (
@@ -69,7 +69,7 @@ export function Simulator() {
           <p className="text-xs mb-4 text-muted">{t("Each action has a cost and recovers margin")}</p>
           <div>
             {scenario.conflicts.map((c, i) => (
-              <div key={c.id} className={`flex items-center gap-3 py-4 ${i > 0 ? "border-t border-line" : ""}`}>
+              <div key={c.id} className={`flex items-center gap-3 py-4 ${i > 0 ? "border-t border-line" : ""} ${spotlight === `lever:${c.id}` ? "tour-glow" : ""}`} style={spotlight === `lever:${c.id}` ? { padding: "10px 12px" } : undefined}>
                 <div className="grid place-items-center h-10 w-10 rounded-xl shrink-0" style={{ background: c.source === "schedule" ? "rgba(194,65,12,.12)" : "var(--mint)", color: c.source === "schedule" ? "var(--warn)" : "var(--ink)" }}><Icon name={c.icon} /></div>
                 <div className="flex-1"><p className="text-sm font-bold leading-tight">{leverLabel(c)}</p><p className="text-xs mt-0.5 text-muted">{c.parcel} · {t("recovers")} <span className="mono font-semibold text-green">{formatMoney(c.loss, currency)}</span> · {t("costs")} <span className="mono">{formatMoney(c.actionCost, currency)}</span></p></div>
                 <button onClick={() => toggleLever(c.id)} className="relative h-7 w-12 rounded-full shrink-0" style={{ background: levers[c.id] ? "var(--green)" : "var(--line)", transition: "background .2s" }}>

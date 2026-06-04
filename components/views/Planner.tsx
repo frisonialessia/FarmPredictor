@@ -21,7 +21,7 @@ const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "
 export function Planner() {
   // The plan lives in the shared store, so every edit here is instantly visible
   // to the What-if Simulator through the same unified engine.
-  const { currency, plan, moveHarvest, resetPlan } = useApp();
+  const { currency, plan, moveHarvest, resetPlan, spotlight } = useApp();
   const t = useT();
   const [dragId, setDragId] = useState<string | null>(null);
   const [calMonth, setCalMonth] = useState(5);
@@ -42,8 +42,8 @@ export function Planner() {
 
   return (
     <div className="fade-in">
-      <div className="grid lg:grid-cols-4 gap-5 mb-5">
-        <div className="card p-5"><p className="flex items-center gap-1.5"><span className="kpi-label">{t("Plan margin")}</span><span className="pill pill-mint text-[9px] px-1.5 py-0.5">{t("Live → Simulator")}</span></p><AnimatedNumber value={result.planMargin} format={(n) => formatMoney(n, currency)} className="mono text-2xl font-bold mt-2 text-green block" /><p className="text-xs mt-1" style={{ color: diff < 0 ? "var(--warn)" : "var(--muted)" }}>{diff === 0 ? t("optimal plan") : `${formatMoney(diff, currency)} ${t("vs. optimal")}`}</p></div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-5">
+        <div className={`card p-5 ${spotlight === "kpi:planMargin" ? "tour-glow" : ""}`}><p className="flex items-center gap-1.5"><span className="kpi-label">{t("Plan margin")}</span><span className="pill pill-mint text-[9px] px-1.5 py-0.5">{t("Live → Simulator")}</span></p><AnimatedNumber value={result.planMargin} format={(n) => formatMoney(n, currency)} className="mono text-2xl font-bold mt-2 text-green block" /><p className="text-xs mt-1" style={{ color: diff < 0 ? "var(--warn)" : "var(--muted)" }}>{diff === 0 ? t("optimal plan") : `${formatMoney(diff, currency)} ${t("vs. optimal")}`}</p></div>
         <div className="card p-5"><p className="kpi-label">{t("Active conflicts")}</p><p className="mono text-2xl font-bold mt-2" style={{ color: result.conflictCount > 0 ? "var(--warn)" : "var(--ink)" }}>{result.conflictCount}</p><p className="text-xs mt-1 text-muted">{t("resource overlaps")}</p></div>
         <div className="card p-5"><p className="kpi-label">{t("In window")}</p><p className="mono text-2xl font-bold mt-2">{result.inWindow} / {plan.length}</p><p className="text-xs mt-1 text-muted">{t("at optimal point")}</p></div>
         <div className="card p-5 flex flex-col justify-center"><button onClick={resetPlan} className="rounded-full py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Restore optimal plan")}</button></div>
@@ -67,7 +67,7 @@ export function Planner() {
                       {blk && d === blk.day && <span className="text-[10px] font-semibold absolute top-1 left-1" style={{ color: "var(--warn)" }}>{t(blk.label)}</span>}
                       {chip && (
                         <div draggable onDragStart={() => setDragId(chip.id)} className="absolute rounded-lg flex items-center justify-center text-[11px] font-bold text-center"
-                          style={{ inset: 3, cursor: "grab", background: chip.conflict ? "var(--warn)" : chip.outOfWindow ? "#fff" : "var(--ink)", color: chip.outOfWindow ? "var(--ink)" : "#fff", border: chip.outOfWindow ? "2px dashed var(--green)" : "none", padding: "0 4px", lineHeight: 1.1, boxShadow: "var(--shadow-sm)" }}>
+                          style={{ inset: 3, cursor: "grab", background: chip.conflict ? "var(--warn)" : chip.outOfWindow ? "#fff" : "var(--ink)", color: chip.outOfWindow ? "var(--ink)" : "#fff", border: chip.outOfWindow ? "2px dashed var(--green)" : "none", padding: "0 4px", lineHeight: 1.1, zIndex: spotlight === `harvest:${chip.id}` ? 20 : undefined, boxShadow: spotlight === `harvest:${chip.id}` ? "0 0 0 3px var(--lime), 0 0 0 9px rgba(133,223,66,.3)" : "var(--shadow-sm)" }}>
                           {chip.label}
                         </div>
                       )}

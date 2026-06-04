@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { DashboardMockup } from "@/components/DashboardMockup";
@@ -22,8 +23,8 @@ export default function Landing() {
       <header className="relative overflow-hidden pt-36 pb-28">
         {/* Layer 0: gradient base (also the graceful fallback if the photo is absent). */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#0B0F0C,#143b1f 58%,#1d5c2e)" }} />
-        {/* Layer 1: aerial farm photo — toned down (less candy-green, richer) so it reads premium. */}
-        <div className="absolute inset-0" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center 42%", filter: "saturate(0.82) brightness(0.82) contrast(1.06)" }} />
+        {/* Layer 1: aerial farm photo — served optimized (AVIF/WebP, sized) by next/image; toned down so it reads premium. */}
+        <Image src="/hero.jpg" alt="" fill priority sizes="100vw" style={{ objectFit: "cover", objectPosition: "center 42%", filter: "saturate(0.82) brightness(0.82) contrast(1.06)" }} />
         {/* Layer 2: neutral dark overlay — strong on the left for text, soft on the right; plus a bottom fade. */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(11,15,12,.6) 0%, rgba(11,15,12,0) 42%), linear-gradient(110deg, rgba(11,15,12,.93) 0%, rgba(11,15,12,.66) 40%, rgba(11,15,12,.34) 70%, rgba(11,15,12,.16) 100%)" }} />
         {/* subtle grain for depth */}
