@@ -38,7 +38,7 @@ function MobileFarmSwitcher() {
   const farm = FARMS[farmId];
   return (
     <div className="relative md:hidden">
-      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1.5 rounded-full pl-1 pr-2 py-1 border border-line" aria-label="Switch farm">
+      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1" aria-label="Switch farm">
         <span className="h-7 w-7 rounded-lg grid place-items-center text-[11px] font-bold" style={{ background: "var(--lime)" }}>{farm.initials}</span>
         <Icon name="chevron" size={12} />
       </button>
