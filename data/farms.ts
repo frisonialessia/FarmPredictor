@@ -5,6 +5,8 @@ export const FARMS: Record<string, Farm> = {
     id: "rio_verde",
     name: "Rio Verde Farms",
     location: "Hidalgo County, TX",
+    lat: 26.30,
+    lon: -98.16,
     plan: "Pro",
     initials: "RV",
     kpis: [
@@ -35,6 +37,8 @@ export const FARMS: Record<string, Farm> = {
     id: "llano_seco",
     name: "Llano Seco Ranch",
     location: "Lubbock County, TX",
+    lat: 33.58,
+    lon: -101.85,
     plan: "Pro",
     initials: "LS",
     kpis: [

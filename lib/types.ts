@@ -38,6 +38,8 @@ export interface Farm {
   id: string;
   name: string;
   location: string;
+  lat: number;           // for live weather (Open-Meteo)
+  lon: number;
   plan: string;
   initials: string;
   kpis: KPI[];

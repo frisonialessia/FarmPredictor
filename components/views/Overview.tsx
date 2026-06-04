@@ -1,10 +1,13 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useFarm, useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { AreaChart } from "@/components/Charts";
 import { formatMoney, formatTemp } from "@/lib/format";
+import { fetchWeather } from "@/lib/weather";
 import { MARKET } from "@/data/farms";
+import type { WeatherDay } from "@/lib/types";
 
 const DECISIONS = [
   { icon: "tractor", parcel: "North A", title: "Harvest before Thursday", desc: "Harvester busy, execution shifts", loss: 2940 },
@@ -18,6 +21,21 @@ export function Overview() {
   const farm = useFarm();
   const { currency, tempUnit } = useApp();
   const t = useT();
+
+  // Start with the simulated forecast (SSR-safe), then swap in a real one from
+  // Open-Meteo once mounted. Falls back silently to demo data on any failure.
+  const [weather, setWeather] = useState<WeatherDay[]>(farm.weather);
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    setWeather(farm.weather);
+    setLive(false);
+    let cancelled = false;
+    fetchWeather(farm.lat, farm.lon)
+      .then((w) => { if (!cancelled && w.length) { setWeather(w); setLive(true); } })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [farm.id, farm.lat, farm.lon, farm.weather]);
+
   return (
     <div className="fade-in">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
@@ -44,10 +62,16 @@ export function Overview() {
           </div>
         </div>
         <div className="card p-6">
-          <h4 className="text-[15px] font-bold mb-4">{t("Weather · 7 days")}</h4>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-[15px] font-bold">{t("Weather · 7 days")}</h4>
+            <span className={live ? "pill pill-mint" : "pill"}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: live ? "var(--green)" : "var(--muted)" }} />
+              {live ? t("Live · Open-Meteo") : t("Demo")}
+            </span>
+          </div>
           <div className="space-y-2">
-            {farm.weather.map((w) => (
-              <div key={w.day} className="flex items-center gap-3 py-1">
+            {weather.map((w, i) => (
+              <div key={`${w.day}-${i}`} className="flex items-center gap-3 py-1">
                 <span className="text-sm w-9 font-medium text-muted">{t(w.day)}</span>
                 <span className="w-7" style={{ color: w.rainPct > 50 ? "var(--warn)" : "var(--ink)" }}><Icon name={w.icon} size={22} /></span>
                 <span className="mono text-sm font-semibold w-12">{formatTemp(w.tempF, tempUnit)}</span>

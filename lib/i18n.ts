@@ -42,6 +42,7 @@ export const ES: Record<string, string> = {
   "Order 620 crates today": "Pide 620 cajas hoy",
   "Supplier delivers in 48h": "El proveedor entrega en 48 h",
   "Weather · 7 days": "Clima · 7 días",
+  "Live · Open-Meteo": "En vivo · Open-Meteo",
   "Market prices": "Precios de mercado",
   "Live spot vs. your cost": "Precio spot vs. tu coste",
   cost: "coste",
