@@ -13,6 +13,7 @@ export const NAV: [string, string, string][] = [
   ["financial", "Financial", "financial"],
   ["operations", "Operations", "operations"],
   ["activity", "Activity", "activity"],
+  ["digest", "Digest", "bell"],
 ];
 
 export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (id: string) => void }) {
