@@ -113,6 +113,8 @@ export const ES: Record<string, string> = {
   cost: "coste",
   "Season margin": "Margen de temporada",
   "Cumulative recovered, by month": "Recuperado acumulado, por mes",
+  "Recovered, by month": "Recuperado, por mes",
+  "Try it — toggle a fix": "Pruébalo — activa un arreglo",
   // ── KPIs (from data) ──────────────────────────────────────────────
   "Margin at risk": "Margen en riesgo",
   "recoverable this week": "recuperable esta semana",

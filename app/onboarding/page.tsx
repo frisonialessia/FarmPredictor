@@ -21,6 +21,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const [parcels, setParcels] = useState<ParcelRow[]>([{ name: "", crop: CROPS[0], area: "" }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -48,6 +49,7 @@ export default function OnboardingPage() {
       existing.push(farm);
       window.localStorage.setItem("fp_farms", JSON.stringify(existing));
       window.localStorage.setItem("fp_farm", farm.id); // open straight into it
+      window.localStorage.setItem("fp_currency", currency); // user's chosen currency
     } catch { /* ignore */ }
     router.push("/dashboard");
   }
@@ -88,6 +90,14 @@ export default function OnboardingPage() {
               </Field>
               <Field label={t("Location (county, region)")} error={errors.location}>
                 <input className="setinput" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Hidalgo County, TX" />
+              </Field>
+              <Field label={t("Currency")}>
+                <select className="setinput" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                  <option value="USD">{t("US Dollar ($)")}</option>
+                  <option value="MXN">{t("Mexican Peso (MX$)")}</option>
+                  <option value="EUR">{t("Euro (€)")}</option>
+                  <option value="CAD">{t("Canadian Dollar (C$)")}</option>
+                </select>
               </Field>
             </>
           )}

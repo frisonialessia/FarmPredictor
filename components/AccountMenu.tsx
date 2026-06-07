@@ -5,10 +5,14 @@ import { useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { getSession, clearSession } from "@/lib/session";
+import type { Currency } from "@/lib/types";
 
-// Top-bar account menu: shows the signed-in user, links to Settings, signs out.
+const CURRENCIES: Currency[] = ["USD", "MXN", "EUR", "CAD"];
+
+// Top-bar account menu: shows the signed-in user, lets them pick the currency
+// they view data in, links to Settings, signs out.
 export function AccountMenu({ onNavigate }: { onNavigate: (id: string) => void }) {
-  const { userName } = useApp();
+  const { userName, currency, setCurrency } = useApp();
   const t = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -32,6 +36,14 @@ export function AccountMenu({ onNavigate }: { onNavigate: (id: string) => void }
               <p className="text-[10px] uppercase tracking-wider text-muted">{t("Signed in as")}</p>
               <p className="text-sm font-bold truncate">{userName}</p>
               {email && <p className="text-xs text-muted truncate">{email}</p>}
+            </div>
+            <div className="px-4 py-3 border-b border-line">
+              <p className="text-[10px] uppercase tracking-wider text-muted mb-1.5">{t("Currency")}</p>
+              <div className="flex gap-1">
+                {CURRENCIES.map((c) => (
+                  <button key={c} onClick={() => setCurrency(c)} className="flex-1 text-[11px] font-bold py-1.5 rounded-lg transition-colors" style={{ background: currency === c ? "var(--ink)" : "var(--bg)", color: currency === c ? "#fff" : "var(--muted)" }}>{c}</button>
+                ))}
+              </div>
             </div>
             <button onClick={() => { onNavigate("settings"); setOpen(false); }} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-bg text-left">
               <Icon name="settings" size={16} />{t("Settings")}
