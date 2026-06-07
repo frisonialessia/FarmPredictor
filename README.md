@@ -115,8 +115,9 @@ pure functions, ready to receive real data without UI changes.
 - **Phase 1 — the brain (done):** unified engine; weather/timing/machinery/
   inventory economics; guided tour; EN/ES; full farm setup.
 - **Phase 2 — real backend:** connect **Supabase** (Postgres + Auth + RLS,
-  multi-tenant) — schema and migrations already live in `supabase/`. Real market
-  prices (USDA/SAGARPA).
+  multi-tenant) — schema and migrations already live in `supabase/`, with a
+  step-by-step [connection runbook](supabase/CONNECT.md). Real market prices
+  (USDA/SAGARPA).
 - **Phase 3 — the math muscle:** an isolated **Python microservice (FastAPI +
   Google OR-Tools)** for crop-degradation ML and combinatorial scheduling
   optimization. The skeleton already lives in [`optimizer/`](optimizer/) (runs,

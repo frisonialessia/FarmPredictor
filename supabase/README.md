@@ -7,6 +7,7 @@ touches the cloud until you apply it.**
 - `migrations/0001_schema.sql` — tables (organizations → memberships → farms → …).
 - `migrations/0002_rls.sql` — RLS policies (hard tenant isolation) + helpers.
 - `seed.sql` — the current demo data (Rio Verde + Llano Seco) on the real schema.
+- **[`CONNECT.md`](CONNECT.md) — the full step-by-step connection runbook** (do this when ready).
 
 ## How to apply (when we're ready)
 1. Create a project at supabase.com (region: US for now; EU later for GDPR).
