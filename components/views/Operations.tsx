@@ -4,6 +4,7 @@ import { Icon } from "@/components/Icon";
 import { useT } from "@/lib/i18n";
 import { formatMoney } from "@/lib/format";
 import { fleetEconomics } from "@/lib/machinery";
+import { inventoryEconomics } from "@/lib/inventory";
 
 const MACH: [string, string, boolean, string][] = [
   ["Harvester #1", "Operational", true, "Service in 120 h"],
@@ -26,6 +27,7 @@ export function Operations() {
   const inv = farm.inventory ?? null;
   const econ = fleetEconomics(farm.resources ?? []);
   const econById = Object.fromEntries(econ.machines.map((m) => [m.id, m]));
+  const invEcon = inventoryEconomics(inv ?? []);
   return (
     <div className="fade-in">
       <div className="grid lg:grid-cols-3 gap-5 mb-5">
@@ -41,7 +43,13 @@ export function Operations() {
         </div>
         <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Supplies")}</h4><p className="text-xs mb-4 text-muted">{inv && inv.length ? tr("Your inventory") : tr("Stock vs. projected need")}</p>
           {inv && inv.length
-            ? <div>{inv.map((it, i) => (<div key={it.id} className={`flex items-center justify-between py-2.5 ${i > 0 ? "border-t border-line" : ""}`}><span className="text-sm font-medium">{it.name}</span><span className="mono text-sm font-semibold">{it.qty} <span className="text-muted">{it.unit}</span></span></div>))}</div>
+            ? <div>
+                {invEcon.items.map((it, i) => (<div key={it.id} className={`flex items-center justify-between py-2.5 ${i > 0 ? "border-t border-line" : ""}`}>
+                  <div className="min-w-0"><p className="text-sm font-medium truncate">{it.name}</p>{(it.location || it.category) && <p className="text-[11px] text-muted truncate">{it.category ? tr(it.category) : ""}{it.location ? ` · ${tr("Stored at")} ${it.location}` : ""}</p>}</div>
+                  <div className="text-right shrink-0"><p className="mono text-sm font-semibold">{it.qty} <span className="text-muted">{it.unit}</span></p>{it.spoilageCost > 0 && <p className="mono text-[11px]" style={{ color: "var(--warn)" }}>-{formatMoney(it.spoilageCost, currency)} {tr("spoils/week")}</p>}</div>
+                </div>))}
+                {invEcon.weeklySpoilage > 0 && <div className="flex items-center justify-between pt-3 mt-1 border-t border-line"><span className="text-sm font-semibold">{tr("Inventory at risk")}</span><span className="mono text-sm font-bold" style={{ color: "var(--warn)" }}>-{formatMoney(invEcon.weeklySpoilage, currency)}</span></div>}
+              </div>
             : <div className="space-y-4">{SUP.map(([n, have, need], i) => { const pct = Math.min(100, ((have as number) / (need as number)) * 100); const sh = have < need; return (<div key={i}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium">{tr(n as string)}</span><span className="mono text-xs" style={{ color: sh ? "var(--warn)" : "var(--muted)" }}>{have}/{need}</span></div><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${pct}%`, background: sh ? "var(--warn)" : "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>); })}</div>}
         </div>
       </div>

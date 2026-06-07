@@ -11,6 +11,7 @@ import { useMarketingT } from "@/lib/lang";
 import { TIMEZONES } from "@/lib/timezones";
 import { ROLES, ROLE_LABEL } from "@/lib/roles";
 import { MACHINE_TYPES } from "@/lib/machinery";
+import { ITEM_CATEGORIES } from "@/lib/inventory";
 import { canonCrop } from "@/lib/cropName";
 import { num } from "@/lib/num";
 import type { Farm, Member, MemberRole, ResourceRow, InventoryItem } from "@/lib/types";
@@ -21,7 +22,7 @@ interface ParcelRow { name: string; crop: string; area: string }
 interface MemberRow { name: string; role: MemberRole }
 interface MachineRow { name: string; machineType: string; year: string; diesel: string; downtime: string }
 interface CrewRow { name: string; workers: string }
-interface InvRow { name: string; qty: string; unit: string }
+interface InvRow { name: string; qty: string; unit: string; category: string; location: string; unitCost: string; spoilage: string }
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function OnboardingPage() {
   const [members, setMembers] = useState<MemberRow[]>([{ name: "", role: "owner" }]);
   const [machines, setMachines] = useState<MachineRow[]>([{ name: "Harvester #1", machineType: "Combine harvester", year: "", diesel: "", downtime: "" }]);
   const [crews, setCrews] = useState<CrewRow[]>([{ name: "Crew A", workers: "" }]);
-  const [inventory, setInventory] = useState<InvRow[]>([{ name: "", qty: "", unit: "units" }]);
+  const [inventory, setInventory] = useState<InvRow[]>([{ name: "", qty: "", unit: "units", category: "Packaging", location: "", unitCost: "", spoilage: "" }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   function next() {
@@ -64,7 +65,7 @@ export default function OnboardingPage() {
         ...crews.filter((c) => c.name.trim()).map((c, i) => ({ id: `c${i + 1}`, label: c.name.trim(), icon: "crew", workers: num(c.workers) })),
       ];
       const memberObjs: Member[] = members.filter((m) => m.name.trim()).map((m, i) => ({ id: `u${i + 1}`, name: m.name.trim(), role: m.role }));
-      const invObjs: InventoryItem[] = inventory.filter((x) => x.name.trim()).map((x, i) => ({ id: `i${i + 1}`, name: x.name.trim(), qty: Number(x.qty) || 0, unit: x.unit.trim() || "units" }));
+      const invObjs: InventoryItem[] = inventory.filter((x) => x.name.trim()).map((x, i) => ({ id: `i${i + 1}`, name: x.name.trim(), qty: Number(x.qty) || 0, unit: x.unit.trim() || "units", category: x.category, location: x.location.trim() || undefined, unitCost: num(x.unitCost), spoilagePct: num(x.spoilage) }));
       const rows = parcels.filter((p) => p.name.trim()).map((p) => ({ ...p, crop: canonCrop(p.crop) }));
 
       const farm: Farm = buildFarm({ id: `user_${Date.now()}`, name, location, lat: 31.0, lon: -100.0, timezone }, rows, { members: memberObjs, resources, inventory: invObjs });
@@ -218,17 +219,29 @@ export default function OnboardingPage() {
               <button onClick={() => setCrews((r) => [...r, { name: "", workers: "" }])} className="text-sm font-semibold btn-press mb-5 block" style={{ color: "var(--green-deep)" }}>{t("+ Add crew")}</button>
 
               <label className="kpi-label">{t("Inventory")}</label>
-              <div className="space-y-2 mt-2">
+              <div className="space-y-3 mt-2">
                 {inventory.map((x, i) => (
-                  <div key={i} className="grid grid-cols-12 gap-2 items-center">
-                    <input className="setinput col-span-6" value={x.name} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, name: e.target.value } : y))} placeholder={t("Item")} />
-                    <input className="setinput col-span-3" value={x.qty} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, qty: e.target.value } : y))} placeholder={t("Qty")} inputMode="numeric" />
-                    <input className="setinput col-span-2" value={x.unit} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, unit: e.target.value } : y))} placeholder={t("Unit")} />
-                    <button onClick={() => setInventory((r) => r.filter((_, j) => j !== i))} className="col-span-1 grid place-items-center h-9 rounded-lg hover:bg-bg btn-press" style={{ color: "var(--muted)" }} aria-label={t("Remove")}><Icon name="x" size={15} /></button>
+                  <div key={i} className="rounded-xl border border-line p-3">
+                    <div className="flex gap-2 items-center mb-2">
+                      <input className="setinput flex-1" value={x.name} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, name: e.target.value } : y))} placeholder={t("Item")} />
+                      <button onClick={() => setInventory((r) => r.filter((_, j) => j !== i))} className="grid place-items-center h-9 w-9 rounded-lg hover:bg-bg btn-press shrink-0" style={{ color: "var(--muted)" }} aria-label={t("Remove")}><Icon name="x" size={15} /></button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <select className="setinput" value={x.category} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, category: e.target.value } : y))} aria-label={t("Category")}>
+                        {ITEM_CATEGORIES.map((c) => <option key={c} value={c}>{t(c)}</option>)}
+                      </select>
+                      <input className="setinput" value={x.qty} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, qty: e.target.value } : y))} placeholder={t("Qty")} inputMode="numeric" />
+                      <input className="setinput" value={x.unit} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, unit: e.target.value } : y))} placeholder={t("Unit")} />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <input className="setinput" value={x.unitCost} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, unitCost: e.target.value } : y))} placeholder={t("Unit cost")} inputMode="decimal" />
+                      <input className="setinput" value={x.spoilage} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, spoilage: e.target.value } : y))} placeholder={t("Spoilage %/wk")} inputMode="decimal" />
+                      <input className="setinput" value={x.location} onChange={(e) => setInventory((r) => r.map((y, j) => j === i ? { ...y, location: e.target.value } : y))} placeholder={t("Location")} />
+                    </div>
                   </div>
                 ))}
               </div>
-              <button onClick={() => setInventory((r) => [...r, { name: "", qty: "", unit: "units" }])} className="mt-3 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add item")}</button>
+              <button onClick={() => setInventory((r) => [...r, { name: "", qty: "", unit: "units", category: "Packaging", location: "", unitCost: "", spoilage: "" }])} className="mt-3 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add item")}</button>
             </>
           )}
 

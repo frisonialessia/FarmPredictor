@@ -50,6 +50,10 @@ export interface InventoryItem {
   name: string;
   qty: number;
   unit: string;
+  category?: string;        // Packaging / Input / Produce / Fuel / Other
+  location?: string;        // where it's stored
+  unitCost?: number;        // $ per unit
+  spoilagePct?: number;     // % that spoils per week
 }
 
 export interface Farm {

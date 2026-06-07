@@ -513,6 +513,9 @@ export const ES: Record<string, string> = {
   "+ Add item": "+ Añadir artículo",
   Qty: "Cant.", Unit: "Unidad", Item: "Artículo", Person: "Persona",
   "Your inventory": "Tu inventario",
+  Input: "Insumo", Produce: "Producto", Fuel: "Combustible",
+  Category: "Categoría", Location: "Ubicación", "Unit cost": "Coste unitario", "Spoilage %/wk": "Merma %/sem",
+  "Inventory at risk": "Inventario en riesgo", "spoils/week": "merma/semana", "Stored at": "Guardado en", Value: "Valor",
   // ── Machinery economics ───────────────────────────────────────────
   "Combine harvester": "Cosechadora", Tractor: "Tractor", Sprayer: "Fumigadora", Seeder: "Sembradora",
   Baler: "Empacadora", Forklift: "Montacargas", "Irrigation rig": "Equipo de riego", Other: "Otro",
