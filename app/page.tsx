@@ -12,9 +12,9 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5"><BrandMark size={28} /><span className="font-bold tracking-tight text-white">FarmPredictor</span></div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: "rgba(255,255,255,.7)" }}>
-            <a href="#problem" className="hover:text-white transition-colors">The problem</a>
             <a href="#how" className="hover:text-white transition-colors">How it works</a>
             <a href="#diff" className="hover:text-white transition-colors">Why us</a>
+            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-sm font-semibold hidden sm:block" style={{ color: "rgba(255,255,255,.8)" }}>Sign in</Link>
