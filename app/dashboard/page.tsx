@@ -11,6 +11,7 @@ import { GuidedTour } from "@/components/GuidedTour";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { Overview } from "@/components/views/Overview";
+import { Assistant } from "@/components/views/Assistant";
 import { ParcelMap } from "@/components/views/ParcelMap";
 import { Planner } from "@/components/views/Planner";
 import { Simulator } from "@/components/views/Simulator";
@@ -23,6 +24,7 @@ import { Settings } from "@/components/views/Settings";
 
 const TITLES: Record<string, [string, string]> = {
   overview: ["Overview", "Tuesday, June 9 · 08:14"],
+  assistant: ["Ask your farm", "Your data, in plain answers"],
   mapa: ["Parcel map", "Optimal-window time remaining"],
   planner: ["Planner", "Machinery & crews vs. optimal windows"],
   whatif: ["What-if simulator", "Pull the levers, watch the margin"],
@@ -93,6 +95,7 @@ function DashboardInner() {
         </div>
         <div className="p-4 sm:p-6 pb-24 md:pb-6">
           {active === "overview" && <Overview />}
+          {active === "assistant" && <Assistant />}
           {active === "mapa" && <ParcelMap />}
           {active === "planner" && <Planner />}
           {active === "whatif" && <Simulator />}

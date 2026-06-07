@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/BrandMark";
 
 export const NAV: [string, string, string][] = [
   ["overview", "Overview", "overview"],
+  ["assistant", "Assistant", "sparkles"],
   ["mapa", "Parcel map", "map"],
   ["planner", "Planner", "planner"],
   ["whatif", "What-if", "whatif"],
