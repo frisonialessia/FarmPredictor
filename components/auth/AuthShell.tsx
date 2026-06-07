@@ -46,11 +46,12 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
 }
 
 export function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+  const t = useMarketingT();
   return (
     <div className="mb-4">
       <label className="block text-xs font-semibold mb-1.5" style={{ color: error ? "var(--warn)" : "var(--muted)" }}>{label}</label>
       {children}
-      {error && <p className="text-xs mt-1" style={{ color: "var(--warn)" }}>{error}</p>}
+      {error && <p className="text-xs mt-1" style={{ color: "var(--warn)" }}>{t(error)}</p>}
     </div>
   );
 }

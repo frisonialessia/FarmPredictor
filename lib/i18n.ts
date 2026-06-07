@@ -465,6 +465,14 @@ export const ES: Record<string, string> = {
   "Start with a few — you can refine later.": "Empieza con unas pocas — puedes afinar después.",
   "+ Add parcel": "+ Añadir parcela",
   Remove: "Quitar",
+  // ── Form validation (Zod) ─────────────────────────────────────────
+  "Enter a valid email": "Introduce un correo válido",
+  "Tell us your name": "Dinos tu nombre",
+  "Farm name is required": "El nombre de la granja es obligatorio",
+  "Where is it? (county, region)": "¿Dónde está? (condado, región)",
+  Name: "Nombre",
+  Crop: "Cultivo",
+  "Area must be > 0": "El área debe ser > 0",
   "Ready to go": "Todo listo",
   "Here's your workspace. You can edit everything later.": "Aquí está tu espacio. Puedes editar todo después.",
   "Demo: in production this creates your farm in your account. Today it opens the live demo dashboard.":
