@@ -4,7 +4,6 @@ import { useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { BrandMark } from "@/components/BrandMark";
-import { repo } from "@/lib/repo";
 
 export const NAV: [string, string, string][] = [
   ["overview", "Overview", "overview"],
@@ -17,10 +16,9 @@ export const NAV: [string, string, string][] = [
 ];
 
 export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (id: string) => void }) {
-  const { farmId, setFarmId } = useApp();
+  const { setFarmId, farms, farm } = useApp();
   const t = useT();
   const [menuOpen, setMenuOpen] = useState(false);
-  const farm = repo.getFarm(farmId) ?? repo.listFarms()[0];
 
   return (
     <aside className="hidden md:flex shrink-0 bg-white border-r border-line py-4 flex-col items-center gap-2" style={{ width: 92, minWidth: 92, maxWidth: 92, position: "sticky", top: 0, height: "100vh", overflowY: "auto", alignSelf: "flex-start" }}>
@@ -42,7 +40,7 @@ export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (i
           </button>
           {menuOpen && (
             <div className="absolute left-2 z-30 bg-white border border-line rounded-xl shadow-lg overflow-hidden" style={{ width: 200, bottom: "calc(100% + 6px)" }}>
-              {repo.listFarms().map((f) => (
+              {farms.map((f) => (
                 <button key={f.id} onClick={() => { setFarmId(f.id); setMenuOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-bg text-left">
                   <span className="h-8 w-8 rounded-lg grid place-items-center text-xs font-bold shrink-0" style={{ background: "var(--lime)" }}>{f.initials}</span>
                   <span><p className="text-xs font-semibold">{f.name}</p><p className="text-[10px] text-muted">{f.location}</p></span>

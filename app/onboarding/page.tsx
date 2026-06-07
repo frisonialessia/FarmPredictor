@@ -5,6 +5,8 @@ import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { Field } from "@/components/auth/AuthShell";
 import { farmBasicsSchema, parcelSchema, fieldErrors } from "@/lib/schemas";
+import { farmFromDraft } from "@/lib/farmFactory";
+import type { Farm } from "@/lib/types";
 
 const CROPS = ["Grain sorghum", "Upland cotton", "Sweet corn", "Grapefruit", "Leaf lettuce", "Watermelon", "Winter wheat", "Peanuts"];
 const STEPS = ["Your farm", "Parcels", "Review"];
@@ -35,9 +37,14 @@ export default function OnboardingPage() {
   }
 
   function finish() {
-    // Mock persistence — the contract for repo.createFarm() once Supabase lands.
+    // Build a real Farm and persist it locally (the contract for
+    // repo.createFarm() once Supabase lands), then make it the active farm.
     try {
-      window.localStorage.setItem("fp_onboarding", JSON.stringify({ name, location, parcels }));
+      const farm = farmFromDraft({ name, location, parcels });
+      const existing = JSON.parse(window.localStorage.getItem("fp_farms") || "[]") as Farm[];
+      existing.push(farm);
+      window.localStorage.setItem("fp_farms", JSON.stringify(existing));
+      window.localStorage.setItem("fp_farm", farm.id); // open straight into it
     } catch { /* ignore */ }
     router.push("/dashboard");
   }

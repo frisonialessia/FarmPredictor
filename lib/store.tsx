@@ -1,6 +1,6 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import type { Currency, AreaUnit, TempUnit, Lang, Harvest } from "./types";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
+import type { Currency, AreaUnit, TempUnit, Lang, Harvest, Farm } from "./types";
 import { repo } from "@/lib/repo";
 
 interface Toast {
@@ -55,6 +55,9 @@ interface AppState {
   // Guided-tour spotlight target, e.g. "harvest:h1", "lever:sched-h1", "net".
   spotlight: string | null;
   setSpotlight: (s: string | null) => void;
+  // Seeded (demo) farms + any farm the user created in onboarding.
+  farms: Farm[];
+  farm: Farm;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -72,13 +75,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [levers, setLevers] = useState<Record<string, boolean>>({});
   const [delayDays, setDelayDays] = useState<number>(0);
   const [spotlight, setSpotlight] = useState<string | null>(null);
+  // Loaded after mount (SSR-safe: server + first client render see seeded only).
+  const [userFarms, setUserFarms] = useState<Farm[]>([]);
 
   useEffect(() => {
     try {
       const s = window.localStorage.getItem("fp_user");
       if (s) setUserNameRaw(s);
     } catch { /* ignore */ }
+    try {
+      const f = window.localStorage.getItem("fp_farms");
+      if (f) setUserFarms(JSON.parse(f) as Farm[]);
+    } catch { /* ignore */ }
   }, []);
+
+  const farms = useMemo(() => [...repo.listFarms(), ...userFarms], [userFarms]);
+  const farm = useMemo(() => farms.find((f) => f.id === farmId) ?? farms[0], [farms, farmId]);
   const setUserName = useCallback((n: string) => {
     setUserNameRaw(n);
     try { window.localStorage.setItem("fp_user", n); } catch { /* ignore */ }
@@ -97,7 +109,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm }}>
       {children}
     </Ctx.Provider>
   );
@@ -110,6 +122,5 @@ export function useApp() {
 }
 
 export function useFarm() {
-  const { farmId } = useApp();
-  return repo.getFarm(farmId) ?? repo.listFarms()[0];
+  return useApp().farm;
 }
