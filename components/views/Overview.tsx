@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { AreaChart } from "@/components/Charts";
 import { formatMoney, formatTemp } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
+import { weatherRisks, RISK_META } from "@/lib/risk";
 import { repo } from "@/lib/repo";
 import type { WeatherDay } from "@/lib/types";
 
@@ -36,6 +37,8 @@ export function Overview() {
       .catch(() => { if (!cancelled) setStatus("demo"); });
     return () => { cancelled = true; };
   }, [farm.id, farm.lat, farm.lon, farm.weather]);
+
+  const risks = weatherRisks(weather);
 
   return (
     <div className="fade-in">
@@ -83,6 +86,38 @@ export function Overview() {
           </div>
         </div>
       </div>
+
+      <div className="card p-6 mb-5">
+        <div className="flex items-center justify-between mb-1">
+          <h4 className="text-[15px] font-bold">{t("Weather risk radar")}</h4>
+          {status === "live" && <span className="pill pill-mint"><span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--green)" }} />{t("Live · Open-Meteo")}</span>}
+        </div>
+        <p className="text-xs mb-4 text-muted">{t("What's coming this week — and what it's worth")}</p>
+        {risks.length === 0 ? (
+          <div className="flex items-center gap-2.5 text-sm text-muted py-2"><span className="h-2 w-2 rounded-full" style={{ background: "var(--green)" }} />{t("No weather risks in the next 7 days.")}</div>
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-3">
+            {risks.map((r) => {
+              const meta = RISK_META[r.kind];
+              const warn = r.severity === "high";
+              return (
+                <div key={r.id} className="flex items-center gap-3 rounded-xl p-3 border border-line">
+                  <div className="grid place-items-center h-10 w-10 rounded-xl shrink-0" style={{ background: warn ? "rgba(194,65,12,.1)" : "var(--mint)", color: warn ? "var(--warn)" : "var(--ink)" }}><Icon name={meta.icon} /></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold">{t(meta.title)} · <span className="font-medium text-muted">{t(r.day)}</span></p>
+                    <p className="text-xs text-muted truncate">{t(meta.action)}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="mono text-sm font-bold" style={{ color: "var(--warn)" }}>-{formatMoney(r.impact, currency)}</p>
+                    <p className="text-[10px] text-muted">{t("at risk")}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="card p-6">
           <h4 className="text-[15px] font-bold mb-1">{t("Market prices")}</h4>
