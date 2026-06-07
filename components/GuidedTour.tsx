@@ -5,7 +5,6 @@ import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { formatMoney } from "@/lib/format";
 import { evaluatePlan, evaluateScenario } from "@/lib/engine";
-import { repo } from "@/lib/repo";
 
 interface Actions {
   resetPlan: () => void;
@@ -76,9 +75,9 @@ const STEPS: Step[] = [
 const AUTO_MS = 4200;
 
 export function GuidedTour({ setView, onExit }: { setView: (v: string) => void; onExit: () => void }) {
-  const { currency, plan, levers, delayDays, resetPlan, moveHarvest, setLevers, setDelayDays, setSpotlight, farmId } = useApp();
+  const { currency, plan, levers, delayDays, resetPlan, moveHarvest, setLevers, setDelayDays, setSpotlight, planner } = useApp();
   const t = useT();
-  const { blocked, capacityConflicts, delayPenalty } = repo.getPlanner(farmId);
+  const { blocked, capacityConflicts, delayPenalty } = planner;
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(true);
 

@@ -6,14 +6,13 @@ import { Icon } from "@/components/Icon";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { formatMoney } from "@/lib/format";
 import { evaluatePlan, evaluateScenario, type EngineConflict } from "@/lib/engine";
-import { repo } from "@/lib/repo";
 
 export function Simulator() {
   // Reads the SAME shared plan as the Planner. Editing a harvest there flows
   // straight into this margin through the unified engine.
-  const { currency, plan, levers, toggleLever, delayDays, setDelayDays, spotlight, farmId } = useApp();
+  const { currency, plan, levers, toggleLever, delayDays, setDelayDays, spotlight, planner } = useApp();
   const t = useT();
-  const { blocked, capacityConflicts, delayPenalty } = repo.getPlanner(farmId);
+  const { blocked, capacityConflicts, delayPenalty } = planner;
 
   const planEval = useMemo(() => evaluatePlan(plan, blocked), [plan, blocked]);
   const scenario = useMemo(

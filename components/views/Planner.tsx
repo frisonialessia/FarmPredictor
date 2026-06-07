@@ -6,7 +6,6 @@ import { Icon } from "@/components/Icon";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { formatMoney } from "@/lib/format";
 import { evaluatePlan } from "@/lib/engine";
-import { repo } from "@/lib/repo";
 import { DAYS7 } from "@/data/planner";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -22,9 +21,9 @@ const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "
 export function Planner() {
   // The plan lives in the shared store, so every edit here is instantly visible
   // to the What-if Simulator through the same unified engine.
-  const { currency, plan, moveHarvest, resetPlan, spotlight, farmId } = useApp();
+  const { currency, plan, moveHarvest, resetPlan, spotlight, planner } = useApp();
   const t = useT();
-  const { resources, blocked } = repo.getPlanner(farmId);
+  const { resources, blocked } = planner;
   const [dragId, setDragId] = useState<string | null>(null);
   const [calMonth, setCalMonth] = useState(5);
   const [calYear, setCalYear] = useState(2026);

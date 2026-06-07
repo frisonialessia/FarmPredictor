@@ -7,7 +7,6 @@ import { fetchWeather } from "@/lib/weather";
 import { weatherRisks } from "@/lib/risk";
 import { evaluatePlan, evaluateScenario } from "@/lib/engine";
 import { evaluateHerd } from "@/lib/herd";
-import { repo } from "@/lib/repo";
 import { PENS } from "@/data/livestock";
 import type { WeatherDay } from "@/lib/types";
 
@@ -20,7 +19,7 @@ const SUGGESTIONS = [
 ];
 
 export function Assistant() {
-  const { farmId, currency, lang, levers, delayDays } = useApp();
+  const { currency, lang, levers, delayDays, planner } = useApp();
   const farm = useFarm();
   const t = useT();
   const [weather, setWeather] = useState<WeatherDay[]>(farm.weather);
@@ -38,7 +37,6 @@ export function Assistant() {
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
 
   function buildContext() {
-    const planner = repo.getPlanner(farmId);
     const planEval = evaluatePlan(planner.optimalPlan, planner.blocked);
     const scenario = evaluateScenario(planEval, planner.capacityConflicts, levers, delayDays, planner.delayPenalty);
     const herd = evaluateHerd(PENS);

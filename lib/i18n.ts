@@ -206,6 +206,8 @@ export const ES: Record<string, string> = {
   Machinery: "Maquinaria",
   Labor: "Mano de obra",
   Packaging: "Embalaje",
+  "Add machine capacity": "Añadir capacidad de máquina",
+  "Hire extra crew": "Contratar cuadrilla extra",
   // ── Financial ─────────────────────────────────────────────────────
   "Projected revenue": "Ingresos proyectados",
   "this season": "esta temporada",
