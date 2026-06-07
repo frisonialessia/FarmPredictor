@@ -1,66 +1,128 @@
-# FarmPredictor
+# 🌾 FarmPredictor
 
-Operations Intelligence for high-yield farms. Crosses optimal harvest windows with the machinery, crews, supplies and weather a farm actually has — and surfaces the gap in dollars.
+**Operations intelligence for high-yield farms.** It answers one question:
+**what decision do I make *today* to maximize my net margin *tomorrow*?**
 
-Built with **Next.js 14 (App Router) + TypeScript + Tailwind CSS**.
+> The thesis: **it's not *when* you should harvest — it's when you *can*.**
+> An optimal harvest you can't execute (machine busy, crew short, no crates,
+> a storm coming) is **margin that walks off the field**. FarmPredictor
+> measures that gap in dollars and helps you close it.
 
-## What's inside
+Built for **non-technical farm owners** — every alert is in plain language and
+money, never jargon (no NDVI, no scores). *“Harvest North A before Thursday or
+lose $2,940.”*
 
-- **Landing** (`/`) — product story, animated, links into the app.
-- **Dashboard** (`/dashboard`) — 8 views:
-  - Overview, Parcel map (interactive SVG), Planner (drag & drop + monthly calendar), What-if simulator (live margin), Financial, Operations, Activity, Settings (currency/units propagate app-wide).
-- Multi-farm switcher (Rio Verde Farms / Llano Seco Ranch), USD/EUR/MXN/CAD currencies, Texas-based demo data.
+---
 
-> All data is **simulated** for the prototype. The architecture is ready to connect real data (market prices, weather, Supabase) in a later phase.
+## ✨ What it does
 
-## Run locally
+- **Unified plan ↔ simulator** — drag a harvest in the Planner and watch the
+  net margin move in the What-if Simulator, live, through **one shared engine**.
+- **Weather-aware timing** — “harvest today vs. wait”: the best day per harvest
+  from the live forecast + crop degradation, in dollars.
+- **Machinery economics** — diesel cost/day and an age-based breakdown risk per
+  machine.
+- **Packaging & spoilage** — inventory value and weekly spoilage cost (“if the
+  boxes/produce spoil, what does it cost us?”).
+- **Livestock + vet** — herd margin and veterinary withdrawal windows (“ready,
+  but you can’t sell until day X”).
+- **“Ask your farm” assistant** — plain answers in your currency from your live
+  data (Claude API, with a free deterministic fallback).
+- **Full farm setup** — onboarding for farm, parcels (free-text crops), team &
+  roles, machinery and inventory; preferences for currency, units and a
+  worldwide time zone.
+- **Bilingual (EN/ES)**, currency conversion, daily decision digest, weather
+  risk radar, parcel map, financials and activity log.
+
+---
+
+## 🛠️ Tech stack
+
+- **Next.js 14 (App Router) · TypeScript · Tailwind CSS** — deployed on **Vercel**.
+- **Live weather** via [Open-Meteo](https://open-meteo.com) (free, no API key).
+- **Claude API** (`@anthropic-ai/sdk`) for the assistant — optional, degrades to
+  a free mock when `ANTHROPIC_API_KEY` is unset.
+- **Vitest** + **GitHub Actions** CI · **next/og** for social images · **Zod**
+  for validation · **Supabase** schema designed (not yet connected).
+
+Python enters later — only as an isolated microservice when real ML/optimization
+is justified (see Roadmap).
+
+---
+
+## 🧠 Architecture
+
+The design keeps a **clean boundary between calculation engines and data
+sources**, so today’s simulated data can be swapped for real data without
+rewriting the UI.
+
+- **Pure, typed engines** (`lib/`): `engine.ts` (unified margin),
+  `risk.ts` (weather → $), `timing.ts` (harvest-day optimizer),
+  `herd.ts` (livestock), `machinery.ts` (fleet economics),
+  `inventory.ts` (spoilage). All take data by parameter and are unit-tested.
+- **Repository pattern** (`lib/repo`): the UI reads domain data through a
+  `DataRepository` interface. Today it’s an in-memory implementation; going live
+  is a one-file swap to a `SupabaseRepository`.
+- **Per-farm state**: the active farm’s parcels generate its harvest plan and
+  drive the planner/operations; edits persist locally per farm.
+
+---
+
+## 🚀 Getting started
 
 ```bash
 npm install
-npm run dev
+npm run dev        # http://localhost:3000
+npm run build      # production build
+npm test           # engine unit tests (Vitest)
 ```
 
-Open http://localhost:3000
+Optional environment variables:
 
-## Build
+| Variable | Purpose |
+|---|---|
+| `ANTHROPIC_API_KEY` | enables real AI answers in the assistant (else free mock) |
+| `NEXT_PUBLIC_SITE_URL` | absolute URL for Open Graph / sitemap |
 
-```bash
-npm run build
-npm start
-```
+---
 
-## Deploy to Vercel
-
-1. Push this repo to GitHub.
-2. In Vercel, "Add New Project" → import the GitHub repo.
-3. Framework preset: **Next.js** (auto-detected). No env vars needed for the prototype.
-4. Deploy.
-
-## Project structure
+## 📁 Project structure
 
 ```
-app/
-  layout.tsx          Root layout, fonts, metadata
-  page.tsx            Landing
-  dashboard/page.tsx  Dashboard shell + view switching
-  globals.css
-components/
-  Sidebar.tsx, Icon.tsx, BrandMark.tsx
-  views/              Overview, ParcelMap, Planner, Simulator, Financial, Operations, Activity, Settings
-data/
-  farms.ts            Typed farm + market data
-  planner.ts          Planner & simulator seed data
-lib/
-  types.ts            Domain types (single source of truth)
-  store.tsx           Shared app state (farm, currency, units)
-  format.ts           Currency & temperature formatters
-  icons.ts            Icon path set
-public/
-  favicon.svg
+app/            routes — landing, /dashboard, /login, /signup, /onboarding,
+                /pricing, opengraph-image, sitemap, robots, /api/assistant
+components/     Sidebar, views/ (Overview, Planner, Simulator, Operations,
+                Livestock, Financial, Activity, Digest, Assistant, …), charts
+lib/            engines (engine, risk, timing, herd, machinery, inventory),
+                repo/ (data boundary), store, i18n, weather, farmFactory, planGen
+data/           simulated, typed data (farms, planner, crops, livestock)
+supabase/       multi-tenant schema + RLS + seed (designed, not yet connected)
 ```
 
-## Roadmap (next phases)
+---
 
-- Shared state between Planner and Simulator (move a harvest → simulator margin updates).
-- Guided tour animating the execution-displacement story.
-- Real data: Supabase (Postgres + RLS), live market prices, weather API, Sentinel-2 satellite layer.
+## 📊 Status
+
+This is a **proof of concept with simulated data** — deliberately, to prove one
+claim convincingly: *an optimal harvest you can’t execute costs measurable
+money.* **Weather is already real** (Open-Meteo). The calculation engines are
+pure functions, ready to receive real data without UI changes.
+
+---
+
+## 🗺️ Roadmap
+
+- **Phase 1 — the brain (done):** unified engine; weather/timing/machinery/
+  inventory economics; guided tour; EN/ES; full farm setup.
+- **Phase 2 — real backend:** connect **Supabase** (Postgres + Auth + RLS,
+  multi-tenant) — schema and migrations already live in `supabase/`. Real market
+  prices (USDA/SAGARPA).
+- **Phase 3 — the math muscle:** an isolated **Python microservice (FastAPI +
+  Google OR-Tools)** for crop-degradation ML and combinatorial scheduling
+  optimization. The TypeScript app calls it as an API.
+
+---
+
+## 📄 License
+
+Prototype · demo data · built for high-yield operations. All rights reserved.
