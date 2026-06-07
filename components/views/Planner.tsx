@@ -91,9 +91,9 @@ export function Planner() {
         <div className="flex items-center justify-between mb-4">
           <div><h4 className="text-[15px] font-bold">{t("Harvest calendar")}</h4><p className="text-xs text-muted">{t("Scheduled harvests and optimal windows")}</p></div>
           <div className="flex items-center gap-2">
-            <button onClick={() => { let m = calMonth - 1, y = calYear; if (m < 0) { m = 11; y--; } setCalMonth(m); setCalYear(y); }} className="h-8 w-8 rounded-lg border border-line grid place-items-center"><Icon name="chevron" size={14} style={{ transform: "rotate(90deg)" }} /></button>
+            <button aria-label={t("Previous month")} onClick={() => { let m = calMonth - 1, y = calYear; if (m < 0) { m = 11; y--; } setCalMonth(m); setCalYear(y); }} className="h-8 w-8 rounded-lg border border-line grid place-items-center btn-press hover:bg-bg"><Icon name="chevron" size={14} style={{ transform: "rotate(90deg)" }} /></button>
             <span className="text-sm font-semibold w-32 text-center">{t(MONTHS[calMonth])} {calYear}</span>
-            <button onClick={() => { let m = calMonth + 1, y = calYear; if (m > 11) { m = 0; y++; } setCalMonth(m); setCalYear(y); }} className="h-8 w-8 rounded-lg border border-line grid place-items-center"><Icon name="chevron" size={14} style={{ transform: "rotate(-90deg)" }} /></button>
+            <button aria-label={t("Next month")} onClick={() => { let m = calMonth + 1, y = calYear; if (m > 11) { m = 0; y++; } setCalMonth(m); setCalYear(y); }} className="h-8 w-8 rounded-lg border border-line grid place-items-center btn-press hover:bg-bg"><Icon name="chevron" size={14} style={{ transform: "rotate(-90deg)" }} /></button>
           </div>
         </div>
         <div className="grid grid-cols-7 gap-1 text-[11px] font-semibold mb-1 text-muted">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d) => <div key={d}>{t(d)}</div>)}</div>

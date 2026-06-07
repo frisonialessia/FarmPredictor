@@ -51,7 +51,7 @@ export function Financial() {
           {CONTRACTS.map((c, i) => (
             <div key={i} className={`flex items-center gap-4 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
               <div className="flex-1"><p className="text-sm font-semibold">{t(c[0])}</p><p className="text-xs text-muted">{t(c[1])} · {t(c[2])}</p></div>
-              <div className="w-32"><div className="h-2 rounded-full" style={{ background: "var(--mint)" }}><div className="h-full rounded-full" style={{ width: `${c[3]}%`, background: "var(--green)" }} /></div></div>
+              <div className="w-32"><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${c[3]}%`, background: "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>
               <span className="mono text-xs font-bold w-10 text-right">{c[3]}%</span>
             </div>
           ))}

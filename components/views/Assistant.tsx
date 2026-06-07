@@ -38,9 +38,9 @@ export function Assistant() {
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
 
   function buildContext() {
-    const { blocked, capacityConflicts, delayPenalty } = repo.getPlanner(farmId);
-    const planEval = evaluatePlan(repo.getPlanner(farmId).optimalPlan, blocked);
-    const scenario = evaluateScenario(planEval, capacityConflicts, levers, delayDays, delayPenalty);
+    const planner = repo.getPlanner(farmId);
+    const planEval = evaluatePlan(planner.optimalPlan, planner.blocked);
+    const scenario = evaluateScenario(planEval, planner.capacityConflicts, levers, delayDays, planner.delayPenalty);
     const herd = evaluateHerd(PENS);
     return {
       farm: farm.name,
@@ -118,6 +118,7 @@ export function Assistant() {
         <div className="border-t border-line p-3 flex items-center gap-2">
           <input
             className="setinput"
+            aria-label={t("Ask your farm")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") ask(input); }}

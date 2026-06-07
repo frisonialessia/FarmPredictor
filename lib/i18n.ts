@@ -148,6 +148,8 @@ export const ES: Record<string, string> = {
   Drag: "Arrastra",
   "any harvest to another day or machine. Conflicts and margin recalculate on drop.":
     "cualquier cosecha a otro día o máquina. Los conflictos y el margen se recalculan al soltar.",
+  "Previous month": "Mes anterior",
+  "Next month": "Mes siguiente",
   "Harvest calendar": "Calendario de cosechas",
   "Scheduled harvests and optimal windows": "Cosechas programadas y ventanas óptimas",
   "North A window": "Ventana North A",

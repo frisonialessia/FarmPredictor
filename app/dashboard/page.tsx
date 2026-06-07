@@ -86,7 +86,7 @@ function DashboardInner() {
             <span className="text-xs mono px-3 py-1.5 rounded-full hidden sm:block" style={{ background: "var(--mint)" }}>{t("week of Jun 8")}</span>
             <LanguageToggle />
             <MobileFarmSwitcher />
-            <button onClick={() => setTourOpen(true)} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press flex items-center gap-1.5" style={{ background: "var(--ink)", color: "#fff" }}>
+            <button onClick={() => setTourOpen(true)} aria-label={t("60-sec tour")} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press flex items-center gap-1.5" style={{ background: "var(--ink)", color: "#fff" }}>
               <Icon name="play" size={12} style={{ color: "var(--lime)" }} /><span className="hidden sm:inline">{t("60-sec tour")}</span>
             </button>
             <button onClick={() => { setActive("overview"); toast("Showing today's recommendations."); }} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press hidden sm:block" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Recommendations")}</button>
