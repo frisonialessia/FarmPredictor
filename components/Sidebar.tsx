@@ -12,6 +12,7 @@ export const NAV: [string, string, string][] = [
   ["whatif", "What-if", "whatif"],
   ["financial", "Financial", "financial"],
   ["operations", "Operations", "operations"],
+  ["livestock", "Livestock", "cattle"],
   ["activity", "Activity", "activity"],
   ["digest", "Digest", "bell"],
 ];

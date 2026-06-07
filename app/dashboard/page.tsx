@@ -17,6 +17,7 @@ import { Simulator } from "@/components/views/Simulator";
 import { Financial } from "@/components/views/Financial";
 import { Operations } from "@/components/views/Operations";
 import { Activity } from "@/components/views/Activity";
+import { Livestock } from "@/components/views/Livestock";
 import { Digest } from "@/components/views/Digest";
 import { Settings } from "@/components/views/Settings";
 
@@ -28,6 +29,7 @@ const TITLES: Record<string, [string, string]> = {
   financial: ["Financial", "Margin, cash flow and profitability"],
   operations: ["Operations", "Machinery, crews, supplies & logistics"],
   activity: ["Activity log", "Decision journal"],
+  livestock: ["Livestock", "Herd margin & vet windows"],
   digest: ["Digest", "Today's decisions, delivered"],
   settings: ["Settings", "Profile & preferences"],
 };
@@ -97,6 +99,7 @@ function DashboardInner() {
           {active === "financial" && <Financial />}
           {active === "operations" && <Operations />}
           {active === "activity" && <Activity />}
+          {active === "livestock" && <Livestock />}
           {active === "digest" && <Digest />}
           {active === "settings" && <Settings />}
         </div>

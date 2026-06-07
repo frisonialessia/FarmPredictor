@@ -26,4 +26,6 @@ export const ICONS: Record<string, string> = {
   pause: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
   logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
   bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  cattle: '<path d="M4 6c0-1 .8-2 2-2 1 0 1.6.6 2 1.4M18 6c0-1-.8-2-2-2-1 0-1.6.6-2 1.4"/><path d="M5 8a7 6 0 0 0 14 0"/><circle cx="9.5" cy="10.5" r=".9"/><circle cx="14.5" cy="10.5" r=".9"/><path d="M9.5 14.5c1.2 1 3.8 1 5 0M12 15.5V19"/>',
+  vial: '<path d="M9 3h6M10 3v7l-3.5 6a3 3 0 0 0 2.6 4.5h5.8a3 3 0 0 0 2.6-4.5L16 10V3"/><path d="M7.5 14h9"/>',
 };
