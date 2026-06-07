@@ -3,6 +3,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
+import { MarketingLangToggle } from "@/components/MarketingLangToggle";
+import { useMarketingT } from "@/lib/lang";
 
 // Pricing reflects the plans seeded in supabase/seed.sql. Numbers are
 // placeholders — adjust once you validate willingness to pay with design partners.
@@ -43,11 +45,12 @@ const TIERS: Tier[] = [
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(true);
+  const tr = useMarketingT();
 
-  const price = (t: Tier) => {
-    if (t.monthly === null) return "Custom";
-    if (t.monthly === 0) return "$0";
-    return annual ? `$${Math.round((t.monthly * 10) / 12)}` : `$${t.monthly}`;
+  const price = (tier: Tier) => {
+    if (tier.monthly === null) return tr("Custom");
+    if (tier.monthly === 0) return "$0";
+    return annual ? `$${Math.round((tier.monthly * 10) / 12)}` : `$${tier.monthly}`;
   };
 
   return (
@@ -55,48 +58,49 @@ export default function PricingPage() {
       <nav className="border-b border-line bg-white">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5"><BrandMark size={28} /><span className="font-bold tracking-tight">FarmPredictor</span></Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-semibold text-muted hidden sm:block">Sign in</Link>
-            <Link href="/signup" className="rounded-full px-5 py-2 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>Get started</Link>
+          <div className="flex items-center gap-3">
+            <MarketingLangToggle />
+            <Link href="/login" className="text-sm font-semibold text-muted hidden sm:block">{tr("Sign in")}</Link>
+            <Link href="/signup" className="rounded-full px-5 py-2 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{tr("Get started")}</Link>
           </div>
         </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">Pricing</p>
-          <h1 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>Priced on the margin you save.</h1>
-          <p className="text-muted mt-4 text-lg">Start free, upgrade when a farm pays for itself. No credit card to begin.</p>
+          <p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">{tr("Pricing")}</p>
+          <h1 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{tr("Priced on the margin you save.")}</h1>
+          <p className="text-muted mt-4 text-lg">{tr("Start free, upgrade when a farm pays for itself. No credit card to begin.")}</p>
         </div>
 
         {/* billing toggle */}
         <div className="flex items-center justify-center gap-3 mb-10">
-          <span className="text-sm font-semibold" style={{ color: annual ? "var(--muted)" : "var(--ink)" }}>Monthly</span>
+          <span className="text-sm font-semibold" style={{ color: annual ? "var(--muted)" : "var(--ink)" }}>{tr("Monthly")}</span>
           <button onClick={() => setAnnual((a) => !a)} className="relative h-7 w-12 rounded-full" style={{ background: "var(--green)" }} aria-label="Toggle billing period">
             <span className="absolute top-1 h-5 w-5 rounded-full bg-white" style={{ left: annual ? 24 : 4, transition: "left .2s" }} />
           </button>
-          <span className="text-sm font-semibold" style={{ color: annual ? "var(--ink)" : "var(--muted)" }}>Annual</span>
-          <span className="pill pill-mint">2 months free</span>
+          <span className="text-sm font-semibold" style={{ color: annual ? "var(--ink)" : "var(--muted)" }}>{tr("Annual")}</span>
+          <span className="pill pill-mint">{tr("2 months free")}</span>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 items-start">
-          {TIERS.map((t) => (
-            <div key={t.id} className="card p-7 relative" style={t.highlight ? { borderColor: "var(--green)", boxShadow: "var(--shadow-lg)" } : undefined}>
-              {t.highlight && <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full" style={{ background: "var(--ink)", color: "var(--lime)" }}>Most popular</span>}
-              <h3 className="text-lg font-extrabold">{t.name}</h3>
-              <p className="text-xs text-muted mt-1 mb-5 min-h-[32px]">{t.blurb}</p>
+          {TIERS.map((tier) => (
+            <div key={tier.id} className="card p-7 relative" style={tier.highlight ? { borderColor: "var(--green)", boxShadow: "var(--shadow-lg)" } : undefined}>
+              {tier.highlight && <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full" style={{ background: "var(--ink)", color: "var(--lime)" }}>{tr("Most popular")}</span>}
+              <h3 className="text-lg font-extrabold">{tier.name}</h3>
+              <p className="text-xs text-muted mt-1 mb-5 min-h-[32px]">{tr(tier.blurb)}</p>
               <div className="flex items-end gap-1.5 mb-1">
-                <span className="mono text-4xl font-bold">{price(t)}</span>
-                {t.monthly !== null && t.monthly > 0 && <span className="text-sm text-muted mb-1.5">/ mo</span>}
+                <span className="mono text-4xl font-bold">{price(tier)}</span>
+                {tier.monthly !== null && tier.monthly > 0 && <span className="text-sm text-muted mb-1.5">/ {tr("mo")}</span>}
               </div>
-              <p className="text-[11px] text-muted mb-6 min-h-[16px]">{t.monthly && t.monthly > 0 ? (annual ? "billed annually" : "billed monthly") : t.monthly === 0 ? "free forever" : "tailored to your operation"}</p>
-              <Link href={t.id === "enterprise" ? "/signup" : "/signup"} className="block text-center rounded-full py-2.5 text-sm font-semibold btn-press mb-6" style={t.highlight ? { background: "var(--green)", color: "var(--ink)" } : { background: "var(--ink)", color: "#fff" }}>{t.cta}</Link>
+              <p className="text-[11px] text-muted mb-6 min-h-[16px]">{tier.monthly && tier.monthly > 0 ? (annual ? tr("billed annually") : tr("billed monthly")) : tier.monthly === 0 ? tr("free forever") : tr("tailored to your operation")}</p>
+              <Link href="/signup" className="block text-center rounded-full py-2.5 text-sm font-semibold btn-press mb-6" style={tier.highlight ? { background: "var(--green)", color: "var(--ink)" } : { background: "var(--ink)", color: "#fff" }}>{tr(tier.cta)}</Link>
               <ul className="space-y-2.5">
-                {t.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm"><span className="grid place-items-center h-5 w-5 rounded-full shrink-0 mt-px" style={{ background: "rgba(82,200,113,.14)", color: "var(--green-deep)" }}><Icon name="check" size={12} /></span>{f}</li>
+                {tier.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm"><span className="grid place-items-center h-5 w-5 rounded-full shrink-0 mt-px" style={{ background: "rgba(82,200,113,.14)", color: "var(--green-deep)" }}><Icon name="check" size={12} /></span>{tr(f)}</li>
                 ))}
-                {t.notIncluded.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted"><span className="grid place-items-center h-5 w-5 rounded-full shrink-0 mt-px" style={{ background: "var(--bg)" }}><Icon name="x" size={11} /></span>{f}</li>
+                {tier.notIncluded.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted"><span className="grid place-items-center h-5 w-5 rounded-full shrink-0 mt-px" style={{ background: "var(--bg)" }}><Icon name="x" size={11} /></span>{tr(f)}</li>
                 ))}
               </ul>
             </div>
@@ -104,7 +108,7 @@ export default function PricingPage() {
         </div>
 
         <p className="text-center text-xs text-muted mt-10 max-w-xl mx-auto">
-          Heavy ML optimizer runs beyond your plan&apos;s monthly allowance are metered as add-on usage. Prototype · demo data — final pricing TBD with design partners.
+          {tr("Heavy ML optimizer runs beyond your plan's monthly allowance are metered as add-on usage. Prototype · demo data — final pricing TBD with design partners.")}
         </p>
       </div>
     </div>
