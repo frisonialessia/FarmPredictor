@@ -7,8 +7,10 @@ import { AreaChart } from "@/components/Charts";
 import { formatMoney, formatTemp } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
 import { weatherRisks, RISK_META } from "@/lib/risk";
+import { harvestTiming } from "@/lib/timing";
 import { repo } from "@/lib/repo";
 import { marketRowsForCrops } from "@/data/crops";
+import { DAYS7 } from "@/data/planner";
 import type { WeatherDay } from "@/lib/types";
 
 const DECISIONS = [
@@ -21,7 +23,7 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 
 export function Overview() {
   const farm = useFarm();
-  const { currency, tempUnit } = useApp();
+  const { currency, tempUnit, plan } = useApp();
   const t = useT();
   // Prices for this farm's actual crops (falls back to the global list).
   const farmMarket = marketRowsForCrops(farm.parcels.map((p) => p.crop));
@@ -42,6 +44,12 @@ export function Overview() {
   }, [farm.id, farm.lat, farm.lon, farm.weather]);
 
   const risks = weatherRisks(weather);
+  const timing = harvestTiming(plan, weather);
+  const dayLabel = (d: number) => t(DAYS7[d] ?? "");
+  const reasonText = (r: string, currentDay: number) =>
+    r === "storm" ? `${t("Storm risk on")} ${dayLabel(currentDay)}`
+      : r === "frost" ? `${t("Frost risk on")} ${dayLabel(currentDay)}`
+      : t("Slipping out of its window");
 
   return (
     <div className="fade-in">
@@ -113,6 +121,33 @@ export function Overview() {
                   <div className="text-right shrink-0">
                     <p className="mono text-sm font-bold" style={{ color: "var(--warn)" }}>-{formatMoney(r.impact, currency)}</p>
                     <p className="text-[10px] text-muted">{t("at risk")}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="card p-6 mb-5">
+        <h4 className="text-[15px] font-bold mb-1">{t("When to harvest")}</h4>
+        <p className="text-xs mb-4 text-muted">{t("Dodge bad weather, stay in the optimal window")}</p>
+        {timing.length === 0 ? (
+          <div className="flex items-center gap-2.5 text-sm text-muted py-2"><span className="h-2 w-2 rounded-full" style={{ background: "var(--green)" }} />{t("Your harvest timing looks optimal this week.")}</div>
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-3">
+            {timing.map((r) => {
+              const icon = r.reason === "storm" ? "rain" : r.reason === "frost" ? "drop" : "clock";
+              return (
+                <div key={r.id} className="flex items-center gap-3 rounded-xl p-3 border border-line">
+                  <div className="grid place-items-center h-10 w-10 rounded-xl shrink-0" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}><Icon name={icon} /></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold">{r.label}</p>
+                    <p className="text-xs text-muted truncate">{reasonText(r.reason, r.currentDay)}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-[11px] font-semibold" style={{ color: "var(--green-deep)" }}>{t("Harvest by")} {dayLabel(r.bestDay)}</p>
+                    <p className="mono text-sm font-bold text-green">+{formatMoney(r.delta, currency)}</p>
                   </div>
                 </div>
               );
