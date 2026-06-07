@@ -22,6 +22,10 @@ export default function LoginPage() {
       const r = magicLinkSchema.safeParse({ email });
       if (!r.success) return setErrors(fieldErrors(r.error));
       setErrors({});
+      // No real email auth yet: any valid email signs in. We establish the
+      // session now so the "magic link" screen is just a simulated step — when
+      // Supabase lands, setSession becomes supabase.auth.signInWithOtp.
+      setSession({ name: email.split("@")[0], email });
       setSent(true); // mock: pretend we emailed a link
       return;
     }

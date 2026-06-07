@@ -7,7 +7,7 @@ import { AreaChart } from "@/components/Charts";
 import { formatMoney, formatTemp } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
 import { weatherRisks, RISK_META } from "@/lib/risk";
-import { harvestTiming } from "@/lib/timing";
+import { useOptimizedTiming } from "@/lib/optimizer";
 import { repo } from "@/lib/repo";
 import { marketRowsForCrops } from "@/data/crops";
 import { DAYS7 } from "@/data/planner";
@@ -44,7 +44,8 @@ export function Overview() {
   }, [farm.id, farm.lat, farm.lon, farm.weather]);
 
   const risks = weatherRisks(weather);
-  const timing = harvestTiming(plan, weather);
+  // Heuristic today; upgrades to the OR-Tools service if NEXT_PUBLIC_OPTIMIZER_URL is set.
+  const timing = useOptimizedTiming(plan, weather);
   const dayLabel = (d: number) => t(DAYS7[d] ?? "");
   const reasonText = (r: string, currentDay: number) =>
     r === "storm" ? `${t("Storm risk on")} ${dayLabel(currentDay)}`

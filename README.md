@@ -119,7 +119,10 @@ pure functions, ready to receive real data without UI changes.
   prices (USDA/SAGARPA).
 - **Phase 3 — the math muscle:** an isolated **Python microservice (FastAPI +
   Google OR-Tools)** for crop-degradation ML and combinatorial scheduling
-  optimization. The TypeScript app calls it as an API.
+  optimization. The skeleton already lives in [`optimizer/`](optimizer/) (runs,
+  tested) and the app is already wired to it behind a flag: set
+  `NEXT_PUBLIC_OPTIMIZER_URL` and scheduling upgrades from heuristic to optimal
+  with no code changes (it falls back to the heuristic when unset/unreachable).
 
 ---
 
