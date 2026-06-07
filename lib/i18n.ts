@@ -275,6 +275,8 @@ export const ES: Record<string, string> = {
   "Download invoices": "Descargar facturas",
   "Delete account": "Eliminar cuenta",
   "Sign out": "Cerrar sesión",
+  Account: "Cuenta",
+  "Signed in as": "Sesión iniciada como",
   // ── Parcel map ────────────────────────────────────────────────────
   Schematic: "Esquemático",
   Satellite: "Satélite",

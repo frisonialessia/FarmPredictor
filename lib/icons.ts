@@ -24,4 +24,5 @@ export const ICONS: Record<string, string> = {
   x: '<path d="M18 6 6 18M6 6l12 12"/>',
   play: '<path d="M6 4.5v15l13-7.5z"/>',
   pause: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
 };

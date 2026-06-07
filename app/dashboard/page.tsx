@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { AccountMenu } from "@/components/AccountMenu";
 import { Toaster } from "@/components/Toaster";
 import { GuidedTour } from "@/components/GuidedTour";
 import { BrandMark } from "@/components/BrandMark";
@@ -83,6 +84,7 @@ function DashboardInner() {
               <Icon name="play" size={12} style={{ color: "var(--lime)" }} /><span className="hidden sm:inline">{t("60-sec tour")}</span>
             </button>
             <button onClick={() => { setActive("overview"); toast("Showing today's recommendations."); }} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press hidden sm:block" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Recommendations")}</button>
+            <AccountMenu onNavigate={setActive} />
           </div>
         </div>
         <div className="p-4 sm:p-6 pb-24 md:pb-6">
