@@ -505,6 +505,7 @@ export const ES: Record<string, string> = {
   "+ Add crew": "+ Añadir cuadrilla",
   "+ Add item": "+ Añadir artículo",
   Qty: "Cant.", Unit: "Unidad", Item: "Artículo", Person: "Persona",
+  "Your inventory": "Tu inventario",
   "Time zone": "Zona horaria",
   // ── Form validation (Zod) ─────────────────────────────────────────
   "Enter a valid email": "Introduce un correo válido",

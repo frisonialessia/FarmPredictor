@@ -1,4 +1,5 @@
 "use client";
+import { useFarm } from "@/lib/store";
 import { Icon } from "@/components/Icon";
 import { useT } from "@/lib/i18n";
 
@@ -16,17 +17,27 @@ const TRANS: [string, string, string, boolean][] = [["Truck T-12","Sweet corn â†
 
 export function Operations() {
   const tr = useT();
+  const farm = useFarm();
+  const machines = farm.resources?.filter((r) => r.icon !== "crew") ?? null;
+  const crews = farm.resources?.filter((r) => r.icon === "crew") ?? null;
+  const inv = farm.inventory ?? null;
   return (
     <div className="fade-in">
       <div className="grid lg:grid-cols-3 gap-5 mb-5">
         <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Machinery")}</h4><p className="text-xs mb-4 text-muted">{tr("Status and next service")}</p>
-          {MACH.map((m, i) => (<div key={i} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: m[2] ? "var(--mint)" : "rgba(194,65,12,.1)", color: m[2] ? "var(--ink)" : "var(--warn)" }}><Icon name="tractor" /></div><div className="flex-1"><p className="text-sm font-semibold">{tr(m[0])}</p><p className="text-xs text-muted">{tr(m[3])}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: m[2] ? "var(--mint)" : "rgba(194,65,12,.1)", color: m[2] ? "var(--ink)" : "var(--warn)" }}>{tr(m[1])}</span></div>))}
+          {machines && machines.length
+            ? machines.map((m, i) => (<div key={m.id} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: "var(--mint)" }}><Icon name="tractor" /></div><div className="flex-1"><p className="text-sm font-semibold">{m.label}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>{tr("Operational")}</span></div>))
+            : MACH.map((m, i) => (<div key={i} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: m[2] ? "var(--mint)" : "rgba(194,65,12,.1)", color: m[2] ? "var(--ink)" : "var(--warn)" }}><Icon name="tractor" /></div><div className="flex-1"><p className="text-sm font-semibold">{tr(m[0])}</p><p className="text-xs text-muted">{tr(m[3])}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: m[2] ? "var(--mint)" : "rgba(194,65,12,.1)", color: m[2] ? "var(--ink)" : "var(--warn)" }}>{tr(m[1])}</span></div>))}
         </div>
         <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Crews")}</h4><p className="text-xs mb-4 text-muted">{tr("Availability this week")}</p>
-          {CREW.map((c, i) => (<div key={i} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: "var(--mint)" }}><Icon name="crew" /></div><div className="flex-1"><p className="text-sm font-semibold">{tr(c[0])}</p><p className="text-xs text-muted">{tr(c[1])}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: c[2] ? "var(--mint)" : "var(--bg)", color: c[2] ? "var(--ink)" : "var(--muted)" }}>{c[2] ? tr("Available") : tr("Not hired")}</span></div>))}
+          {crews && crews.length
+            ? crews.map((c, i) => (<div key={c.id} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: "var(--mint)" }}><Icon name="crew" /></div><div className="flex-1"><p className="text-sm font-semibold">{c.label}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>{tr("Available")}</span></div>))
+            : CREW.map((c, i) => (<div key={i} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: "var(--mint)" }}><Icon name="crew" /></div><div className="flex-1"><p className="text-sm font-semibold">{tr(c[0])}</p><p className="text-xs text-muted">{tr(c[1])}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: c[2] ? "var(--mint)" : "var(--bg)", color: c[2] ? "var(--ink)" : "var(--muted)" }}>{c[2] ? tr("Available") : tr("Not hired")}</span></div>))}
         </div>
-        <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Supplies")}</h4><p className="text-xs mb-4 text-muted">{tr("Stock vs. projected need")}</p>
-          <div className="space-y-4">{SUP.map(([n, have, need], i) => { const pct = Math.min(100, ((have as number) / (need as number)) * 100); const sh = have < need; return (<div key={i}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium">{tr(n as string)}</span><span className="mono text-xs" style={{ color: sh ? "var(--warn)" : "var(--muted)" }}>{have}/{need}</span></div><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${pct}%`, background: sh ? "var(--warn)" : "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>); })}</div>
+        <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Supplies")}</h4><p className="text-xs mb-4 text-muted">{inv && inv.length ? tr("Your inventory") : tr("Stock vs. projected need")}</p>
+          {inv && inv.length
+            ? <div>{inv.map((it, i) => (<div key={it.id} className={`flex items-center justify-between py-2.5 ${i > 0 ? "border-t border-line" : ""}`}><span className="text-sm font-medium">{it.name}</span><span className="mono text-sm font-semibold">{it.qty} <span className="text-muted">{it.unit}</span></span></div>))}</div>
+            : <div className="space-y-4">{SUP.map(([n, have, need], i) => { const pct = Math.min(100, ((have as number) / (need as number)) * 100); const sh = have < need; return (<div key={i}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium">{tr(n as string)}</span><span className="mono text-xs" style={{ color: sh ? "var(--warn)" : "var(--muted)" }}>{have}/{need}</span></div><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${pct}%`, background: sh ? "var(--warn)" : "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>); })}</div>}
         </div>
       </div>
       <div className="grid lg:grid-cols-3 gap-5">

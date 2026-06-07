@@ -8,27 +8,17 @@ import { farmBasicsSchema, parcelSchema, fieldErrors } from "@/lib/schemas";
 import { buildFarm, CROPS } from "@/lib/farmFactory";
 import { MarketingLangToggle } from "@/components/MarketingLangToggle";
 import { useMarketingT } from "@/lib/lang";
-import { translate } from "@/lib/i18n";
 import { TIMEZONES } from "@/lib/timezones";
+import { ROLES, ROLE_LABEL } from "@/lib/roles";
+import { canonCrop } from "@/lib/cropName";
 import type { Farm, Member, MemberRole, ResourceRow, InventoryItem } from "@/lib/types";
 
 const STEPS = ["Your farm", "Parcels", "Team", "Resources", "Review"];
-const ROLES: MemberRole[] = ["owner", "manager", "agronomist", "foreman", "planter", "harvester", "irrigator", "caretaker", "driver", "mechanic", "packer", "accountant", "viewer"];
-const ROLE_LABEL: Record<MemberRole, string> = {
-  owner: "Owner", manager: "Manager", agronomist: "Agronomist", foreman: "Foreman", planter: "Planter",
-  harvester: "Harvester", irrigator: "Irrigator", caretaker: "Caretaker", driver: "Driver",
-  mechanic: "Mechanic", packer: "Packer", accountant: "Accountant", viewer: "Viewer",
-};
 
 interface ParcelRow { name: string; crop: string; area: string }
 interface MemberRow { name: string; role: MemberRole }
 interface NamedRow { name: string }
 interface InvRow { name: string; qty: string; unit: string }
-
-// Map a (possibly localized) crop back to its canonical English name so the
-// crop templates match regardless of UI language.
-const ES_TO_EN = new Map(CROPS.map((c) => [translate("es", c).toLowerCase(), c] as const));
-const canonCrop = (s: string) => ES_TO_EN.get(s.toLowerCase().trim()) ?? s.trim();
 
 export default function OnboardingPage() {
   const router = useRouter();
