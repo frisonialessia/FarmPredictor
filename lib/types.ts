@@ -34,17 +34,39 @@ export interface KPI {
   highlight?: boolean;
 }
 
+export type MemberRole =
+  | "owner" | "manager" | "agronomist" | "foreman"
+  | "planter" | "harvester" | "irrigator" | "caretaker"
+  | "driver" | "mechanic" | "packer" | "accountant" | "viewer";
+
+export interface Member {
+  id: string;
+  name: string;
+  role: MemberRole;
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  qty: number;
+  unit: string;
+}
+
 export interface Farm {
   id: string;
   name: string;
   location: string;
   lat: number;           // for live weather (Open-Meteo)
   lon: number;
+  timezone?: string;
   plan: string;
   initials: string;
   kpis: KPI[];
   weather: WeatherDay[];
   parcels: Parcel[];
+  members?: Member[];      // team & roles
+  resources?: ResourceRow[]; // user's machines & crews (feeds the planner)
+  inventory?: InventoryItem[];
 }
 
 export interface MarketRow {

@@ -1,9 +1,9 @@
-import type { Farm, Parcel, KPI } from "@/lib/types";
-import { cropTemplate } from "@/data/crops";
+import type { Farm, Parcel, KPI, Member, ResourceRow, InventoryItem } from "@/lib/types";
+import { cropTemplate, ALL_CROPS } from "@/data/crops";
 
 export interface ParcelRow { name: string; crop: string; area: string }
 
-export const CROPS = ["Grain sorghum", "Upland cotton", "Sweet corn", "Grapefruit", "Leaf lettuce", "Watermelon", "Winter wheat", "Peanuts"];
+export const CROPS = ALL_CROPS;
 
 // Lays out parcel rows into full Parcel objects with schematic map geometry.
 // SIMULATED metrics (margin/window) until real data is connected.
@@ -56,11 +56,18 @@ interface FarmMeta {
   lat: number;
   lon: number;
   plan?: string;
+  timezone?: string;
 }
 
-// Builds a complete, valid Farm from metadata + parcel rows. Used to create a
-// farm in onboarding and to edit one later (preserving id/coords).
-export function buildFarm(meta: FarmMeta, rows: ParcelRow[]): Farm {
+interface FarmExtras {
+  members?: Member[];
+  resources?: ResourceRow[];
+  inventory?: InventoryItem[];
+}
+
+// Builds a complete, valid Farm from metadata + parcel rows (+ optional team,
+// resources and inventory). Used to create a farm in onboarding and edit later.
+export function buildFarm(meta: FarmMeta, rows: ParcelRow[], extras: FarmExtras = {}): Farm {
   const parcels = parcelsFromRows(rows);
   return {
     id: meta.id,
@@ -68,11 +75,15 @@ export function buildFarm(meta: FarmMeta, rows: ParcelRow[]): Farm {
     location: meta.location,
     lat: meta.lat,
     lon: meta.lon,
+    timezone: meta.timezone,
     plan: meta.plan ?? "Starter",
     initials: initialsOf(meta.name),
     kpis: kpisFromParcels(parcels, rows),
     weather: [],
     parcels,
+    members: extras.members,
+    resources: extras.resources && extras.resources.length ? extras.resources : undefined,
+    inventory: extras.inventory,
   };
 }
 

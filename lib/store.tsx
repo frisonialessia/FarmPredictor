@@ -39,6 +39,8 @@ interface AppState {
   setAreaUnit: (a: AreaUnit) => void;
   tempUnit: TempUnit;
   setTempUnit: (t: TempUnit) => void;
+  timezone: string;
+  setTimezone: (tz: string) => void;
   userName: string;
   setUserName: (n: string) => void;
   lang: Lang;
@@ -74,6 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currency, setCurrency] = usePersisted<Currency>("fp_currency", "USD");
   const [areaUnit, setAreaUnit] = usePersisted<AreaUnit>("fp_area", "ac");
   const [tempUnit, setTempUnit] = usePersisted<TempUnit>("fp_temp", "F");
+  const [timezone, setTimezone] = usePersisted<string>("fp_tz", "America/Chicago");
   const [userName, setUserNameRaw] = useState<string>("M. Alvarez");
   const [lang, setLang] = usePersisted<Lang>("fp_lang", "en");
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -164,7 +167,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toasts, toast, planner, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm, saveFarm }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toasts, toast, planner, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm, saveFarm }}>
       {children}
     </Ctx.Provider>
   );

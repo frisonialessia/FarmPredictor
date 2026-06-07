@@ -28,6 +28,22 @@ export function cropTemplate(crop: string): CropTemplate | undefined {
   return CROP_TEMPLATES[crop];
 }
 
+// A broad, worldwide list of crops for the picker (suggestions). Users can also
+// type anything else — crop is free text. Templated crops get inferred margins;
+// others fall back to generic defaults.
+export const ALL_CROPS: string[] = [
+  "Grain sorghum", "Field corn", "Sweet corn", "Upland cotton", "Winter wheat", "Spring wheat",
+  "Barley", "Oats", "Rye", "Rice", "Soybeans", "Peanuts", "Alfalfa", "Hay", "Canola", "Sunflower",
+  "Sugarcane", "Sugar beet", "Tobacco", "Dry beans", "Chickpeas", "Lentils",
+  "Potato", "Sweet potato", "Tomato", "Onion", "Garlic", "Carrot", "Bell pepper", "Chili pepper",
+  "Broccoli", "Cauliflower", "Cabbage", "Leaf lettuce", "Romaine lettuce", "Spinach", "Celery",
+  "Asparagus", "Cucumber", "Squash", "Pumpkin", "Watermelon", "Cantaloupe",
+  "Strawberry", "Blueberry", "Grapes", "Apple", "Pear", "Peach", "Cherry",
+  "Orange", "Grapefruit", "Lemon", "Lime", "Avocado", "Mango", "Banana", "Pineapple", "Papaya",
+  "Coffee", "Cacao", "Almonds", "Walnuts", "Pecans", "Pistachios", "Hazelnuts", "Olives",
+];
+
+
 // Market rows for a set of crops (de-duplicated, only those with a template).
 export function marketRowsForCrops(crops: string[]): MarketRow[] {
   const seen = new Set<string>();

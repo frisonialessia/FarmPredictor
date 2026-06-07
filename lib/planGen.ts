@@ -20,11 +20,13 @@ const acres = (s: string) => Number(String(s).replace(/[^0-9.]/g, "")) || 0;
 // resource/day slots (so it starts optimal, 0 conflicts), plus a couple of
 // capacity conflicts derived from the highest-value harvests.
 function generateFromParcels(farm: Farm): PlannerData {
-  const R = GEN_RESOURCES.length;
+  // Use the farm's own machines/crews if it has them, else sensible defaults.
+  const resources = farm.resources && farm.resources.length ? farm.resources : GEN_RESOURCES;
+  const R = resources.length;
   const optimalPlan: Harvest[] = farm.parcels.map((p, i) => {
     const day = Math.min(6, Math.floor(i / R));
     const value = Math.max(200, Math.round(p.marginPerAcre * acres(p.area)));
-    return { id: `h${i + 1}`, label: p.name, row: GEN_RESOURCES[i % R].id, day, window: [day, Math.min(6, day + 1)], value };
+    return { id: `h${i + 1}`, label: p.name, row: resources[i % R].id, day, window: [day, Math.min(6, day + 1)], value };
   });
 
   const top = [...optimalPlan].sort((a, b) => b.value - a.value).slice(0, Math.min(2, optimalPlan.length));
@@ -41,7 +43,7 @@ function generateFromParcels(farm: Farm): PlannerData {
     };
   });
 
-  return { resources: GEN_RESOURCES, optimalPlan, blocked: [], capacityConflicts, delayPenalty: DELAY_PENALTY };
+  return { resources, optimalPlan, blocked: [], capacityConflicts, delayPenalty: DELAY_PENALTY };
 }
 
 // Planner data for the active farm: the curated story for the demo farm,

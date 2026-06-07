@@ -6,12 +6,13 @@ import { useT } from "@/lib/i18n";
 import { formatMoney } from "@/lib/format";
 import { FarmEditor } from "@/components/FarmEditor";
 import { clearSession } from "@/lib/session";
+import { TIMEZONES } from "@/lib/timezones";
 import type { Currency, AreaUnit, TempUnit, Lang } from "@/lib/types";
 
 const PREFS_DEFAULT = [["Weather alerts", true], ["Margin-at-risk push", true], ["Daily decision digest", true], ["Auto-irrigation triggers", false], ["Weekly summary email", true]] as [string, boolean][];
 
 export function Settings() {
-  const { currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toast } = useApp();
+  const { currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toast } = useApp();
   const farm = useFarm();
   const t = useT();
   const router = useRouter();
@@ -71,7 +72,7 @@ export function Settings() {
           <label className="block text-xs font-medium mb-1 text-muted">{t("Temperature")}</label>
           <select className="setinput mb-4" value={tempUnit} onChange={(e) => setTempUnit(e.target.value as TempUnit)}><option value="F">{t("Fahrenheit (°F)")}</option><option value="C">{t("Celsius (°C)")}</option></select>
           <label className="block text-xs font-medium mb-1 text-muted">{t("Region / timezone")}</label>
-          <select className="setinput"><option>{t("Texas, US (CT)")}</option><option>{t("California, US (PT)")}</option><option>{t("Sinaloa, MX (CT)")}</option></select>
+          <select className="setinput" value={timezone} onChange={(e) => setTimezone(e.target.value)}>{TIMEZONES.map((tz) => <option key={tz} value={tz}>{tz}</option>)}</select>
         </div>
         <div className="card p-6">
           <h4 className="text-[15px] font-bold mb-1">{t("Notifications")}</h4><p className="text-xs mb-5 text-muted">{t("When should we alert you")}</p>
