@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useApp, useFarm } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { formatMoney } from "@/lib/format";
+import { clearSession } from "@/lib/session";
 import type { Currency, AreaUnit, TempUnit, Lang } from "@/lib/types";
 
 const PREFS_DEFAULT = [["Weather alerts", true], ["Margin-at-risk push", true], ["Daily decision digest", true], ["Auto-irrigation triggers", false], ["Weekly summary email", true]] as [string, boolean][];
@@ -11,6 +13,7 @@ export function Settings() {
   const { currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toast } = useApp();
   const farm = useFarm();
   const t = useT();
+  const router = useRouter();
   const [threshold, setThreshold] = useState(2000);
   const [prefs, setPrefs] = useState(PREFS_DEFAULT);
   const [saved, setSaved] = useState(false);
@@ -88,6 +91,7 @@ export function Settings() {
           <button onClick={exportCsv} className="rounded-full px-4 py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Export farm data (CSV)")}</button>
           <button onClick={() => toast("Demo prototype — this action isn't wired up yet.")} className="rounded-full px-4 py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Download invoices")}</button>
           <button onClick={() => toast("Demo prototype — this action isn't wired up yet.")} className="rounded-full px-4 py-2 text-sm font-semibold btn-press" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}>{t("Delete account")}</button>
+          <button onClick={() => { clearSession(); router.push("/login"); }} className="rounded-full px-4 py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Sign out")}</button>
         </div>
       </div>
     </div>

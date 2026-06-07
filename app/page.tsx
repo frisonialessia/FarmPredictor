@@ -16,7 +16,10 @@ export default function Landing() {
             <a href="#how" className="hover:text-white transition-colors">How it works</a>
             <a href="#diff" className="hover:text-white transition-colors">Why us</a>
           </div>
-          <Link href="/dashboard" className="rounded-full px-5 py-2 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>Open dashboard</Link>
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="text-sm font-semibold hidden sm:block" style={{ color: "rgba(255,255,255,.8)" }}>Sign in</Link>
+            <Link href="/signup" className="rounded-full px-5 py-2 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>Get started</Link>
+          </div>
         </div>
       </nav>
 

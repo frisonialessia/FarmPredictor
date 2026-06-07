@@ -274,6 +274,7 @@ export const ES: Record<string, string> = {
   "Export farm data (CSV)": "Exportar datos (CSV)",
   "Download invoices": "Descargar facturas",
   "Delete account": "Eliminar cuenta",
+  "Sign out": "Cerrar sesión",
   // ── Parcel map ────────────────────────────────────────────────────
   Schematic: "Esquemático",
   Satellite: "Satélite",
