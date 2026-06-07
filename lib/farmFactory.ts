@@ -1,4 +1,5 @@
 import type { Farm, Parcel, KPI } from "@/lib/types";
+import { cropTemplate } from "@/data/crops";
 
 export interface ParcelRow { name: string; crop: string; area: string }
 
@@ -15,14 +16,17 @@ export function parcelsFromRows(rows: ParcelRow[]): Parcel[] {
     const w = 135;
     const h = 100;
     const area = Number(p.area) || 0;
+    // Pull realistic margin/window from the crop template; fall back to generic.
+    const tpl = cropTemplate(p.crop);
+    const marginPerAcre = tpl ? tpl.marginPerAcre : 90 + ((i * 17) % 60);
     return {
       id: `p_${i}`,
       name: p.name,
       crop: p.crop,
       area: `${area} ac`,
-      hoursToWindowClose: 48 + i * 24,
-      marginPerAcre: 90 + ((i * 17) % 60),
-      marginPct: Math.min(95, 50 + i * 9),
+      hoursToWindowClose: tpl ? tpl.windowDays * 24 + 24 : 48 + i * 24,
+      marginPerAcre,
+      marginPct: Math.min(95, Math.round((marginPerAcre / 160) * 100)),
       polygon: `${x},${y} ${x + w},${y + 5} ${x + w - 5},${y + h} ${x},${y + h - 5}`,
       cx: x + w / 2,
       cy: y + h / 2,

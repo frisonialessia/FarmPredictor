@@ -8,6 +8,7 @@ import { formatMoney, formatTemp } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
 import { weatherRisks, RISK_META } from "@/lib/risk";
 import { repo } from "@/lib/repo";
+import { marketRowsForCrops } from "@/data/crops";
 import type { WeatherDay } from "@/lib/types";
 
 const DECISIONS = [
@@ -22,7 +23,9 @@ export function Overview() {
   const farm = useFarm();
   const { currency, tempUnit } = useApp();
   const t = useT();
-  const market = repo.getMarketPrices();
+  // Prices for this farm's actual crops (falls back to the global list).
+  const farmMarket = marketRowsForCrops(farm.parcels.map((p) => p.crop));
+  const market = farmMarket.length ? farmMarket : repo.getMarketPrices();
 
   // Start with the simulated forecast (SSR-safe), then swap in a real one from
   // Open-Meteo once mounted. Falls back silently to demo data on any failure.
