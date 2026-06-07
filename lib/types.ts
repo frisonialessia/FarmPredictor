@@ -93,6 +93,13 @@ export interface ResourceRow {
   id: string;
   label: string;
   icon: string;
+  // Machine economics (optional)
+  machineType?: string;
+  year?: number;
+  dieselGalPerHr?: number;
+  downtimeCostPerDay?: number;
+  // Crew (optional)
+  workers?: number;
 }
 
 export interface BlockedSlot {

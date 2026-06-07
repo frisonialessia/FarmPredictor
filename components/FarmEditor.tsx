@@ -6,12 +6,15 @@ import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { buildFarm, CROPS, type ParcelRow } from "@/lib/farmFactory";
 import { ROLES, ROLE_LABEL } from "@/lib/roles";
+import { MACHINE_TYPES } from "@/lib/machinery";
 import { canonCrop } from "@/lib/cropName";
+import { num } from "@/lib/num";
 import type { Member, MemberRole, ResourceRow, InventoryItem } from "@/lib/types";
 
 const areaNum = (a: string) => a.replace(/[^0-9.]/g, "");
 interface MemberRow { name: string; role: MemberRole }
-interface NamedRow { name: string }
+interface MachineRow { name: string; machineType: string; year: string; diesel: string; downtime: string }
+interface CrewRow { name: string; workers: string }
 interface InvRow { name: string; qty: string; unit: string }
 
 export function FarmEditor() {
@@ -25,14 +28,14 @@ export function FarmEditor() {
   const [location, setLocation] = useState(farm.location);
   const [rows, setRows] = useState<ParcelRow[]>(farm.parcels.map((p) => ({ name: p.name, crop: p.crop, area: areaNum(p.area) })));
   const [members, setMembers] = useState<MemberRow[]>((farm.members ?? []).map((m) => ({ name: m.name, role: m.role })));
-  const [machines, setMachines] = useState<NamedRow[]>((farm.resources ?? []).filter((r) => r.icon !== "crew").map((r) => ({ name: r.label })));
-  const [crews, setCrews] = useState<NamedRow[]>((farm.resources ?? []).filter((r) => r.icon === "crew").map((r) => ({ name: r.label })));
+  const [machines, setMachines] = useState<MachineRow[]>((farm.resources ?? []).filter((r) => r.icon !== "crew").map((r) => ({ name: r.label, machineType: r.machineType ?? "Tractor", year: r.year ? String(r.year) : "", diesel: r.dieselGalPerHr ? String(r.dieselGalPerHr) : "", downtime: r.downtimeCostPerDay ? String(r.downtimeCostPerDay) : "" })));
+  const [crews, setCrews] = useState<CrewRow[]>((farm.resources ?? []).filter((r) => r.icon === "crew").map((r) => ({ name: r.label, workers: r.workers ? String(r.workers) : "" })));
   const [inventory, setInventory] = useState<InvRow[]>((farm.inventory ?? []).map((x) => ({ name: x.name, qty: String(x.qty), unit: x.unit })));
 
   function save() {
     const resources: ResourceRow[] = [
-      ...machines.filter((m) => m.name.trim()).map((m, i) => ({ id: `m${i + 1}`, label: m.name.trim(), icon: "tractor" })),
-      ...crews.filter((c) => c.name.trim()).map((c, i) => ({ id: `c${i + 1}`, label: c.name.trim(), icon: "crew" })),
+      ...machines.filter((m) => m.name.trim()).map((m, i) => ({ id: `m${i + 1}`, label: m.name.trim(), icon: "tractor", machineType: m.machineType, year: num(m.year), dieselGalPerHr: num(m.diesel), downtimeCostPerDay: num(m.downtime) })),
+      ...crews.filter((c) => c.name.trim()).map((c, i) => ({ id: `c${i + 1}`, label: c.name.trim(), icon: "crew", workers: num(c.workers) })),
     ];
     const memberObjs: Member[] = members.filter((m) => m.name.trim()).map((m, i) => ({ id: `u${i + 1}`, name: m.name.trim(), role: m.role }));
     const invObjs: InventoryItem[] = inventory.filter((x) => x.name.trim()).map((x, i) => ({ id: `i${i + 1}`, name: x.name.trim(), qty: Number(x.qty) || 0, unit: x.unit.trim() || "units" }));
@@ -100,33 +103,40 @@ export function FarmEditor() {
       </div>
       <button onClick={() => setMembers((r) => [...r, { name: "", role: "harvester" }])} className="text-sm font-semibold btn-press mb-6 block" style={{ color: "var(--green-deep)" }}>{t("+ Add person")}</button>
 
-      {/* Machines + Crews */}
-      <div className="grid sm:grid-cols-2 gap-6 mb-6">
-        <div>
-          <label className="kpi-label">{t("Machines")}</label>
-          <div className="space-y-2 mt-2">
-            {machines.map((m, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <input className="setinput flex-1" value={m.name} onChange={(e) => setMachines((r) => r.map((x, j) => j === i ? { name: e.target.value } : x))} placeholder="Harvester #1" />
-                <RowDelete onClick={() => setMachines((r) => r.filter((_, j) => j !== i))} />
-              </div>
-            ))}
+      {/* Machines */}
+      <label className="kpi-label">{t("Machines")}</label>
+      <div className="space-y-3 mt-2 mb-3">
+        {machines.map((m, i) => (
+          <div key={i} className="rounded-xl border border-line p-3">
+            <div className="flex gap-2 items-center mb-2">
+              <input className="setinput flex-1" value={m.name} onChange={(e) => setMachines((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder="Harvester #1" />
+              <RowDelete onClick={() => setMachines((r) => r.filter((_, j) => j !== i))} />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <select className="setinput" value={m.machineType} onChange={(e) => setMachines((r) => r.map((x, j) => j === i ? { ...x, machineType: e.target.value } : x))} aria-label={t("Machine type")}>
+                {MACHINE_TYPES.map((mt) => <option key={mt} value={mt}>{t(mt)}</option>)}
+              </select>
+              <input className="setinput" value={m.year} onChange={(e) => setMachines((r) => r.map((x, j) => j === i ? { ...x, year: e.target.value } : x))} placeholder={t("Year")} inputMode="numeric" />
+              <input className="setinput" value={m.diesel} onChange={(e) => setMachines((r) => r.map((x, j) => j === i ? { ...x, diesel: e.target.value } : x))} placeholder={t("Diesel (gal/h)")} inputMode="decimal" />
+              <input className="setinput" value={m.downtime} onChange={(e) => setMachines((r) => r.map((x, j) => j === i ? { ...x, downtime: e.target.value } : x))} placeholder={t("Downtime $/day")} inputMode="numeric" />
+            </div>
           </div>
-          <button onClick={() => setMachines((r) => [...r, { name: "" }])} className="mt-2 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add machine")}</button>
-        </div>
-        <div>
-          <label className="kpi-label">{t("Crews")}</label>
-          <div className="space-y-2 mt-2">
-            {crews.map((c, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <input className="setinput flex-1" value={c.name} onChange={(e) => setCrews((r) => r.map((x, j) => j === i ? { name: e.target.value } : x))} placeholder="Crew A" />
-                <RowDelete onClick={() => setCrews((r) => r.filter((_, j) => j !== i))} />
-              </div>
-            ))}
-          </div>
-          <button onClick={() => setCrews((r) => [...r, { name: "" }])} className="mt-2 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add crew")}</button>
-        </div>
+        ))}
       </div>
+      <button onClick={() => setMachines((r) => [...r, { name: "", machineType: "Tractor", year: "", diesel: "", downtime: "" }])} className="text-sm font-semibold btn-press mb-6 block" style={{ color: "var(--green-deep)" }}>{t("+ Add machine")}</button>
+
+      {/* Crews */}
+      <label className="kpi-label">{t("Crews")}</label>
+      <div className="space-y-2 mt-2 mb-3">
+        {crews.map((c, i) => (
+          <div key={i} className="grid grid-cols-12 gap-2 items-center">
+            <input className="setinput col-span-7 sm:col-span-8" value={c.name} onChange={(e) => setCrews((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder="Crew A" />
+            <input className="setinput col-span-4 sm:col-span-3" value={c.workers} onChange={(e) => setCrews((r) => r.map((x, j) => j === i ? { ...x, workers: e.target.value } : x))} placeholder={t("Workers")} inputMode="numeric" />
+            <div className="col-span-1"><RowDelete onClick={() => setCrews((r) => r.filter((_, j) => j !== i))} /></div>
+          </div>
+        ))}
+      </div>
+      <button onClick={() => setCrews((r) => [...r, { name: "", workers: "" }])} className="text-sm font-semibold btn-press mb-6 block" style={{ color: "var(--green-deep)" }}>{t("+ Add crew")}</button>
 
       {/* Inventory */}
       <label className="kpi-label">{t("Inventory")}</label>

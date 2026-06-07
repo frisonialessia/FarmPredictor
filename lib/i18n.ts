@@ -513,6 +513,13 @@ export const ES: Record<string, string> = {
   "+ Add item": "+ Añadir artículo",
   Qty: "Cant.", Unit: "Unidad", Item: "Artículo", Person: "Persona",
   "Your inventory": "Tu inventario",
+  // ── Machinery economics ───────────────────────────────────────────
+  "Combine harvester": "Cosechadora", Tractor: "Tractor", Sprayer: "Fumigadora", Seeder: "Sembradora",
+  Baler: "Empacadora", Forklift: "Montacargas", "Irrigation rig": "Equipo de riego", Other: "Otro",
+  "Machine type": "Tipo de máquina", Year: "Año", "Diesel (gal/h)": "Diésel (gal/h)", "Downtime $/day": "Parada $/día",
+  Workers: "Trabajadores", "Fleet economics": "Economía de flota", "Weekly fuel": "Combustible semanal",
+  "Breakdown risk": "Riesgo de avería", "per week": "por semana", "fuel/day": "comb./día", "breakdown risk": "riesgo de avería",
+  "Diesel burn & breakdown risk": "Consumo de diésel y riesgo de avería",
   "Time zone": "Zona horaria",
   // ── Form validation (Zod) ─────────────────────────────────────────
   "Enter a valid email": "Introduce un correo válido",
