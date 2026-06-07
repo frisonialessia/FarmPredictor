@@ -11,7 +11,7 @@ import { useOptimizedTiming } from "@/lib/optimizer";
 import { repo } from "@/lib/repo";
 import { marketRowsForCrops } from "@/data/crops";
 import { DAYS7 } from "@/data/planner";
-import type { WeatherDay } from "@/lib/types";
+import type { WeatherDay, MarketRow } from "@/lib/types";
 
 const DECISIONS = [
   { icon: "tractor", parcel: "North A", title: "Harvest before Thursday", desc: "Harvester busy, execution shifts", loss: 2940 },
@@ -25,9 +25,17 @@ export function Overview() {
   const farm = useFarm();
   const { currency, tempUnit, plan } = useApp();
   const t = useT();
-  // Prices for this farm's actual crops (falls back to the global list).
+  // Prices for this farm's actual crops; fall back to the global list, loaded
+  // through the async repository (Supabase-ready).
   const farmMarket = marketRowsForCrops(farm.parcels.map((p) => p.crop));
-  const market = farmMarket.length ? farmMarket : repo.getMarketPrices();
+  const [fallbackMarket, setFallbackMarket] = useState<MarketRow[]>([]);
+  useEffect(() => {
+    if (farmMarket.length) return;
+    let cancelled = false;
+    repo.getMarketPrices().then((m) => { if (!cancelled) setFallbackMarket(m); });
+    return () => { cancelled = true; };
+  }, [farmMarket.length]);
+  const market = farmMarket.length ? farmMarket : fallbackMarket;
 
   // Start with the simulated forecast (SSR-safe), then swap in a real one from
   // Open-Meteo once mounted. Falls back silently to demo data on any failure.

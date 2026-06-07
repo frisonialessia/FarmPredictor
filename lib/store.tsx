@@ -69,7 +69,6 @@ interface AppState {
 }
 
 const Ctx = createContext<AppState | null>(null);
-const DEMO_FARM = repo.getFarm("rio_verde")!;
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [farmId, setFarmId] = usePersisted<string>("fp_farm", "rio_verde");
@@ -81,16 +80,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = usePersisted<Lang>("fp_lang", "en");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [spotlight, setSpotlight] = useState<string | null>(null);
-  // Loaded after mount (SSR-safe: server + first client render see seeded only).
+  // Loaded after mount. seedFarms = null means the repository load is in flight
+  // (the in-memory source resolves instantly; a real backend would take time).
+  const [seedFarms, setSeedFarms] = useState<Farm[] | null>(null);
   const [userFarms, setUserFarms] = useState<Farm[]>([]);
+  // True once the active farm's scenario has been loaded — gates first paint so
+  // children never see an empty plan.
+  const [ready, setReady] = useState(false);
 
-  // Scenario state (per-farm). Initialized to the demo farm's plan for a
-  // deterministic first render; the load effect swaps in the active farm's.
-  const [plan, setPlan] = useState<Harvest[]>(() => clonePlan(DEMO_FARM));
+  // Scenario state (per-farm). Empty until the load effect populates it for the
+  // active farm; the loading gate below keeps it from rendering early.
+  const [plan, setPlan] = useState<Harvest[]>([]);
   const [levers, setLeversState] = useState<Record<string, boolean>>({});
   const [delayDays, setDelayState] = useState<number>(0);
 
+  // Load farms from the repository (async — Supabase-ready) plus any farm the
+  // user created locally, and the saved display name.
   useEffect(() => {
+    let cancelled = false;
+    repo.listFarms().then((f) => { if (!cancelled) setSeedFarms(f); }).catch(() => { if (!cancelled) setSeedFarms([]); });
     try {
       const s = window.localStorage.getItem("fp_user");
       if (s) setUserNameRaw(s);
@@ -99,15 +107,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const f = window.localStorage.getItem("fp_farms");
       if (f) setUserFarms(JSON.parse(f) as Farm[]);
     } catch { /* ignore */ }
+    return () => { cancelled = true; };
   }, []);
 
-  const farms = useMemo(() => [...repo.listFarms(), ...userFarms], [userFarms]);
+  const farms = useMemo(() => (seedFarms ? [...seedFarms, ...userFarms] : []), [seedFarms, userFarms]);
   const farm = useMemo(() => farms.find((f) => f.id === farmId) ?? farms[0], [farms, farmId]);
-  const planner = useMemo(() => plannerForFarm(farm), [farm]);
+  const planner = useMemo(() => (farm ? plannerForFarm(farm) : null), [farm]);
 
   // Load this farm's saved scenario (or generate a fresh one) whenever the
   // active farm changes — including after the user edits its parcels.
   useEffect(() => {
+    if (!farm) return;
     try {
       const sp = window.localStorage.getItem(`fp_plan_${farm.id}`);
       if (sp) setPlan(JSON.parse(sp));
@@ -121,6 +131,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLeversState({});
       setDelayState(0);
     }
+    setReady(true);
   }, [farm]);
 
   // Create or update a user farm; clear its saved plan so it regenerates from
@@ -149,6 +160,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, [farmId]);
   const resetPlan = useCallback(() => {
+    if (!farm) return;
     const fresh = clonePlan(farm);
     setPlan(fresh); persist(`fp_plan_${farm.id}`, fresh);
     setLeversState({}); persist(`fp_levers_${farm.id}`, {});
@@ -165,6 +177,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => [...prev, { id, msg }]);
     setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 2600);
   }, []);
+
+  // Loading gate: hold first paint until farms + the active scenario are ready,
+  // so every child can rely on a defined farm/planner/plan. With the in-memory
+  // source this is a single frame; with a real backend it absorbs network
+  // latency in one place instead of scattering loading checks across the UI.
+  if (!farm || !planner || !ready) {
+    return (
+      <div className="min-h-screen grid place-items-center" style={{ background: "var(--bg)" }}>
+        <div className="flex flex-col items-center gap-3">
+          <span className="h-8 w-8 rounded-full animate-spin" style={{ border: "3px solid var(--line)", borderTopColor: "var(--green)" }} />
+          <span className="text-xs text-muted">Loading your farm…</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toasts, toast, planner, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm, saveFarm }}>

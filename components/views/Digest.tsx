@@ -6,14 +6,13 @@ import { Icon } from "@/components/Icon";
 import { formatMoney } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
 import { weatherRisks, RISK_META } from "@/lib/risk";
-import { repo } from "@/lib/repo";
 import type { WeatherDay } from "@/lib/types";
 
 // The daily decision digest: the day's actions in plain dollars, delivered to
 // where the farmer already is. UI + live preview; real sending lands with a
 // provider (Resend / WhatsApp) later.
 export function Digest() {
-  const { farmId, userName, currency, toast } = useApp();
+  const { planner, userName, currency, toast } = useApp();
   const farm = useFarm();
   const t = useT();
   const [channel, setChannel] = useState<"email" | "whatsapp">("whatsapp");
@@ -26,7 +25,9 @@ export function Digest() {
     return () => { cancelled = true; };
   }, [farm.lat, farm.lon]);
 
-  const conflicts = repo.getPlanner(farmId).capacityConflicts;
+  // Per-farm conflicts from the single planner source (was repo.getPlanner,
+  // which ignored the farm and showed the demo's conflicts for every farm).
+  const conflicts = planner.capacityConflicts;
   const total = conflicts.reduce((s, c) => s + c.loss, 0);
   const risks = weatherRisks(weather);
   const firstName = userName.trim().split(/\s+/)[0];

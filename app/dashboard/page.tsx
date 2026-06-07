@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { AppProvider, useApp } from "@/lib/store";
+import { RequireAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
@@ -116,8 +117,10 @@ function DashboardInner() {
 
 export default function DashboardPage() {
   return (
-    <AppProvider>
-      <DashboardInner />
-    </AppProvider>
+    <RequireAuth>
+      <AppProvider>
+        <DashboardInner />
+      </AppProvider>
+    </RequireAuth>
   );
 }

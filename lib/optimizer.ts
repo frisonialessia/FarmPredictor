@@ -9,8 +9,9 @@
 import { useEffect, useState } from "react";
 import type { Harvest, WeatherDay } from "./types";
 import { harvestTiming, type TimingRec } from "./timing";
+import { env } from "./env";
 
-export const OPTIMIZER_URL = process.env.NEXT_PUBLIC_OPTIMIZER_URL ?? "";
+export const OPTIMIZER_URL = env.optimizerUrl;
 export const optimizerEnabled = (): boolean => OPTIMIZER_URL.length > 0;
 
 // Mirror of optimizer/app/models.py OptimizeResult.

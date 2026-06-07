@@ -14,6 +14,7 @@ import { MACHINE_TYPES } from "@/lib/machinery";
 import { ITEM_CATEGORIES } from "@/lib/inventory";
 import { canonCrop } from "@/lib/cropName";
 import { num } from "@/lib/num";
+import { RequireAuth } from "@/lib/auth";
 import type { Farm, Member, MemberRole, ResourceRow, InventoryItem } from "@/lib/types";
 
 const STEPS = ["Your farm", "Parcels", "Team", "Resources", "Review"];
@@ -24,7 +25,7 @@ interface MachineRow { name: string; machineType: string; year: string; diesel: 
 interface CrewRow { name: string; workers: string }
 interface InvRow { name: string; qty: string; unit: string; category: string; location: string; unitCost: string; spoilage: string }
 
-export default function OnboardingPage() {
+function OnboardingForm() {
   const router = useRouter();
   const t = useMarketingT();
   const [step, setStep] = useState(0);
@@ -273,5 +274,13 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <RequireAuth>
+      <OnboardingForm />
+    </RequireAuth>
   );
 }
