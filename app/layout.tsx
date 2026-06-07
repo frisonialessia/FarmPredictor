@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
-
-// Resolve the absolute site URL so social cards (Open Graph) point at the real
-// deployment. Vercel injects these env vars automatically in production.
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
-  "http://localhost:3000";
 
 const title = "FarmPredictor — Harvest when you actually can";
 const description =
