@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useApp, useFarm } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { formatMoney } from "@/lib/format";
+import { FarmEditor } from "@/components/FarmEditor";
 import { clearSession } from "@/lib/session";
 import type { Currency, AreaUnit, TempUnit, Lang } from "@/lib/types";
 
@@ -46,6 +47,7 @@ export function Settings() {
           <button onClick={() => { setSaved(true); toast("Preferences saved (demo)."); setTimeout(() => setSaved(false), 1800); }} className="rounded-full px-5 py-2 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{saved ? t("Saved ✓") : t("Save changes")}</button>
         </div>
       </div>
+      <div className="mb-5"><FarmEditor /></div>
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="card p-6">
           <h4 className="text-[15px] font-bold mb-1">{t("Profile")}</h4><p className="text-xs mb-5 text-muted">{t("Your account details")}</p>

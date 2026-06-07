@@ -19,7 +19,7 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
         <div className="relative">
           <h2 className="text-white font-extrabold tracking-tight leading-[1.1]" style={{ fontSize: "clamp(1.8rem,2.6vw,2.6rem)" }}>{t("Harvest when you")}<br />{t("actually")} <span style={{ color: "var(--lime)" }}>{t("can")}</span>.</h2>
           <ul className="mt-6 space-y-2.5">
-            {["Plan and simulator on one engine", "The gap to optimal, measured in dollars", "Live weather, no jargon"].map((s) => (
+            {["Plan and simulator on one engine", "The gap to optimal, measured in money", "Live weather, no jargon"].map((s) => (
               <li key={s} className="flex items-center gap-2.5 text-sm" style={{ color: "rgba(255,255,255,.82)" }}>
                 <span className="grid place-items-center h-5 w-5 rounded-full shrink-0" style={{ background: "rgba(133,223,66,.2)", color: "var(--lime)" }}>✓</span>{t(s)}
               </li>

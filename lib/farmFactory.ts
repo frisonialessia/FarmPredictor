@@ -1,22 +1,13 @@
 import type { Farm, Parcel, KPI } from "@/lib/types";
 
-interface Draft {
-  name: string;
-  location: string;
-  parcels: { name: string; crop: string; area: string }[];
-}
+export interface ParcelRow { name: string; crop: string; area: string }
 
-// Turns the onboarding draft into a fully-formed Farm (with synthesized map
-// geometry + KPIs) so user-created farms render everywhere the demo farms do.
-// SIMULATED: coordinates default to central Texas and metrics are placeholders
-// until real data is connected.
-export function farmFromDraft(draft: Draft): Farm {
-  const id = `user_${Date.now()}`;
-  const initials =
-    draft.name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() ||
-    draft.name.slice(0, 2).toUpperCase();
+export const CROPS = ["Grain sorghum", "Upland cotton", "Sweet corn", "Grapefruit", "Leaf lettuce", "Watermelon", "Winter wheat", "Peanuts"];
 
-  const parcels: Parcel[] = draft.parcels.map((p, i) => {
+// Lays out parcel rows into full Parcel objects with schematic map geometry.
+// SIMULATED metrics (margin/window) until real data is connected.
+export function parcelsFromRows(rows: ParcelRow[]): Parcel[] {
+  return rows.map((p, i) => {
     const col = i % 3;
     const row = Math.floor(i / 3);
     const x = 40 + col * 155;
@@ -29,34 +20,59 @@ export function farmFromDraft(draft: Draft): Farm {
       name: p.name,
       crop: p.crop,
       area: `${area} ac`,
-      hoursToWindowClose: 48 + i * 24, // SIMULATED
-      marginPerAcre: 90 + ((i * 17) % 60), // SIMULATED
-      marginPct: Math.min(95, 50 + i * 9), // SIMULATED
+      hoursToWindowClose: 48 + i * 24,
+      marginPerAcre: 90 + ((i * 17) % 60),
+      marginPct: Math.min(95, 50 + i * 9),
       polygon: `${x},${y} ${x + w},${y + 5} ${x + w - 5},${y + h} ${x},${y + h - 5}`,
       cx: x + w / 2,
       cy: y + h / 2,
     };
   });
+}
 
-  const totalAc = draft.parcels.reduce((s, p) => s + (Number(p.area) || 0), 0);
-  const crops = new Set(draft.parcels.map((p) => p.crop)).size;
-  const kpis: KPI[] = [
+function initialsOf(name: string): string {
+  return name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || name.slice(0, 2).toUpperCase();
+}
+
+function kpisFromParcels(parcels: Parcel[], rows: ParcelRow[]): KPI[] {
+  const totalAc = rows.reduce((s, p) => s + (Number(p.area) || 0), 0);
+  const crops = new Set(rows.map((p) => p.crop)).size;
+  return [
     { label: "Parcels", value: String(parcels.length), sub: "in this farm" },
     { label: "Total area", value: `${totalAc} ac`, sub: "under management" },
     { label: "Crops", value: String(crops), sub: "tracked" },
     { label: "Margin at risk", value: "—", sub: "connect data to compute", highlight: true },
   ];
+}
 
+interface FarmMeta {
+  id: string;
+  name: string;
+  location: string;
+  lat: number;
+  lon: number;
+  plan?: string;
+}
+
+// Builds a complete, valid Farm from metadata + parcel rows. Used to create a
+// farm in onboarding and to edit one later (preserving id/coords).
+export function buildFarm(meta: FarmMeta, rows: ParcelRow[]): Farm {
+  const parcels = parcelsFromRows(rows);
   return {
-    id,
-    name: draft.name,
-    location: draft.location,
-    lat: 31.0,
-    lon: -100.0,
-    plan: "Starter",
-    initials,
-    kpis,
-    weather: [], // filled live by Open-Meteo
+    id: meta.id,
+    name: meta.name,
+    location: meta.location,
+    lat: meta.lat,
+    lon: meta.lon,
+    plan: meta.plan ?? "Starter",
+    initials: initialsOf(meta.name),
+    kpis: kpisFromParcels(parcels, rows),
+    weather: [],
     parcels,
   };
+}
+
+// Onboarding entry point — new id + default (central Texas) coordinates.
+export function farmFromDraft(draft: { name: string; location: string; parcels: ParcelRow[] }): Farm {
+  return buildFarm({ id: `user_${Date.now()}`, name: draft.name, location: draft.location, lat: 31.0, lon: -100.0 }, draft.parcels);
 }

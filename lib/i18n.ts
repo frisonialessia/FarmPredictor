@@ -23,7 +23,7 @@ export const ES: Record<string, string> = {
   Assistant: "Asistente",
   "Ask your farm": "Pregúntale a tu granja",
   "Your data, in plain answers": "Tus datos, en respuestas claras",
-  "Plain answers, in dollars — powered by your live data": "Respuestas claras, en dólares — con tus datos en vivo",
+  "Plain answers, in your currency — powered by your live data": "Respuestas claras, en tu moneda — con tus datos en vivo",
   "Ask anything about today's decisions. For example:": "Pregunta lo que sea sobre las decisiones de hoy. Por ejemplo:",
   "What should I do today to protect my margin?": "¿Qué hago hoy para proteger mi margen?",
   "Which weather risk costs me the most this week?": "¿Qué riesgo de clima me cuesta más esta semana?",
@@ -409,7 +409,7 @@ export const ES: Record<string, string> = {
   "Execution planner": "Planificador de ejecución",
   "Drag harvests across days and machines. Conflicts with crews, rigs and supplies surface instantly — margin recalculates live.":
     "Arrastra cosechas entre días y máquinas. Los conflictos con cuadrillas, equipos e insumos aparecen al instante — el margen se recalcula en vivo.",
-  "Decisions in dollars": "Decisiones en dólares",
+  "Decisions in money": "Decisiones en dinero",
   "No NDVI charts. No jargon. Every alert says what to do today and what it's worth: \"Order 620 crates now, save $1,120.\"":
     "Sin gráficos NDVI. Sin jerga. Cada alerta dice qué hacer hoy y cuánto vale: \"Pide 620 cajas ahora, ahorra $1,120.\"",
   "Everyone else stops at \"the crop is ready.\"": "Los demás se quedan en \"el cultivo está listo.\"",
@@ -424,8 +424,8 @@ export const ES: Record<string, string> = {
   "Models machines, crews, supplies & weather together": "Modela máquinas, cuadrillas, insumos y clima juntos",
   "The product": "El producto",
   "Your whole operation, on one screen.": "Toda tu operación, en una pantalla.",
-  "Margin at risk, today's decisions and the season trend — in plain dollars, no jargon.":
-    "Margen en riesgo, las decisiones de hoy y la tendencia de temporada — en dólares claros, sin jerga.",
+  "Margin at risk, today's decisions and the season trend — in your currency, no jargon.":
+    "Margen en riesgo, las decisiones de hoy y la tendencia de temporada — en tu moneda, sin jerga.",
   "Open the live dashboard →": "Abre el dashboard en vivo →",
   "See your margin before": "Mira tu margen antes",
   "it walks off the field.": "de que se vaya del campo.",
@@ -435,7 +435,7 @@ export const ES: Record<string, string> = {
   actually: "de verdad",
   can: "puedes",
   "Plan and simulator on one engine": "Plan y simulador en un solo motor",
-  "The gap to optimal, measured in dollars": "El hueco hasta el óptimo, medido en dólares",
+  "The gap to optimal, measured in money": "El hueco hasta el óptimo, medido en dinero",
   "Live weather, no jargon": "Clima en vivo, sin jerga",
   "Prototype · demo data": "Prototipo · datos demo",
   "Welcome back": "Bienvenido de vuelta",
@@ -467,6 +467,12 @@ export const ES: Record<string, string> = {
   "Start with a few — you can refine later.": "Empieza con unas pocas — puedes afinar después.",
   "+ Add parcel": "+ Añadir parcela",
   Remove: "Quitar",
+  // ── Farm editor ───────────────────────────────────────────────────
+  "Manage your farm and parcels": "Gestiona tu granja y parcelas",
+  "This is a demo farm — create your own to edit it.": "Esta es una granja demo — crea la tuya para editarla.",
+  "Create your farm": "Crea tu granja",
+  "Save farm": "Guardar granja",
+  "Farm saved.": "Granja guardada.",
   // ── Form validation (Zod) ─────────────────────────────────────────
   "Enter a valid email": "Introduce un correo válido",
   "Tell us your name": "Dinos tu nombre",

@@ -87,7 +87,7 @@ export function Assistant() {
           <span className="grid place-items-center h-9 w-9 rounded-xl" style={{ background: "var(--ink)", color: "var(--lime)" }}><Icon name="sparkles" size={18} /></span>
           <div>
             <h4 className="text-[15px] font-bold leading-tight">{t("Ask your farm")}</h4>
-            <p className="text-xs text-muted">{t("Plain answers, in dollars — powered by your live data")}</p>
+            <p className="text-xs text-muted">{t("Plain answers, in your currency — powered by your live data")}</p>
           </div>
         </div>
 

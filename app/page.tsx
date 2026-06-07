@@ -61,7 +61,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="max-w-2xl mb-14"><p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">{t("How it works")}</p><h2 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{t("Three layers. One question: what do I do today?")}</h2></div>
           <div className="grid md:grid-cols-3 gap-6">
-            {[["whatif", "Projected Loss Engine", "Compares live market value against production cost and daily crop degradation to pinpoint the optimal harvest day."], ["planner", "Execution planner", "Drag harvests across days and machines. Conflicts with crews, rigs and supplies surface instantly — margin recalculates live."], ["financial", "Decisions in dollars", "No NDVI charts. No jargon. Every alert says what to do today and what it's worth: \"Order 620 crates now, save $1,120.\""]].map(([icon, title, desc]) => (
+            {[["whatif", "Projected Loss Engine", "Compares live market value against production cost and daily crop degradation to pinpoint the optimal harvest day."], ["planner", "Execution planner", "Drag harvests across days and machines. Conflicts with crews, rigs and supplies surface instantly — margin recalculates live."], ["financial", "Decisions in money", "No NDVI charts. No jargon. Every alert says what to do today and what it's worth: \"Order 620 crates now, save $1,120.\""]].map(([icon, title, desc]) => (
               <div key={title} className="rounded-2xl p-8 border border-line" style={{ background: "var(--bg)", boxShadow: "var(--shadow-sm)" }}>
                 <div className="grid place-items-center h-12 w-12 rounded-xl mb-5" style={{ background: "#fff", border: "1px solid var(--line)", color: "var(--green-deep)" }}><Icon name={icon} /></div>
                 <h3 className="font-bold text-lg mb-2">{t(title)}</h3><p className="text-sm text-muted">{t(desc)}</p>
@@ -83,7 +83,7 @@ export default function Landing() {
 
       <section className="bg-white border-t border-line py-24">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="max-w-2xl mb-10"><p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">{t("The product")}</p><h2 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{t("Your whole operation, on one screen.")}</h2><p className="text-muted mt-4 text-lg">{t("Margin at risk, today's decisions and the season trend — in plain dollars, no jargon.")}</p></div>
+          <div className="max-w-2xl mb-10"><p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">{t("The product")}</p><h2 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{t("Your whole operation, on one screen.")}</h2><p className="text-muted mt-4 text-lg">{t("Margin at risk, today's decisions and the season trend — in your currency, no jargon.")}</p></div>
           <DashboardMockup />
           <div className="text-center mt-10">
             <Link href="/dashboard" className="inline-block rounded-full px-8 py-4 text-sm font-semibold btn-press" style={{ background: "var(--ink)", color: "#fff" }}>{t("Open the live dashboard →")}</Link>

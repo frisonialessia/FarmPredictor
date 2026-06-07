@@ -58,6 +58,7 @@ interface AppState {
   // Seeded (demo) farms + any farm the user created in onboarding.
   farms: Farm[];
   farm: Farm;
+  saveFarm: (farm: Farm) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -91,6 +92,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const farms = useMemo(() => [...repo.listFarms(), ...userFarms], [userFarms]);
   const farm = useMemo(() => farms.find((f) => f.id === farmId) ?? farms[0], [farms, farmId]);
+
+  // Create or update a user farm and persist it (demo farms stay read-only).
+  const saveFarm = useCallback((updated: Farm) => {
+    setUserFarms((prev) => {
+      const next = prev.some((f) => f.id === updated.id) ? prev.map((f) => (f.id === updated.id ? updated : f)) : [...prev, updated];
+      try { window.localStorage.setItem("fp_farms", JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
   const setUserName = useCallback((n: string) => {
     setUserNameRaw(n);
     try { window.localStorage.setItem("fp_user", n); } catch { /* ignore */ }
@@ -109,7 +119,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, userName, setUserName, lang, setLang, toasts, toast, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm, saveFarm }}>
       {children}
     </Ctx.Provider>
   );
