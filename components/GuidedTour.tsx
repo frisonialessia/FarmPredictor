@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 import { formatMoney } from "@/lib/format";
 import { evaluatePlan, evaluateScenario } from "@/lib/engine";
-import { CONFLICTS, BLOCKED, DELAY_PENALTY } from "@/data/planner";
+import { repo } from "@/lib/repo";
 
 interface Actions {
   resetPlan: () => void;
@@ -76,8 +76,9 @@ const STEPS: Step[] = [
 const AUTO_MS = 4200;
 
 export function GuidedTour({ setView, onExit }: { setView: (v: string) => void; onExit: () => void }) {
-  const { currency, plan, levers, delayDays, resetPlan, moveHarvest, setLevers, setDelayDays, setSpotlight } = useApp();
+  const { currency, plan, levers, delayDays, resetPlan, moveHarvest, setLevers, setDelayDays, setSpotlight, farmId } = useApp();
   const t = useT();
+  const { blocked, capacityConflicts, delayPenalty } = repo.getPlanner(farmId);
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(true);
 
@@ -98,9 +99,9 @@ export function GuidedTour({ setView, onExit }: { setView: (v: string) => void; 
   }, [playing, i]);
 
   const scenario = useMemo(() => {
-    const pe = evaluatePlan(plan, BLOCKED);
-    return { pe, sc: evaluateScenario(pe, CONFLICTS, levers, delayDays, DELAY_PENALTY) };
-  }, [plan, levers, delayDays]);
+    const pe = evaluatePlan(plan, blocked);
+    return { pe, sc: evaluateScenario(pe, capacityConflicts, levers, delayDays, delayPenalty) };
+  }, [plan, blocked, capacityConflicts, levers, delayDays, delayPenalty]);
 
   const metricValue = (): string | null => {
     if (step.metric === "planMargin") return formatMoney(scenario.pe.planMargin, currency);

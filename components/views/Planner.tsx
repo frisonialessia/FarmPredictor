@@ -6,7 +6,8 @@ import { Icon } from "@/components/Icon";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { formatMoney } from "@/lib/format";
 import { evaluatePlan } from "@/lib/engine";
-import { RESOURCE_ROWS, OPTIMAL_PLAN, BLOCKED, DAYS7 } from "@/data/planner";
+import { repo } from "@/lib/repo";
+import { DAYS7 } from "@/data/planner";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "alert" }[]> = {
@@ -21,13 +22,14 @@ const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "
 export function Planner() {
   // The plan lives in the shared store, so every edit here is instantly visible
   // to the What-if Simulator through the same unified engine.
-  const { currency, plan, moveHarvest, resetPlan, spotlight } = useApp();
+  const { currency, plan, moveHarvest, resetPlan, spotlight, farmId } = useApp();
   const t = useT();
+  const { resources, blocked } = repo.getPlanner(farmId);
   const [dragId, setDragId] = useState<string | null>(null);
   const [calMonth, setCalMonth] = useState(5);
   const [calYear, setCalYear] = useState(2026);
 
-  const result = useMemo(() => evaluatePlan(plan, BLOCKED), [plan]);
+  const result = useMemo(() => evaluatePlan(plan, blocked), [plan, blocked]);
   const diff = result.planMargin - result.grossOptimal;
 
   function drop(row: string, day: number) {
@@ -55,12 +57,12 @@ export function Planner() {
           <div className="grid items-center mb-2" style={{ gridTemplateColumns: "150px 1fr" }}>
             <div /><div className="grid grid-cols-7 text-xs text-muted">{DAYS7.map((d) => <div key={d}>{t(d)}</div>)}</div>
           </div>
-          {RESOURCE_ROWS.map((r) => (
+          {resources.map((r) => (
             <div key={r.id} className="grid items-stretch" style={{ gridTemplateColumns: "150px 1fr" }}>
               <div className="flex items-center gap-2 pr-3 py-2"><Icon name={r.icon} size={15} /><span className="text-xs font-semibold">{t(r.label)}</span></div>
               <div className="grid grid-cols-7">
                 {Array.from({ length: 7 }).map((_, d) => {
-                  const blk = BLOCKED.find((b) => b.row === r.id && d >= b.day && d < b.day + b.len);
+                  const blk = blocked.find((b) => b.row === r.id && d >= b.day && d < b.day + b.len);
                   const chip = result.harvests.find((h) => h.row === r.id && h.day === d);
                   return (
                     <div key={d} onDragOver={(e) => e.preventDefault()} onDrop={() => drop(r.id, d)} className="border-l border-line relative" style={{ minHeight: 48, background: blk ? "repeating-linear-gradient(45deg,#f0e2dc,#f0e2dc 6px,#f6ece7 6px,#f6ece7 12px)" : undefined }}>

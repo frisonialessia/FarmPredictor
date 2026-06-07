@@ -9,7 +9,7 @@ import { Toaster } from "@/components/Toaster";
 import { GuidedTour } from "@/components/GuidedTour";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
-import { FARMS, FARM_IDS } from "@/data/farms";
+import { repo } from "@/lib/repo";
 import { Overview } from "@/components/views/Overview";
 import { ParcelMap } from "@/components/views/ParcelMap";
 import { Planner } from "@/components/views/Planner";
@@ -35,7 +35,7 @@ const TITLES: Record<string, [string, string]> = {
 function MobileFarmSwitcher() {
   const { farmId, setFarmId } = useApp();
   const [open, setOpen] = useState(false);
-  const farm = FARMS[farmId];
+  const farm = repo.getFarm(farmId) ?? repo.listFarms()[0];
   return (
     <div className="relative md:hidden">
       <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1" aria-label="Switch farm">
@@ -44,10 +44,10 @@ function MobileFarmSwitcher() {
       </button>
       {open && (
         <div className="absolute right-0 z-50 bg-white border border-line rounded-xl shadow-lg overflow-hidden mt-2" style={{ width: 200 }}>
-          {FARM_IDS.map((id) => (
-            <button key={id} onClick={() => { setFarmId(id); setOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-bg text-left">
-              <span className="h-8 w-8 rounded-lg grid place-items-center text-xs font-bold shrink-0" style={{ background: "var(--lime)" }}>{FARMS[id].initials}</span>
-              <span><p className="text-xs font-semibold">{FARMS[id].name}</p><p className="text-[10px] text-muted">{FARMS[id].location}</p></span>
+          {repo.listFarms().map((f) => (
+            <button key={f.id} onClick={() => { setFarmId(f.id); setOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-bg text-left">
+              <span className="h-8 w-8 rounded-lg grid place-items-center text-xs font-bold shrink-0" style={{ background: "var(--lime)" }}>{f.initials}</span>
+              <span><p className="text-xs font-semibold">{f.name}</p><p className="text-[10px] text-muted">{f.location}</p></span>
             </button>
           ))}
         </div>

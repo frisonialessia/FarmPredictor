@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon";
 import { AreaChart } from "@/components/Charts";
 import { formatMoney, formatTemp } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
-import { MARKET } from "@/data/farms";
+import { repo } from "@/lib/repo";
 import type { WeatherDay } from "@/lib/types";
 
 const DECISIONS = [
@@ -21,6 +21,7 @@ export function Overview() {
   const farm = useFarm();
   const { currency, tempUnit } = useApp();
   const t = useT();
+  const market = repo.getMarketPrices();
 
   // Start with the simulated forecast (SSR-safe), then swap in a real one from
   // Open-Meteo once mounted. Falls back silently to demo data on any failure.
@@ -87,7 +88,7 @@ export function Overview() {
           <h4 className="text-[15px] font-bold mb-1">{t("Market prices")}</h4>
           <p className="text-xs mb-4 text-muted">{t("Live spot vs. your cost")}</p>
           <div className="space-y-3">
-            {MARKET.map((m) => (
+            {market.map((m) => (
               <div key={m.crop} className="flex items-center justify-between">
                 <div><p className="text-sm font-medium">{t(m.crop)}</p><p className="text-[11px] text-muted">{t("cost")} {formatMoney(m.cost, currency)}/{m.unit}</p></div>
                 <div className="text-right"><p className="mono text-sm font-bold">{formatMoney(m.spot, currency)}</p><p className="text-[11px] mono" style={{ color: m.changePct >= 0 ? "var(--green)" : "var(--warn)" }}>{m.changePct >= 0 ? "+" : ""}{m.changePct}%</p></div>

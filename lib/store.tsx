@@ -1,15 +1,14 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import type { Currency, AreaUnit, TempUnit, Lang, Harvest } from "./types";
-import { FARMS } from "@/data/farms";
-import { OPTIMAL_PLAN } from "@/data/planner";
+import { repo } from "@/lib/repo";
 
 interface Toast {
   id: number;
   msg: string;
 }
 
-const clonePlan = () => JSON.parse(JSON.stringify(OPTIMAL_PLAN)) as Harvest[];
+const clonePlan = (farmId: string) => JSON.parse(JSON.stringify(repo.getPlanner(farmId).optimalPlan)) as Harvest[];
 
 // Persisted preference state: starts at a default (SSR-safe), hydrates from
 // localStorage after mount, and writes back on every change.
@@ -69,7 +68,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // English is the primary language; Spanish is the secondary option.
   const [lang, setLang] = usePersisted<Lang>("fp_lang", "en");
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [plan, setPlan] = useState<Harvest[]>(clonePlan);
+  const [plan, setPlan] = useState<Harvest[]>(() => clonePlan(farmId));
   const [levers, setLevers] = useState<Record<string, boolean>>({});
   const [delayDays, setDelayDays] = useState<number>(0);
   const [spotlight, setSpotlight] = useState<string | null>(null);
@@ -88,7 +87,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const moveHarvest = useCallback((id: string, row: string, day: number) => {
     setPlan((prev) => prev.map((h) => (h.id === id ? { ...h, row, day } : h)));
   }, []);
-  const resetPlan = useCallback(() => setPlan(clonePlan()), []);
+  const resetPlan = useCallback(() => setPlan(clonePlan(farmId)), [farmId]);
   const toggleLever = useCallback((id: string) => setLevers((p) => ({ ...p, [id]: !p[id] })), []);
 
   const toast = useCallback((msg: string) => {
@@ -112,5 +111,5 @@ export function useApp() {
 
 export function useFarm() {
   const { farmId } = useApp();
-  return FARMS[farmId];
+  return repo.getFarm(farmId) ?? repo.listFarms()[0];
 }
