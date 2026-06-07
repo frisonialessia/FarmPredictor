@@ -184,9 +184,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // latency in one place instead of scattering loading checks across the UI.
   if (!farm || !planner || !ready) {
     return (
-      <div className="min-h-screen grid place-items-center" style={{ background: "var(--bg)" }}>
+      <div className="min-h-screen grid place-items-center" style={{ background: "var(--bg)" }} role="status" aria-label="Loading your farm">
         <div className="flex flex-col items-center gap-3">
-          <span className="h-8 w-8 rounded-full animate-spin" style={{ border: "3px solid var(--line)", borderTopColor: "var(--green)" }} />
+          <span aria-hidden="true" className="h-8 w-8 rounded-full animate-spin" style={{ border: "3px solid var(--line)", borderTopColor: "var(--green)" }} />
           <span className="text-xs text-muted">Loading your farm…</span>
         </div>
       </div>

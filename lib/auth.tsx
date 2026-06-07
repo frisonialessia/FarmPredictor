@@ -13,8 +13,8 @@ type Status = "checking" | "authed";
 
 function AuthSplash() {
   return (
-    <div className="min-h-screen grid place-items-center" style={{ background: "var(--bg)" }}>
-      <span className="h-8 w-8 rounded-full animate-spin" style={{ border: "3px solid var(--line)", borderTopColor: "var(--green)" }} />
+    <div className="min-h-screen grid place-items-center" style={{ background: "var(--bg)" }} role="status" aria-label="Checking your session">
+      <span aria-hidden="true" className="h-8 w-8 rounded-full animate-spin" style={{ border: "3px solid var(--line)", borderTopColor: "var(--green)" }} />
     </div>
   );
 }

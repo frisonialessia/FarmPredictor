@@ -8,6 +8,7 @@ import { z } from "zod";
 const schema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
   NEXT_PUBLIC_OPTIMIZER_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
 });
 
 // Reference each var explicitly: Next.js only inlines NEXT_PUBLIC_* values that
@@ -15,6 +16,7 @@ const schema = z.object({
 const parsed = schema.safeParse({
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   NEXT_PUBLIC_OPTIMIZER_URL: process.env.NEXT_PUBLIC_OPTIMIZER_URL,
+  NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
 });
 
 if (!parsed.success) {
@@ -31,4 +33,6 @@ export const env = {
     "http://localhost:3000",
   // Phase 3 optimizer service. Empty = use the built-in TS heuristic.
   optimizerUrl: parsed.data.NEXT_PUBLIC_OPTIMIZER_URL ?? "",
+  // Observability sink (Sentry). Empty = errors are logged locally only.
+  sentryDsn: parsed.data.NEXT_PUBLIC_SENTRY_DSN ?? "",
 } as const;

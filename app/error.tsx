@@ -5,11 +5,11 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
+import { captureError } from "@/lib/observability";
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    // TODO(observability): forward to Sentry/log drain when enabled.
-    console.error(error);
+    captureError(error, { digest: error.digest, boundary: "route" });
   }, [error]);
 
   return (
