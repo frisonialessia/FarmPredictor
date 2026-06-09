@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
+import { canView } from "@/lib/permissions";
 import { Icon } from "@/components/Icon";
 import { BrandMark } from "@/components/BrandMark";
 
@@ -19,15 +20,16 @@ export const NAV: [string, string, string][] = [
 ];
 
 export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (id: string) => void }) {
-  const { setFarmId, farms, farm } = useApp();
+  const { setFarmId, farms, farm, role } = useApp();
   const t = useT();
   const [menuOpen, setMenuOpen] = useState(false);
+  const nav = NAV.filter(([id]) => canView(role, id));
 
   return (
     <aside className="hidden md:flex shrink-0 bg-white border-r border-line py-4 flex-col items-center gap-2" style={{ width: 92, minWidth: 92, maxWidth: 92, position: "sticky", top: 0, height: "100vh", overflowY: "auto", alignSelf: "flex-start" }}>
       <a href="/" className="grid place-items-center mb-2 mt-1 rounded-xl p-1.5 hover:bg-bg transition-colors" title={t("Home")}><BrandMark size={30} /></a>
       <div className="w-full px-2 flex flex-col gap-1">
-        {NAV.map(([id, label, icon]) => (
+        {nav.map(([id, label, icon]) => (
           <button key={id} onClick={() => onNavigate(id)} title={t(label)}
             className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl transition-colors ${active === id ? "bg-ink text-white" : "hover:bg-bg"}`}>
             <span style={{ color: active === id ? "var(--lime)" : "var(--ink)" }}><Icon name={icon} size={19} /></span>

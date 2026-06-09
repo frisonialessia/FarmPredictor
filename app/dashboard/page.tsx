@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppProvider, useApp } from "@/lib/store";
 import { RequireAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
+import { canView } from "@/lib/permissions";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -65,8 +66,13 @@ function MobileFarmSwitcher() {
 function DashboardInner() {
   const [active, setActive] = useState("overview");
   const [tourOpen, setTourOpen] = useState(false);
-  const { toast } = useApp();
+  const { toast, role } = useApp();
   const t = useT();
+  // If the active role can't see the current view (e.g. after switching role),
+  // fall back to the always-allowed Overview.
+  useEffect(() => {
+    if (active !== "settings" && !canView(role, active)) setActive("overview");
+  }, [role, active]);
   const title = TITLES[active];
   return (
     <div className="flex min-h-screen">

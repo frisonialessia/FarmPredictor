@@ -5,16 +5,19 @@ import { useApp, useFarm } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { formatMoney } from "@/lib/format";
 import { FarmEditor } from "@/components/FarmEditor";
+import { TeamAccess } from "@/components/TeamAccess";
 import { clearSession } from "@/lib/session";
 import { TIMEZONES } from "@/lib/timezones";
+import { ACCESS_ROLES, ACCESS_ROLE_LABEL, caps } from "@/lib/permissions";
 import type { Currency, AreaUnit, TempUnit, Lang } from "@/lib/types";
 
 const PREFS_DEFAULT = [["Weather alerts", true], ["Margin-at-risk push", true], ["Daily decision digest", true], ["Auto-irrigation triggers", false], ["Weekly summary email", true]] as [string, boolean][];
 
 export function Settings() {
-  const { currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toast } = useApp();
+  const { currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toast, role, setRole } = useApp();
   const farm = useFarm();
   const t = useT();
+  const ability = caps(role);
   const router = useRouter();
   const [threshold, setThreshold] = useState(2000);
   const [prefs, setPrefs] = useState(PREFS_DEFAULT);
@@ -41,23 +44,40 @@ export function Settings() {
       <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="h-14 w-14 rounded-2xl grid place-items-center text-lg font-bold" style={{ background: "var(--lime)" }}>{initials}</div>
-          <div><p className="text-lg font-bold">{userName}</p><p className="text-xs text-muted">{t("Owner")} · {farm.name}</p></div>
+          <div><p className="text-lg font-bold">{userName}</p><p className="text-xs text-muted">{t(ACCESS_ROLE_LABEL[role])} · {farm.name}</p></div>
         </div>
         <div className="flex items-center gap-2">
           {saved && <span className="text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>{t("Saved")}</span>}
           <button onClick={() => { setSaved(true); toast("Preferences saved (demo)."); setTimeout(() => setSaved(false), 1800); }} className="rounded-full px-5 py-2 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{saved ? t("Saved ✓") : t("Save changes")}</button>
         </div>
       </div>
-      <div className="mb-5"><FarmEditor /></div>
+      {/* Demo aid: preview the app as any role to see what each one can access. */}
+      <div className="card p-4 mb-5 flex flex-wrap items-center gap-3">
+        <div className="flex-1 min-w-[200px]">
+          <p className="text-sm font-bold">{t("View as role")}</p>
+          <p className="text-xs text-muted">{t("Preview what each role can see and do (demo).")}</p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {ACCESS_ROLES.map((r) => (
+            <button key={r} onClick={() => setRole(r)} className="text-xs font-semibold px-3 py-1.5 rounded-full btn-press" style={{ background: role === r ? "var(--ink)" : "var(--bg)", color: role === r ? "#fff" : "var(--muted)" }}>{t(ACCESS_ROLE_LABEL[r])}</button>
+          ))}
+        </div>
+      </div>
+
+      <TeamAccess />
+
+      {ability.canManageTeam
+        ? <div className="mb-5"><FarmEditor /></div>
+        : <div className="card p-6 mb-5 text-sm text-muted">{t("Only the owner and farm manager can edit the farm's parcels, team and resources.")}</div>}
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="card p-6">
           <h4 className="text-[15px] font-bold mb-1">{t("Profile")}</h4><p className="text-xs mb-5 text-muted">{t("Your account details")}</p>
           <label className="block text-xs font-medium mb-1 text-muted">{t("Full name")}</label>
           <input className="setinput mb-4" value={userName} onChange={(e) => setUserName(e.target.value)} />
           <label className="block text-xs font-medium mb-1 text-muted">{t("Email")}</label>
-          <input type="email" className="setinput mb-4" defaultValue="m.alvarez@rioverde.ag" />
+          <input type="email" className="setinput mb-4" defaultValue="demo@farmpredictor.app" />
           <label className="block text-xs font-medium mb-1 text-muted">{t("Role")}</label>
-          <select className="setinput mb-4"><option>{t("Owner")}</option><option>{t("Farm manager")}</option><option>{t("Agronomist")}</option></select>
+          <input className="setinput mb-4" value={t(ACCESS_ROLE_LABEL[role])} readOnly />
           <label className="block text-xs font-medium mb-1 text-muted">{t("Phone")}</label>
           <input className="setinput" defaultValue="+1 (956) 555-0142" />
         </div>
@@ -93,7 +113,7 @@ export function Settings() {
         <div className="flex flex-wrap gap-3">
           <button onClick={exportCsv} className="rounded-full px-4 py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Export farm data (CSV)")}</button>
           <button onClick={() => toast("Demo prototype — this action isn't wired up yet.")} className="rounded-full px-4 py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Download invoices")}</button>
-          <button onClick={() => toast("Demo prototype — this action isn't wired up yet.")} className="rounded-full px-4 py-2 text-sm font-semibold btn-press" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}>{t("Delete account")}</button>
+          {ability.canManageBilling && <button onClick={() => toast("Demo prototype — this action isn't wired up yet.")} className="rounded-full px-4 py-2 text-sm font-semibold btn-press" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}>{t("Delete account")}</button>}
           <button onClick={() => { clearSession(); router.push("/login"); }} className="rounded-full px-4 py-2 text-sm font-semibold border border-line btn-press hover:bg-bg">{t("Sign out")}</button>
         </div>
       </div>

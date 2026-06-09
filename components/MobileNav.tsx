@@ -1,13 +1,16 @@
 "use client";
 import { Icon } from "@/components/Icon";
 import { useT } from "@/lib/i18n";
+import { useApp } from "@/lib/store";
+import { canView } from "@/lib/permissions";
 import { NAV } from "@/components/Sidebar";
 
 // Bottom tab bar shown only on small screens (the left rail is hidden there).
 // Horizontally scrollable so every destination stays reachable on a phone.
 export function MobileNav({ active, onNavigate }: { active: string; onNavigate: (id: string) => void }) {
   const t = useT();
-  const items: [string, string, string][] = [...NAV, ["settings", "Settings", "settings"]];
+  const { role } = useApp();
+  const items: [string, string, string][] = [...NAV, ["settings", "Settings", "settings"]].filter(([id]) => canView(role, id)) as [string, string, string][];
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-line"

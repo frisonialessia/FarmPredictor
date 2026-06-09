@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
 import type { Currency, AreaUnit, TempUnit, Lang, Harvest, Farm } from "./types";
+import type { AccessRole } from "./permissions";
 import { repo } from "@/lib/repo";
 import { plannerForFarm } from "@/lib/planGen";
 import type { PlannerData } from "@/lib/repo";
@@ -66,6 +67,10 @@ interface AppState {
   farms: Farm[];
   farm: Farm;
   saveFarm: (farm: Farm) => void;
+  // The active user's access role (gates views/actions). In the single-user demo
+  // this doubles as a "view as" preview; with Supabase it comes from membership.
+  role: AccessRole;
+  setRole: (r: AccessRole) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -78,6 +83,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [timezone, setTimezone] = usePersisted<string>("fp_tz", "America/Chicago");
   const [userName, setUserNameRaw] = useState<string>("Demo User");
   const [lang, setLang] = usePersisted<Lang>("fp_lang", "en");
+  const [role, setRole] = usePersisted<AccessRole>("fp_role", "owner");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [spotlight, setSpotlight] = useState<string | null>(null);
   // Loaded after mount. seedFarms = null means the repository load is in flight
@@ -194,7 +200,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toasts, toast, planner, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm, saveFarm }}>
+    <Ctx.Provider value={{ farmId, setFarmId, currency, setCurrency, areaUnit, setAreaUnit, tempUnit, setTempUnit, timezone, setTimezone, userName, setUserName, lang, setLang, toasts, toast, planner, plan, moveHarvest, resetPlan, levers, toggleLever, setLevers, delayDays, setDelayDays, spotlight, setSpotlight, farms, farm, saveFarm, role, setRole }}>
       {children}
     </Ctx.Provider>
   );
