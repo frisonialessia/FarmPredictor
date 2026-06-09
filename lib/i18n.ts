@@ -89,6 +89,11 @@ export const ES: Record<string, string> = {
   // ── Overview ──────────────────────────────────────────────────────
   "Today's decisions": "Decisiones de hoy",
   "Sorted by margin impact": "Ordenadas por impacto en margen",
+  "Resolve conflict": "Resolver conflicto",
+  "capacity shortfall": "falta de capacidad",
+  "No urgent decisions today — your plan is executable.": "No hay decisiones urgentes hoy — tu plan es ejecutable.",
+  "No activity yet": "Aún no hay actividad",
+  "Your decision journal is empty. As you act on recommendations and move the plan, every decision is logged here with its margin impact.": "Tu bitácora de decisiones está vacía. A medida que actúes sobre las recomendaciones y muevas el plan, cada decisión se registra aquí con su impacto en el margen.",
   "Harvest before Thursday": "Cosecha antes del jueves",
   "Harvester busy, execution shifts": "Cosechadora ocupada, la ejecución se desplaza",
   "Cover Wednesday rain": "Cubre la lluvia del miércoles",

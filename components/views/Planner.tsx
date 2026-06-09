@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { caps } from "@/lib/permissions";
+import { isDemoFarm } from "@/lib/demo";
 import { Icon } from "@/components/Icon";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { formatMoney } from "@/lib/format";
@@ -22,10 +23,11 @@ const CAL_EVENTS: Record<number, { label: string; type: "harvest" | "window" | "
 export function Planner() {
   // The plan lives in the shared store, so every edit here is instantly visible
   // to the What-if Simulator through the same unified engine.
-  const { currency, plan, moveHarvest, resetPlan, spotlight, planner, role } = useApp();
+  const { currency, plan, moveHarvest, resetPlan, spotlight, planner, role, farm } = useApp();
   const t = useT();
   const { resources, blocked } = planner;
   const canEdit = caps(role).canEditPlan;
+  const showCalEvents = isDemoFarm(farm.id);
   const [dragId, setDragId] = useState<string | null>(null);
   const [calMonth, setCalMonth] = useState(5);
   const [calYear, setCalYear] = useState(2026);
@@ -104,7 +106,7 @@ export function Planner() {
           {Array.from({ length: startDow }).map((_, i) => <div key={`e${i}`} className="rounded-lg" style={{ background: "var(--bg)", opacity: 0.4, minHeight: 74 }} />)}
           {Array.from({ length: days }).map((_, idx) => {
             const d = idx + 1;
-            const ev = calMonth === 5 && calYear === 2026 ? CAL_EVENTS[d] || [] : [];
+            const ev = showCalEvents && calMonth === 5 && calYear === 2026 ? CAL_EVENTS[d] || [] : [];
             const isToday = d === 9 && calMonth === 5 && calYear === 2026;
             return (
               <div key={d} className="rounded-lg p-1.5 border" style={{ minHeight: 74, borderColor: isToday ? "var(--green)" : "var(--line)", background: "#fff" }}>

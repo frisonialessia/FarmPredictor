@@ -13,17 +13,12 @@ import { marketRowsForCrops } from "@/data/crops";
 import { DAYS7 } from "@/data/planner";
 import type { WeatherDay, MarketRow } from "@/lib/types";
 
-const DECISIONS = [
-  { icon: "tractor", parcel: "North A", title: "Harvest before Thursday", desc: "Harvester busy, execution shifts", loss: 2940 },
-  { icon: "rain", parcel: "West 2", title: "Cover Wednesday rain", desc: "Only 1 crew free that day", loss: 2080 },
-  { icon: "box", parcel: "North A", title: "Order 620 crates today", desc: "Supplier delivers in 48h", loss: 1120 },
-];
 const SEASON = [18, 24, 31, 28, 36, 42];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 
 export function Overview() {
   const farm = useFarm();
-  const { currency, tempUnit, plan } = useApp();
+  const { currency, tempUnit, plan, planner } = useApp();
   const t = useT();
   // Prices for this farm's actual crops; fall back to the global list, loaded
   // through the async repository (Supabase-ready).
@@ -60,6 +55,25 @@ export function Overview() {
       : r === "frost" ? `${t("Frost risk on")} ${dayLabel(currentDay)}`
       : t("Slipping out of its window");
 
+  // Today's decisions, derived from this farm's real conflicts + harvest timing
+  // (not a hardcoded list) — so a user's own farm shows its own actions.
+  const decisions = [
+    ...planner.capacityConflicts.map((c) => ({
+      icon: c.icon,
+      parcel: c.parcel,
+      title: c.actionLabel ? t(c.actionLabel) : t("Resolve conflict"),
+      desc: `${t(c.resource)} · ${t("capacity shortfall")}`,
+      loss: c.loss,
+    })),
+    ...timing.map((r) => ({
+      icon: r.reason === "storm" ? "rain" : r.reason === "frost" ? "drop" : "clock",
+      parcel: r.label,
+      title: `${t("Harvest by")} ${dayLabel(r.bestDay)}`,
+      desc: reasonText(r.reason, r.currentDay),
+      loss: r.delta,
+    })),
+  ].sort((a, b) => b.loss - a.loss).slice(0, 4);
+
   return (
     <div className="fade-in">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
@@ -76,10 +90,12 @@ export function Overview() {
           <h4 className="text-[15px] font-bold mb-1">{t("Today's decisions")}</h4>
           <p className="text-xs mb-4 text-muted">{t("Sorted by margin impact")}</p>
           <div>
-            {DECISIONS.map((d, i) => (
+            {decisions.length === 0 ? (
+              <div className="flex items-center gap-2.5 text-sm text-muted py-3"><span className="h-2 w-2 rounded-full" style={{ background: "var(--green)" }} />{t("No urgent decisions today — your plan is executable.")}</div>
+            ) : decisions.map((d, i) => (
               <div key={i} className={`flex gap-3 py-3 px-2 -mx-2 rounded-xl row-hover ${i > 0 ? "border-t border-line" : ""}`}>
                 <div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}><Icon name={d.icon} /></div>
-                <div className="flex-1"><span className="text-sm font-bold">{d.parcel}</span><p className="text-sm mt-0.5">{t(d.title)}</p><p className="text-xs mt-0.5 text-muted">{t(d.desc)}</p></div>
+                <div className="flex-1"><span className="text-sm font-bold">{d.parcel}</span><p className="text-sm mt-0.5">{d.title}</p><p className="text-xs mt-0.5 text-muted">{d.desc}</p></div>
                 <span className="mono text-sm font-bold self-center" style={{ color: "var(--warn)" }}>-{formatMoney(d.loss, currency)}</span>
               </div>
             ))}

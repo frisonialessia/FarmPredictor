@@ -3,6 +3,7 @@ import { useApp, useFarm } from "@/lib/store";
 import { Icon } from "@/components/Icon";
 import { useT } from "@/lib/i18n";
 import { formatMoney } from "@/lib/format";
+import { isDemoFarm, seededValue } from "@/lib/demo";
 import { fleetEconomics } from "@/lib/machinery";
 import { inventoryEconomics } from "@/lib/inventory";
 
@@ -22,6 +23,11 @@ export function Operations() {
   const tr = useT();
   const { currency } = useApp();
   const farm = useFarm();
+  // Demo farm keeps its scripted soil-moisture story; a user farm derives stable
+  // figures from its own parcels instead of showing the demo's "North A / West 2".
+  const irr: [string, number][] = isDemoFarm(farm.id)
+    ? IRR
+    : farm.parcels.slice(0, 6).map((p) => [p.name, seededValue(p.id + p.name, 28, 88)]);
   const machines = farm.resources?.filter((r) => r.icon !== "crew") ?? null;
   const crews = farm.resources?.filter((r) => r.icon === "crew") ?? null;
   const inv = farm.inventory ?? null;
@@ -68,7 +74,7 @@ export function Operations() {
           </div>
         )}
         <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Irrigation")}</h4><p className="text-xs mb-4 text-muted">{tr("Soil moisture by parcel")}</p>
-          <div className="space-y-4">{IRR.map(([n, v], i) => { const dry = (v as number) < 45; return (<div key={i}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium flex items-center gap-1.5"><Icon name="drop" size={14} />{n}</span><span className="mono text-xs" style={{ color: dry ? "var(--warn)" : "var(--muted)" }}>{v}%</span></div><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${v}%`, background: dry ? "var(--warn)" : "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>); })}</div>
+          <div className="space-y-4">{irr.map(([n, v], i) => { const dry = (v as number) < 45; return (<div key={i}><div className="flex items-center justify-between mb-1"><span className="text-sm font-medium flex items-center gap-1.5"><Icon name="drop" size={14} />{n}</span><span className="mono text-xs" style={{ color: dry ? "var(--warn)" : "var(--muted)" }}>{v}%</span></div><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${v}%`, background: dry ? "var(--warn)" : "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>); })}</div>
         </div>
         <div className="card p-6"><h4 className="text-[15px] font-bold mb-1">{tr("Transport & logistics")}</h4><p className="text-xs mb-4 text-muted">{tr("Scheduled shipments")}</p>
           {TRANS.map((row, i) => (<div key={i} className={`flex items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}><div className="grid place-items-center h-9 w-9 rounded-xl shrink-0" style={{ background: "var(--mint)" }}><Icon name="truck" /></div><div className="flex-1"><p className="text-sm font-semibold">{row[0]}</p><p className="text-xs text-muted">{tr(row[1])}</p></div><span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: row[3] ? "var(--mint)" : "var(--bg)", color: row[3] ? "var(--ink)" : "var(--muted)" }}>{tr(row[2])}</span></div>))}

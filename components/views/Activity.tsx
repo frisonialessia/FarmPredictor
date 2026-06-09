@@ -2,6 +2,8 @@
 import { Icon } from "@/components/Icon";
 import { AreaChart } from "@/components/Charts";
 import { useT } from "@/lib/i18n";
+import { useFarm } from "@/lib/store";
+import { isDemoFarm } from "@/lib/demo";
 
 const FEED = [
   { t: "08:02", icon: "tractor", title: "Harvest started — Greenhouse 1", desc: "Grapefruit, within optimal window", val: "+$640", warn: false },
@@ -16,6 +18,21 @@ const STATS: [string, number, string][] = [["Harvests", 3, "var(--ink)"], ["Aler
 
 export function Activity() {
   const tr = useT();
+  const farm = useFarm();
+
+  // The activity feed is the curated demo story. A user's own farm starts with a
+  // clean journal — actions are logged as they make decisions (real once Supabase
+  // lands), rather than borrowing the demo's events.
+  if (!isDemoFarm(farm.id)) {
+    return (
+      <div className="fade-in card p-10 text-center max-w-xl mx-auto">
+        <div className="grid place-items-center h-12 w-12 rounded-xl mx-auto mb-4" style={{ background: "var(--mint)" }}><Icon name="activity" /></div>
+        <h4 className="text-[15px] font-bold mb-1">{tr("No activity yet")}</h4>
+        <p className="text-sm text-muted">{tr("Your decision journal is empty. As you act on recommendations and move the plan, every decision is logged here with its margin impact.")}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="fade-in grid lg:grid-cols-3 gap-5">
       <div className="lg:col-span-1">

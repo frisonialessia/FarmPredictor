@@ -30,7 +30,7 @@ export default function Landing() {
 
       <header className="relative overflow-hidden pt-36 pb-28">
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#0B0F0C,#143b1f 58%,#1d5c2e)" }} />
-        <Image src="/hero.jpg" alt="" fill priority sizes="100vw" style={{ objectFit: "cover", objectPosition: "center 42%", filter: "saturate(0.82) brightness(0.82) contrast(1.06)" }} />
+        <Image src="/hero.jpg" alt="" fill priority quality={68} sizes="100vw" style={{ objectFit: "cover", objectPosition: "center 42%", filter: "saturate(0.82) brightness(0.82) contrast(1.06)" }} />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(11,15,12,.6) 0%, rgba(11,15,12,0) 42%), linear-gradient(110deg, rgba(11,15,12,.93) 0%, rgba(11,15,12,.66) 40%, rgba(11,15,12,.34) 70%, rgba(11,15,12,.16) 100%)" }} />
         <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
 
@@ -94,7 +94,8 @@ export default function Landing() {
 
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <div className="relative rounded-[28px] p-10 md:p-16 text-center overflow-hidden" style={{ background: "linear-gradient(135deg,#143b1f,#1d5c2e)" }}>
-          <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center" }} />
+          {/* Lightweight noise texture (was a 3.2MB raw hero.jpg — perf). */}
+          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
           <div className="relative">
             <h2 className="text-white font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4.5vw,3.4rem)" }}>{t("See your margin before")}<br />{t("it walks off the field.")}</h2>
             <div className="flex flex-wrap gap-3 justify-center mt-8">
