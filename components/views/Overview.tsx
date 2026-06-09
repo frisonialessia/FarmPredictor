@@ -11,6 +11,7 @@ import { useOptimizedTiming } from "@/lib/optimizer";
 import { repo } from "@/lib/repo";
 import { marketRowsForCrops } from "@/data/crops";
 import { DAYS7 } from "@/data/planner";
+import { isDemoFarm } from "@/lib/demo";
 import type { WeatherDay, MarketRow } from "@/lib/types";
 
 const SEASON = [18, 24, 31, 28, 36, 42];
@@ -38,6 +39,9 @@ export function Overview() {
   const [status, setStatus] = useState<"loading" | "live" | "demo">("loading");
   useEffect(() => {
     setWeather(farm.weather);
+    // Demo farm keeps its curated forecast (it carries the storm that makes the
+    // "harvest before the rain" story land). User farms use live Open-Meteo.
+    if (isDemoFarm(farm.id)) { setStatus("demo"); return; }
     setStatus("loading");
     let cancelled = false;
     fetchWeather(farm.lat, farm.lon)
@@ -100,6 +104,9 @@ export function Overview() {
               </div>
             ))}
           </div>
+          {decisions.length > 0 && (
+            <p className="text-[11px] text-muted mt-3 flex items-center gap-1.5"><span className="h-2 w-2 rounded-full shrink-0" style={{ background: "var(--warn)" }} />{t("Each amount is margin at risk if you don't act today.")}</p>
+          )}
         </div>
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">

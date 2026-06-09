@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { formatMoney } from "@/lib/format";
 import { fetchWeather } from "@/lib/weather";
 import { weatherRisks, RISK_META } from "@/lib/risk";
+import { isDemoFarm } from "@/lib/demo";
 import type { WeatherDay } from "@/lib/types";
 
 // The daily decision digest: the day's actions in plain dollars, delivered to
@@ -20,10 +21,11 @@ export function Digest() {
   const [weather, setWeather] = useState<WeatherDay[]>(farm.weather);
 
   useEffect(() => {
+    if (isDemoFarm(farm.id)) { setWeather(farm.weather); return; } // curated storm story
     let cancelled = false;
     fetchWeather(farm.lat, farm.lon).then((w) => { if (!cancelled && w.length) setWeather(w); }).catch(() => {});
     return () => { cancelled = true; };
-  }, [farm.lat, farm.lon]);
+  }, [farm.id, farm.lat, farm.lon, farm.weather]);
 
   // Per-farm conflicts from the single planner source (was repo.getPlanner,
   // which ignored the farm and showed the demo's conflicts for every farm).

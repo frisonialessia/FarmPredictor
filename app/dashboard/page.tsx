@@ -66,8 +66,15 @@ function MobileFarmSwitcher() {
 function DashboardInner() {
   const [active, setActive] = useState("overview");
   const [tourOpen, setTourOpen] = useState(false);
-  const { toast, role } = useApp();
+  const { toast, role, lang } = useApp();
   const t = useT();
+  // Real dates so the demo never looks frozen on a hardcoded "June 9".
+  const loc = lang === "es" ? "es-ES" : "en-US";
+  const today = new Date();
+  const dateLabel = today.toLocaleDateString(loc, { weekday: "long", month: "long", day: "numeric" });
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  const weekLabel = `${t("week of")} ${monday.toLocaleDateString(loc, { month: "short", day: "numeric" })}`;
   // If the active role can't see the current view (e.g. after switching role),
   // fall back to the always-allowed Overview.
   useEffect(() => {
@@ -83,14 +90,14 @@ function DashboardInner() {
             <a href="/" className="md:hidden shrink-0" title={t("Home")}><BrandMark size={26} /></a>
             <div className="min-w-0">
               <h2 className="text-[15px] sm:text-[17px] font-bold tracking-tight truncate">{t(title[0])}</h2>
-              <p className="text-xs text-muted truncate">{t(title[1])}</p>
+              <p className="text-xs text-muted truncate">{active === "overview" ? dateLabel : t(title[1])}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-[11px] font-semibold px-2 py-1 rounded-full hidden lg:flex items-center gap-1.5" style={{ background: "var(--bg)", color: "var(--muted)" }}>
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--green)" }} />{t("Demo data")}
             </span>
-            <span className="text-xs mono px-3 py-1.5 rounded-full hidden sm:block" style={{ background: "var(--mint)" }}>{t("week of Jun 8")}</span>
+            <span className="text-xs mono px-3 py-1.5 rounded-full hidden sm:block" style={{ background: "var(--mint)" }}>{weekLabel}</span>
             <LanguageToggle />
             <MobileFarmSwitcher />
             <button onClick={() => setTourOpen(true)} aria-label={t("60-sec tour")} className="rounded-full px-3 sm:px-4 py-2 text-xs font-semibold whitespace-nowrap btn-press flex items-center gap-1.5" style={{ background: "var(--ink)", color: "#fff" }}>

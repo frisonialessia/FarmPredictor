@@ -92,6 +92,8 @@ export const ES: Record<string, string> = {
   "Resolve conflict": "Resolver conflicto",
   "capacity shortfall": "falta de capacidad",
   "No urgent decisions today — your plan is executable.": "No hay decisiones urgentes hoy — tu plan es ejecutable.",
+  "Each amount is margin at risk if you don't act today.": "Cada monto es margen en riesgo si no actúas hoy.",
+  "week of": "semana del",
   "No activity yet": "Aún no hay actividad",
   "Your decision journal is empty. As you act on recommendations and move the plan, every decision is logged here with its margin impact.": "Tu bitácora de decisiones está vacía. A medida que actúes sobre las recomendaciones y muevas el plan, cada decisión se registra aquí con su impacto en el margen.",
   "Harvest before Thursday": "Cosecha antes del jueves",
