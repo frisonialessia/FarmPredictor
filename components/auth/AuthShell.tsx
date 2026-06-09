@@ -13,8 +13,8 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
       {/* brand panel */}
       <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden">
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#0B0F0C,#143b1f 58%,#1d5c2e)" }} />
-        <Image src="/hero.jpg" alt="" fill priority sizes="50vw" style={{ objectFit: "cover", objectPosition: "center 42%", filter: "saturate(0.82) brightness(0.7) contrast(1.05)" }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(120deg,rgba(11,15,12,.92),rgba(11,15,12,.55) 70%,rgba(20,59,31,.4))" }} />
+        <Image src="/auth.jpg" alt="" fill priority sizes="50vw" style={{ objectFit: "cover", objectPosition: "center", filter: "saturate(0.95) brightness(0.78) contrast(1.04)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(120deg,rgba(11,15,12,.9),rgba(11,15,12,.5) 70%,rgba(20,59,31,.38))" }} />
         <Link href="/" className="relative flex items-center gap-2.5"><BrandMark size={30} /><span className="font-bold tracking-tight text-white text-lg">FarmPredictor</span></Link>
         <div className="relative">
           <h2 className="text-white font-extrabold tracking-tight leading-[1.1]" style={{ fontSize: "clamp(1.8rem,2.6vw,2.6rem)" }}>{t("Harvest when you")}<br />{t("actually")} <span style={{ color: "var(--lime)" }}>{t("can")}</span>.</h2>
