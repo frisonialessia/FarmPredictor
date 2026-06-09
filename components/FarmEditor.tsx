@@ -27,7 +27,7 @@ export function FarmEditor() {
 
   const [name, setName] = useState(farm.name);
   const [location, setLocation] = useState(farm.location);
-  const [rows, setRows] = useState<ParcelRow[]>(farm.parcels.map((p) => ({ name: p.name, crop: p.crop, area: areaNum(p.area) })));
+  const [rows, setRows] = useState<ParcelRow[]>(farm.parcels.map((p) => ({ name: p.name, crop: p.crop, area: areaNum(p.area), plantedOn: p.plantedOn ?? "" })));
   const [members, setMembers] = useState<MemberRow[]>((farm.members ?? []).map((m) => ({ name: m.name, role: m.role })));
   const [machines, setMachines] = useState<MachineRow[]>((farm.resources ?? []).filter((r) => r.icon !== "crew").map((r) => ({ name: r.label, machineType: r.machineType ?? "Tractor", year: r.year ? String(r.year) : "", diesel: r.dieselGalPerHr ? String(r.dieselGalPerHr) : "", downtime: r.downtimeCostPerDay ? String(r.downtimeCostPerDay) : "" })));
   const [crews, setCrews] = useState<CrewRow[]>((farm.resources ?? []).filter((r) => r.icon === "crew").map((r) => ({ name: r.label, workers: r.workers ? String(r.workers) : "" })));
@@ -80,14 +80,15 @@ export function FarmEditor() {
       <div className="space-y-2 mt-2 mb-3">
         {rows.map((p, i) => (
           <div key={i} className="grid grid-cols-12 gap-2 items-center">
-            <input className="setinput col-span-12 sm:col-span-4" value={p.name} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder={t("Name")} />
-            <input list="crops-edit" className="setinput col-span-6 sm:col-span-5" value={p.crop} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, crop: e.target.value } : x))} placeholder={t("Crop")} />
-            <input className="setinput col-span-4 sm:col-span-2" value={p.area} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, area: e.target.value } : x))} placeholder="ac" inputMode="numeric" />
+            <input className="setinput col-span-12 sm:col-span-3" value={p.name} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder={t("Name")} />
+            <input list="crops-edit" className="setinput col-span-7 sm:col-span-3" value={p.crop} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, crop: e.target.value } : x))} placeholder={t("Crop (type or pick)")} />
+            <input className="setinput col-span-5 sm:col-span-2" value={p.area} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, area: e.target.value } : x))} placeholder={areaUnit} inputMode="numeric" />
+            <input type="date" className="setinput col-span-10 sm:col-span-3" value={p.plantedOn ?? ""} onChange={(e) => setRows((r) => r.map((x, j) => j === i ? { ...x, plantedOn: e.target.value } : x))} title={t("Planting date")} aria-label={t("Planting date")} />
             <div className="col-span-2 sm:col-span-1"><RowDelete onClick={() => setRows((r) => r.length > 1 ? r.filter((_, j) => j !== i) : r)} /></div>
           </div>
         ))}
       </div>
-      <button onClick={() => setRows((r) => [...r, { name: "", crop: "Grain sorghum", area: "" }])} className="text-sm font-semibold btn-press mb-6 block" style={{ color: "var(--green-deep)" }}>{t("+ Add parcel")}</button>
+      <button onClick={() => setRows((r) => [...r, { name: "", crop: "", area: "", plantedOn: "" }])} className="text-sm font-semibold btn-press mb-6 block" style={{ color: "var(--green-deep)" }}>{t("+ Add parcel")}</button>
 
       {/* Team */}
       <label className="kpi-label">{t("Team")}</label>

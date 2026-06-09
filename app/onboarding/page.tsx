@@ -7,7 +7,7 @@ import { Field } from "@/components/auth/AuthShell";
 import { farmBasicsSchema, parcelSchema, fieldErrors } from "@/lib/schemas";
 import { buildFarm, CROPS } from "@/lib/farmFactory";
 import { MarketingLangToggle } from "@/components/MarketingLangToggle";
-import { useMarketingT } from "@/lib/lang";
+import { useMarketingT, useLang } from "@/lib/lang";
 import { TIMEZONES } from "@/lib/timezones";
 import { ROLES, ROLE_LABEL } from "@/lib/roles";
 import { MACHINE_TYPES } from "@/lib/machinery";
@@ -15,11 +15,12 @@ import { ITEM_CATEGORIES } from "@/lib/inventory";
 import { canonCrop } from "@/lib/cropName";
 import { num } from "@/lib/num";
 import { RequireAuth } from "@/lib/auth";
+import { estimateTiming, fmtShortDate } from "@/lib/cropTiming";
 import type { Farm, Member, MemberRole, ResourceRow, InventoryItem } from "@/lib/types";
 
 const STEPS = ["Your farm", "Parcels", "Team", "Resources", "Review"];
 
-interface ParcelRow { name: string; crop: string; area: string }
+interface ParcelRow { name: string; crop: string; area: string; plantedOn: string }
 interface MemberRow { name: string; role: MemberRole }
 interface MachineRow { name: string; machineType: string; year: string; diesel: string; downtime: string }
 interface CrewRow { name: string; workers: string }
@@ -28,6 +29,7 @@ interface InvRow { name: string; qty: string; unit: string; category: string; lo
 function OnboardingForm() {
   const router = useRouter();
   const t = useMarketingT();
+  const lang = useLang();
   const [step, setStep] = useState(0);
 
   const [name, setName] = useState("");
@@ -37,7 +39,7 @@ function OnboardingForm() {
   const [tempUnit, setTempUnit] = useState("F");
   const [timezone, setTimezone] = useState("America/Chicago");
 
-  const [parcels, setParcels] = useState<ParcelRow[]>([{ name: "", crop: "", area: "" }]);
+  const [parcels, setParcels] = useState<ParcelRow[]>([{ name: "", crop: "", area: "", plantedOn: "" }]);
   const [members, setMembers] = useState<MemberRow[]>([{ name: "", role: "owner" }]);
   const [machines, setMachines] = useState<MachineRow[]>([{ name: "Harvester #1", machineType: "Combine harvester", year: "", diesel: "", downtime: "" }]);
   const [crews, setCrews] = useState<CrewRow[]>([{ name: "Crew A", workers: "" }]);
@@ -146,19 +148,20 @@ function OnboardingForm() {
           {step === 1 && (
             <>
               <h1 className="text-xl font-extrabold tracking-tight mb-1">{t("Add your parcels")}</h1>
-              <p className="text-sm text-muted mb-5">{t("Start with a few — you can refine later.")}</p>
+              <p className="text-sm text-muted mb-5">{t("Add a planting date and we estimate your harvest window from the crop.")}</p>
               <div className="space-y-3">
                 {parcels.map((p, i) => (
                   <div key={i} className="grid grid-cols-12 gap-2 items-center">
-                    <input className="setinput col-span-12 sm:col-span-4" value={p.name} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder={t("Name")} />
-                    <input list="crops" className="setinput col-span-6 sm:col-span-5" value={p.crop} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, crop: e.target.value } : x))} placeholder={t("Crop (type or pick)")} />
-                    <input className="setinput col-span-4 sm:col-span-2" value={p.area} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, area: e.target.value } : x))} placeholder={areaUnit} inputMode="numeric" />
+                    <input className="setinput col-span-12 sm:col-span-3" value={p.name} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder={t("Name")} />
+                    <input list="crops" className="setinput col-span-7 sm:col-span-3" value={p.crop} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, crop: e.target.value } : x))} placeholder={t("Crop (type or pick)")} />
+                    <input className="setinput col-span-5 sm:col-span-2" value={p.area} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, area: e.target.value } : x))} placeholder={areaUnit} inputMode="numeric" />
+                    <input type="date" className="setinput col-span-10 sm:col-span-3" value={p.plantedOn} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, plantedOn: e.target.value } : x))} title={t("Planting date")} aria-label={t("Planting date")} />
                     <button onClick={() => setParcels((r) => r.length > 1 ? r.filter((_, j) => j !== i) : r)} className="col-span-2 sm:col-span-1 grid place-items-center h-9 rounded-lg hover:bg-bg btn-press" style={{ color: "var(--muted)" }} aria-label={t("Remove")}><Icon name="x" size={15} /></button>
                   </div>
                 ))}
               </div>
               {errors.parcels && <p className="text-xs mt-2" style={{ color: "var(--warn)" }}>{errors.parcels}</p>}
-              <button onClick={() => setParcels((r) => [...r, { name: "", crop: "", area: "" }])} className="mt-4 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add parcel")}</button>
+              <button onClick={() => setParcels((r) => [...r, { name: "", crop: "", area: "", plantedOn: "" }])} className="mt-4 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add parcel")}</button>
             </>
           )}
 
@@ -253,7 +256,10 @@ function OnboardingForm() {
               <div className="rounded-xl border border-line p-4 space-y-3">
                 <div><p className="kpi-label">{t("Farm")}</p><p className="font-bold mt-1">{name} <span className="text-muted font-normal">· {location} · {currency} · {timezone}</span></p></div>
                 <div><p className="kpi-label">{t("Parcels")} ({parcels.filter((p) => p.name.trim()).length})</p>
-                  <div className="mt-1 space-y-1">{parcels.filter((p) => p.name.trim()).map((p, i) => <div key={i} className="flex justify-between text-sm"><span className="font-medium">{p.name}</span><span className="text-muted">{t(canonCrop(p.crop))} · {p.area} {areaUnit}</span></div>)}</div>
+                  <div className="mt-1 space-y-1">{parcels.filter((p) => p.name.trim()).map((p, i) => {
+                    const tm = estimateTiming(canonCrop(p.crop), p.plantedOn);
+                    return <div key={i} className="flex justify-between text-sm"><span className="font-medium">{p.name}</span><span className="text-muted">{t(canonCrop(p.crop))} · {p.area} {areaUnit}{tm ? ` · ${t("harvest")} ${fmtShortDate(tm.harvest, lang)}` : ""}</span></div>;
+                  })}</div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-sm">
                   <div><p className="kpi-label">{t("Team")}</p><p className="font-bold mt-1">{members.filter((m) => m.name.trim()).length}</p></div>

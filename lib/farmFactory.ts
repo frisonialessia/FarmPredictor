@@ -1,7 +1,8 @@
 import type { Farm, Parcel, KPI, Member, ResourceRow, InventoryItem } from "@/lib/types";
 import { cropTemplate, ALL_CROPS } from "@/data/crops";
+import { estimateTiming } from "@/lib/cropTiming";
 
-export interface ParcelRow { name: string; crop: string; area: string }
+export interface ParcelRow { name: string; crop: string; area: string; plantedOn?: string }
 
 export const CROPS = ALL_CROPS;
 
@@ -20,12 +21,16 @@ export function parcelsFromRows(rows: ParcelRow[], unit: string = "ac"): Parcel[
     // Pull realistic margin/window from the crop template; fall back to generic.
     const tpl = cropTemplate(p.crop);
     const marginPerAcre = tpl ? tpl.marginPerAcre : 90 + ((i * 17) % 60);
+    // Real timing if a planting date was given; otherwise the template assumption.
+    const timing = estimateTiming(p.crop, p.plantedOn);
+    const hoursToWindowClose = timing ? timing.hoursToWindowClose : tpl ? tpl.windowDays * 24 + 24 : 48 + i * 24;
     return {
       id: `p_${i}`,
       name: p.name,
       crop: p.crop,
       area: `${area} ${unit}`,
-      hoursToWindowClose: tpl ? tpl.windowDays * 24 + 24 : 48 + i * 24,
+      plantedOn: p.plantedOn || undefined,
+      hoursToWindowClose,
       marginPerAcre,
       marginPct: Math.min(95, Math.round((marginPerAcre / 160) * 100)),
       polygon: `${x},${y} ${x + w},${y + 5} ${x + w - 5},${y + h} ${x},${y + h - 5}`,

@@ -11,6 +11,7 @@ export interface Parcel {
   name: string;
   crop: string;
   area: string;          // e.g. "180 ac"
+  plantedOn?: string;    // ISO date (YYYY-MM-DD); drives estimated harvest timing
   hoursToWindowClose: number;
   marginPerAcre: number; // USD base
   marginPct: number;     // 0-100, relative bar

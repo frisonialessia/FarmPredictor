@@ -10,18 +10,19 @@ export interface CropTemplate {
   cost: number;          // production cost per unit
   marginPerAcre: number; // typical net margin per acre
   windowDays: number;    // optimal harvest window length
+  daysToMaturity: number; // typical days from planting to harvest
   changePct: number;     // recent price move
 }
 
 export const CROP_TEMPLATES: Record<string, CropTemplate> = {
-  "Grain sorghum": { unit: "bu", spot: 4.85, cost: 3.2, marginPerAcre: 142, windowDays: 2, changePct: 2.1 },
-  "Upland cotton": { unit: "lb", spot: 0.72, cost: 0.58, marginPerAcre: 118, windowDays: 3, changePct: -1.4 },
-  "Sweet corn": { unit: "crate", spot: 6.4, cost: 4.1, marginPerAcre: 96, windowDays: 2, changePct: 3.6 },
-  Grapefruit: { unit: "box", spot: 18.5, cost: 11.0, marginPerAcre: 156, windowDays: 4, changePct: 0.8 },
-  "Leaf lettuce": { unit: "crate", spot: 14.0, cost: 9.0, marginPerAcre: 74, windowDays: 1, changePct: 1.2 },
-  Watermelon: { unit: "cwt", spot: 22.0, cost: 14.0, marginPerAcre: 88, windowDays: 3, changePct: 2.0 },
-  "Winter wheat": { unit: "bu", spot: 6.2, cost: 4.3, marginPerAcre: 82, windowDays: 4, changePct: -0.6 },
-  Peanuts: { unit: "ton", spot: 480, cost: 360, marginPerAcre: 133, windowDays: 5, changePct: 0.9 },
+  "Grain sorghum": { unit: "bu", spot: 4.85, cost: 3.2, marginPerAcre: 142, windowDays: 2, daysToMaturity: 110, changePct: 2.1 },
+  "Upland cotton": { unit: "lb", spot: 0.72, cost: 0.58, marginPerAcre: 118, windowDays: 3, daysToMaturity: 160, changePct: -1.4 },
+  "Sweet corn": { unit: "crate", spot: 6.4, cost: 4.1, marginPerAcre: 96, windowDays: 2, daysToMaturity: 75, changePct: 3.6 },
+  Grapefruit: { unit: "box", spot: 18.5, cost: 11.0, marginPerAcre: 156, windowDays: 4, daysToMaturity: 240, changePct: 0.8 },
+  "Leaf lettuce": { unit: "crate", spot: 14.0, cost: 9.0, marginPerAcre: 74, windowDays: 1, daysToMaturity: 60, changePct: 1.2 },
+  Watermelon: { unit: "cwt", spot: 22.0, cost: 14.0, marginPerAcre: 88, windowDays: 3, daysToMaturity: 85, changePct: 2.0 },
+  "Winter wheat": { unit: "bu", spot: 6.2, cost: 4.3, marginPerAcre: 82, windowDays: 4, daysToMaturity: 240, changePct: -0.6 },
+  Peanuts: { unit: "ton", spot: 480, cost: 360, marginPerAcre: 133, windowDays: 5, daysToMaturity: 140, changePct: 0.9 },
 };
 
 export function cropTemplate(crop: string): CropTemplate | undefined {

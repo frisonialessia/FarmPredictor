@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useFarm } from "@/lib/store";
+import { useFarm, useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
+import { estimateTiming, fmtShortDate } from "@/lib/cropTiming";
 
 function colorFor(hours: number) {
   if (hours < 48) return "#C2410C";
@@ -16,6 +17,7 @@ function label(hours: number) {
 
 export function ParcelMap() {
   const farm = useFarm();
+  const { lang } = useApp();
   const t = useT();
   const [active, setActive] = useState(0);
   const w = 520, h = 440;
@@ -70,13 +72,16 @@ export function ParcelMap() {
         <h4 className="text-[15px] font-bold mb-1">{t("Parcels")}</h4>
         <p className="text-xs mb-4 text-muted">{t("Tap to highlight · sorted by urgency")}</p>
         <div>
-          {farm.parcels.map((p, i) => (
+          {farm.parcels.map((p, i) => {
+            const tm = estimateTiming(p.crop, p.plantedOn);
+            return (
             <div key={p.id} onClick={() => setActive(i)} className={`flex items-center gap-3 py-3 px-2 rounded-xl cursor-pointer row-hover ${i > 0 ? "border-t border-line" : ""}`} style={{ background: active === i ? "var(--bg)" : "transparent" }}>
               <span className="h-3 w-3 rounded-full shrink-0" style={{ background: colorFor(p.hoursToWindowClose) }} />
-              <div className="flex-1"><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-muted">{t(p.crop)} · {p.area}</p></div>
+              <div className="flex-1"><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-muted">{t(p.crop)} · {p.area}{tm ? ` · ${t("harvest")} ${fmtShortDate(tm.harvest, lang)}` : ""}</p></div>
               <span className="mono text-sm font-bold" style={{ color: colorFor(p.hoursToWindowClose) }}>{label(p.hoursToWindowClose)}</span>
             </div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </div>
