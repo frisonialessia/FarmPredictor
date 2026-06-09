@@ -31,6 +31,7 @@ const LEVERS = [
   { id: "box", label: "Rush order 620 crates (today)", recover: 1120 },
 ];
 const BASE = 28060; // "do nothing" net; applying all three reaches $34,200.
+const CEILING = 34200; // optimal margin ceiling — the bar fills toward this.
 
 const fmt = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
 
@@ -40,6 +41,7 @@ export function DashboardMockup() {
   const [on, setOn] = useState<Record<string, boolean>>({});
 
   const recovered = LEVERS.reduce((s, l) => s + (on[l.id] ? l.recover : 0), 0);
+  const resolved = LEVERS.filter((l) => on[l.id]).length;
   const net = BASE + recovered;
 
   return (
@@ -89,8 +91,8 @@ export function DashboardMockup() {
 
           {view === "overview" ? (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                {KPIS.map(([label, value, hl]) => (
+              <div className="grid grid-cols-3 gap-3 mb-3">
+                {KPIS.slice(0, 3).map(([label, value, hl]) => (
                   <div key={label} className="card p-3.5">
                     <p className="kpi-label">{t(label)}</p>
                     <p className={`mono text-lg font-bold mt-1.5 ${hl ? "text-green" : ""}`}>{value}</p>
@@ -117,27 +119,50 @@ export function DashboardMockup() {
               </div>
             </>
           ) : (
-            <div className="grid md:grid-cols-5 gap-3">
-              <div className="rounded-2xl p-5 md:col-span-2 text-white flex flex-col justify-center" style={{ background: "var(--ink)" }}>
-                <span className="inline-block self-start text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3" style={{ background: "var(--lime)", color: "var(--ink)" }}>{t("Live scenario")}</span>
-                <span className="text-[11px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,.6)" }}>{t("Weekly net margin")}</span>
-                <AnimatedNumber value={net} format={fmt} className="mono text-4xl font-bold block mt-1" style={{ color: "var(--lime)" }} />
-                <span className="mono text-xs font-bold mt-1" style={{ color: "var(--lime)" }}>+{fmt(recovered)} {t("vs. doing nothing")}</span>
-              </div>
-              <div className="card p-4 md:col-span-3">
-                <h5 className="text-[13px] font-bold mb-0.5">{t("Decision levers")}</h5>
-                <p className="text-[11px] mb-3 text-muted">{t("Try it — toggle a fix")}</p>
-                {LEVERS.map((l, i) => (
-                  <div key={l.id} className={`flex items-center gap-3 py-2.5 ${i > 0 ? "border-t border-line" : ""}`}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-bold leading-tight">{t(l.label)}</p>
-                      <p className="text-[11px] text-muted">{t("recovers")} <span className="mono font-semibold text-green">{fmt(l.recover)}</span></p>
-                    </div>
-                    <button onClick={() => setOn((p) => ({ ...p, [l.id]: !p[l.id] }))} className="relative h-6 w-11 rounded-full shrink-0" style={{ background: on[l.id] ? "var(--green)" : "var(--line)", transition: "background .2s" }}>
-                      <span className="absolute top-1 h-4 w-4 rounded-full bg-white" style={{ left: on[l.id] ? 24 : 4, transition: "left .2s" }} />
-                    </button>
+            <div className="grid md:grid-cols-5 gap-3 items-stretch">
+              <div className="rounded-2xl p-5 md:col-span-2 text-white flex flex-col" style={{ background: "var(--ink)" }}>
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ background: "var(--lime)", color: "var(--ink)" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--ink)" }} />{t("Live scenario")}</span>
+                  <span className="text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: "rgba(255,255,255,.1)", color: "rgba(255,255,255,.7)" }}>{resolved}/{LEVERS.length} {t("fixed")}</span>
+                </div>
+                <div className="mt-5">
+                  <span className="text-[11px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,.55)" }}>{t("Weekly net margin")}</span>
+                  <AnimatedNumber value={net} format={fmt} className="mono text-4xl font-bold block mt-1" style={{ color: "var(--lime)" }} />
+                  <span className="mono text-xs font-bold mt-1 block" style={{ color: recovered > 0 ? "var(--lime)" : "rgba(255,255,255,.45)" }}>
+                    {recovered > 0 ? `+${fmt(recovered)} ${t("recovered")}` : t("Toggle a fix to recover margin")}
+                  </span>
+                </div>
+                {/* progress toward the optimal ceiling — the gap is the thesis */}
+                <div className="mt-auto pt-6">
+                  <div className="flex items-center justify-between text-[10px] mb-1.5" style={{ color: "rgba(255,255,255,.55)" }}>
+                    <span>{t("Now")}</span>
+                    <span>{t("Optimal")} · {fmt(CEILING)}</span>
                   </div>
-                ))}
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.12)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${Math.round((net / CEILING) * 100)}%`, background: "linear-gradient(90deg,var(--green),var(--lime))", transition: "width .4s ease" }} />
+                  </div>
+                  <span className="text-[11px] mt-2 block" style={{ color: "rgba(255,255,255,.55)" }}>
+                    {net >= CEILING ? t("At the optimal ceiling") : <><span className="mono font-bold" style={{ color: "#fff" }}>{fmt(CEILING - net)}</span> {t("to optimal")}</>}
+                  </span>
+                </div>
+              </div>
+              <div className="card p-4 md:col-span-3 flex flex-col">
+                <h5 className="text-[13px] font-bold mb-0.5">{t("Decision levers")}</h5>
+                <p className="text-[11px] mb-2 text-muted">{t("Try it — toggle a fix")}</p>
+                <div className="flex flex-col justify-center flex-1">
+                  {LEVERS.map((l, i) => (
+                    <div key={l.id} className={`flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-lg transition-colors ${i > 0 ? "border-t border-line" : ""}`} style={{ background: on[l.id] ? "rgba(82,200,113,.08)" : "transparent" }}>
+                      <span className="grid place-items-center h-7 w-7 rounded-lg shrink-0 transition-colors" style={{ background: on[l.id] ? "var(--green)" : "var(--mint)", color: on[l.id] ? "#fff" : "var(--green-deep)" }}><Icon name={on[l.id] ? "check" : "whatif"} size={14} /></span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-bold leading-tight truncate">{t(l.label)}</p>
+                        <p className="text-[11px] text-muted">{t("recovers")} <span className="mono font-semibold text-green">{fmt(l.recover)}</span></p>
+                      </div>
+                      <button onClick={() => setOn((p) => ({ ...p, [l.id]: !p[l.id] }))} aria-label={t(l.label)} className="relative h-6 w-11 rounded-full shrink-0" style={{ background: on[l.id] ? "var(--green)" : "var(--line)", transition: "background .2s" }}>
+                        <span className="absolute top-1 h-4 w-4 rounded-full bg-white" style={{ left: on[l.id] ? 24 : 4, transition: "left .2s" }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
