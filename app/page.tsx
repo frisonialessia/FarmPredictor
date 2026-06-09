@@ -97,9 +97,9 @@ export default function Landing() {
 
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <div className="relative rounded-[28px] p-10 md:p-16 text-center overflow-hidden" style={{ background: "linear-gradient(135deg,#143b1f,#1d5c2e)" }}>
-          {/* Drone field photo (the non-hero image), behind a green wash for legibility. */}
-          <Image src="/auth.jpg" alt="" fill sizes="100vw" style={{ objectFit: "cover", objectPosition: "center", opacity: 0.32 }} />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,rgba(20,59,31,.86),rgba(29,92,46,.72))" }} />
+          {/* Drone field photo (the non-hero image), clearly visible behind a dark-green wash kept just strong enough for white text. */}
+          <Image src="/auth.jpg" alt="" fill sizes="100vw" style={{ objectFit: "cover", objectPosition: "center" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,rgba(11,15,12,.72),rgba(20,59,31,.58))" }} />
           {/* Lightweight noise texture for depth. */}
           <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
           <div className="relative">
