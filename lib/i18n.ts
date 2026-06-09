@@ -101,6 +101,7 @@ export const ES: Record<string, string> = {
   Optimal: "Óptimo",
   "to optimal": "hasta el óptimo",
   "At the optimal ceiling": "En el techo óptimo",
+  "recovered this season": "recuperado esta temporada",
   "No activity yet": "Aún no hay actividad",
   "Your decision journal is empty. As you act on recommendations and move the plan, every decision is logged here with its margin impact.": "Tu bitácora de decisiones está vacía. A medida que actúes sobre las recomendaciones y muevas el plan, cada decisión se registra aquí con su impacto en el margen.",
   "Harvest before Thursday": "Cosecha antes del jueves",

@@ -99,22 +99,27 @@ export function DashboardMockup() {
                   </div>
                 ))}
               </div>
-              <div className="grid md:grid-cols-3 gap-3">
-                <div className="card p-4 md:col-span-2">
+              <div className="grid md:grid-cols-3 gap-3 items-stretch">
+                <div className="card p-4 md:col-span-2 flex flex-col">
                   <h5 className="text-[13px] font-bold mb-0.5">{t("Today's decisions")}</h5>
-                  <p className="text-[11px] mb-3 text-muted">{t("Sorted by margin impact")}</p>
-                  {DECISIONS.map(([icon, parcel, title], i) => (
-                    <button key={i} onClick={() => setView("whatif")} className={`w-full flex gap-3 items-center py-2.5 text-left row-hover -mx-2 px-2 rounded-lg ${i > 0 ? "border-t border-line" : ""}`}>
-                      <span className="grid place-items-center h-8 w-8 rounded-lg shrink-0" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}><Icon name={icon} size={15} /></span>
-                      <div className="flex-1 min-w-0"><span className="text-[12px] font-bold">{parcel}</span><p className="text-[12px] leading-tight">{t(title)}</p></div>
-                      <span className="mono text-[12px] font-bold" style={{ color: "var(--warn)" }}>-{fmt(LEVERS[i].recover)}</span>
-                    </button>
-                  ))}
+                  <p className="text-[11px] mb-2 text-muted">{t("Sorted by margin impact")}</p>
+                  <div>
+                    {DECISIONS.map(([icon, parcel, title], i) => (
+                      <button key={i} onClick={() => setView("whatif")} className={`w-full flex gap-3 items-center py-2.5 text-left row-hover -mx-2 px-2 rounded-lg ${i > 0 ? "border-t border-line" : ""}`}>
+                        <span className="grid place-items-center h-8 w-8 rounded-lg shrink-0" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}><Icon name={icon} size={15} /></span>
+                        <div className="flex-1 min-w-0"><span className="text-[12px] font-bold">{parcel}</span><p className="text-[12px] leading-tight">{t(title)}</p></div>
+                        <span className="mono text-[12px] font-bold" style={{ color: "var(--warn)" }}>-{fmt(LEVERS[i].recover)}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-muted mt-auto pt-2.5 flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: "var(--warn)" }} />{t("Each amount is margin at risk if you don't act today.")}</p>
                 </div>
-                <div className="card p-4">
+                <div className="card p-4 flex flex-col">
                   <h5 className="text-[13px] font-bold mb-0.5">{t("Season margin")}</h5>
-                  <p className="text-[11px] mb-3 text-muted">{t("Recovered, by month")}</p>
-                  <AreaChart data={SEASON} labels={MONTHS.map((m) => t(m))} height={104} />
+                  <p className="text-[11px] text-muted">{t("Recovered, by month")}</p>
+                  <p className="mono text-xl font-bold text-green mt-2 leading-none">+$52,840</p>
+                  <p className="text-[10px] text-muted mb-2">{t("recovered this season")}</p>
+                  <div className="mt-auto"><AreaChart data={SEASON} labels={MONTHS.map((m) => t(m))} height={88} /></div>
                 </div>
               </div>
             </>
