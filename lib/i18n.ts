@@ -304,7 +304,6 @@ export const ES: Record<string, string> = {
   auto: "auto",
   risk: "riesgo",
   // ── Settings ──────────────────────────────────────────────────────
-  "Owner · Rio Verde Farms": "Propietaria · Rio Verde Farms",
   Saved: "Guardado",
   "Save changes": "Guardar cambios",
   "Saved ✓": "Guardado ✓",

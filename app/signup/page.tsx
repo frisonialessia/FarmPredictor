@@ -28,7 +28,7 @@ export default function SignupPage() {
     <AuthShell title={t("Start free")} subtitle={t("Set up your farm in under 5 minutes.")}>
       <form onSubmit={submit} noValidate>
         <Field label={t("Full name")} error={errors.name}>
-          <input className="setinput" value={name} onChange={(e) => setName(e.target.value)} placeholder="M. Alvarez" autoComplete="name" />
+          <input className="setinput" value={name} onChange={(e) => setName(e.target.value)} placeholder="Maria Lopez" autoComplete="name" />
         </Field>
         <Field label={t("Email")} error={errors.email}>
           <input className="setinput" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@farm.com" autoComplete="email" />

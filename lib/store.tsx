@@ -76,7 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [areaUnit, setAreaUnit] = usePersisted<AreaUnit>("fp_area", "ac");
   const [tempUnit, setTempUnit] = usePersisted<TempUnit>("fp_temp", "F");
   const [timezone, setTimezone] = usePersisted<string>("fp_tz", "America/Chicago");
-  const [userName, setUserNameRaw] = useState<string>("M. Alvarez");
+  const [userName, setUserNameRaw] = useState<string>("Demo User");
   const [lang, setLang] = usePersisted<Lang>("fp_lang", "en");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [spotlight, setSpotlight] = useState<string | null>(null);

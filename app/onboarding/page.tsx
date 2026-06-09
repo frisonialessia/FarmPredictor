@@ -112,7 +112,7 @@ function OnboardingForm() {
               <h1 className="text-xl font-extrabold tracking-tight mb-1">{t("Let's set up your farm")}</h1>
               <p className="text-sm text-muted mb-6">{t("We use this to localize weather and decisions.")}</p>
               <Field label={t("Farm name")} error={errors.name}>
-                <input className="setinput" value={name} onChange={(e) => setName(e.target.value)} placeholder="Rio Verde Farms" />
+                <input className="setinput" value={name} onChange={(e) => setName(e.target.value)} placeholder="Green Valley Farm" />
               </Field>
               <Field label={t("Location (county, region)")} error={errors.location}>
                 <input className="setinput" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Hidalgo County, TX" />

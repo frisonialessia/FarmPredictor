@@ -3,12 +3,12 @@ import type { Farm, MarketRow } from "@/lib/types";
 export const FARMS: Record<string, Farm> = {
   rio_verde: {
     id: "rio_verde",
-    name: "Rio Verde Farms",
+    name: "Demo Farm 1",
     location: "Hidalgo County, TX",
     lat: 26.30,
     lon: -98.16,
     plan: "Pro",
-    initials: "RV",
+    initials: "D1",
     kpis: [
       { label: "Margin at risk", value: "$6,240", sub: "recoverable this week", highlight: true },
       { label: "Avg. displacement", value: "2.3 d", sub: "optimal vs. actual" },
@@ -35,12 +35,12 @@ export const FARMS: Record<string, Farm> = {
   },
   llano_seco: {
     id: "llano_seco",
-    name: "Llano Seco Ranch",
+    name: "Demo Farm 2",
     location: "Lubbock County, TX",
     lat: 33.58,
     lon: -101.85,
     plan: "Pro",
-    initials: "LS",
+    initials: "D2",
     kpis: [
       { label: "Margin at risk", value: "$3,180", sub: "recoverable this week", highlight: true },
       { label: "Avg. displacement", value: "1.4 d", sub: "optimal vs. actual" },

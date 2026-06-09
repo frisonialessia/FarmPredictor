@@ -2,7 +2,7 @@ import type { Farm, Harvest, ResourceRow, Conflict } from "@/lib/types";
 import type { PlannerData } from "@/lib/repo";
 import { RESOURCE_ROWS, OPTIMAL_PLAN, BLOCKED, CONFLICTS, DELAY_PENALTY } from "@/data/planner";
 
-// The curated demo story lives on Rio Verde (matches the guided tour + images).
+// The curated demo story lives on Demo Farm 1 (id rio_verde) — matches the tour.
 const DEMO_FARM_ID = "rio_verde";
 
 // Default resources for a generated (user) farm.

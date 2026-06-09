@@ -41,7 +41,7 @@ export function Settings() {
       <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="h-14 w-14 rounded-2xl grid place-items-center text-lg font-bold" style={{ background: "var(--lime)" }}>{initials}</div>
-          <div><p className="text-lg font-bold">{userName}</p><p className="text-xs text-muted">{t("Owner · Rio Verde Farms")}</p></div>
+          <div><p className="text-lg font-bold">{userName}</p><p className="text-xs text-muted">{t("Owner")} · {farm.name}</p></div>
         </div>
         <div className="flex items-center gap-2">
           {saved && <span className="text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: "var(--mint)", color: "var(--ink)" }}>{t("Saved")}</span>}
