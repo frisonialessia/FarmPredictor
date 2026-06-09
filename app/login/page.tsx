@@ -14,7 +14,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [sent, setSent] = useState(false);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,11 +21,11 @@ export default function LoginPage() {
       const r = magicLinkSchema.safeParse({ email });
       if (!r.success) return setErrors(fieldErrors(r.error));
       setErrors({});
-      // No real email auth yet: any valid email signs in. We establish the
-      // session now so the "magic link" screen is just a simulated step — when
-      // Supabase lands, setSession becomes supabase.auth.signInWithOtp.
+      // No real email auth yet: any valid email signs in straight to the demo —
+      // zero friction. When Supabase lands, this becomes auth.signInWithOtp and
+      // the user finishes via the emailed link instead of going direct.
       setSession({ name: email.split("@")[0], email });
-      setSent(true); // mock: pretend we emailed a link
+      router.push("/dashboard");
       return;
     }
     const r = loginSchema.safeParse({ email, password });
@@ -34,18 +33,6 @@ export default function LoginPage() {
     setErrors({});
     setSession({ name: email.split("@")[0], email });
     router.push("/dashboard");
-  }
-
-  if (sent) {
-    return (
-      <AuthShell title={t("Check your inbox")} subtitle={`${t("We sent a sign-in link to")} ${email}.`}>
-        <div className="rounded-xl p-4 text-sm" style={{ background: "rgba(82,200,113,.1)", border: "1px solid rgba(82,200,113,.25)", color: "var(--green-deep)" }}>
-          {t("Open the link on this device to continue.")} <span className="text-muted">{t("(Demo: no email is actually sent.)")}</span>
-        </div>
-        <button onClick={() => router.push("/dashboard")} className="w-full mt-5 rounded-full py-3 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Continue to the demo →")}</button>
-        <button onClick={() => setSent(false)} className="w-full mt-3 text-sm font-semibold text-muted">{t("Use a different email")}</button>
-      </AuthShell>
-    );
   }
 
   return (
@@ -66,7 +53,7 @@ export default function LoginPage() {
           </Field>
         )}
         <button type="submit" className="w-full mt-2 rounded-full py-3 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>
-          {mode === "magic" ? t("Send magic link") : t("Sign in")}
+          {mode === "magic" ? t("Continue to the demo →") : t("Sign in")}
         </button>
       </form>
 
