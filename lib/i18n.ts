@@ -480,6 +480,7 @@ export const ES: Record<string, string> = {
   "Add your parcels": "Añade tus parcelas",
   "Start with a few — you can refine later.": "Empieza con unas pocas — puedes afinar después.",
   "+ Add parcel": "+ Añadir parcela",
+  "Crop (type or pick)": "Cultivo (escribe o elige)",
   Remove: "Quitar",
   // ── Farm editor ───────────────────────────────────────────────────
   "Manage your farm and parcels": "Gestiona tu granja y parcelas",

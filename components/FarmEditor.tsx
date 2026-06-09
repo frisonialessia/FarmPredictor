@@ -20,7 +20,7 @@ interface InvRow { name: string; qty: string; unit: string; category: string; lo
 
 export function FarmEditor() {
   const farm = useFarm();
-  const { saveFarm, toast } = useApp();
+  const { saveFarm, toast, areaUnit } = useApp();
   const t = useT();
   const router = useRouter();
   const editable = farm.id.startsWith("user_");
@@ -41,7 +41,7 @@ export function FarmEditor() {
     const memberObjs: Member[] = members.filter((m) => m.name.trim()).map((m, i) => ({ id: `u${i + 1}`, name: m.name.trim(), role: m.role }));
     const invObjs: InventoryItem[] = inventory.filter((x) => x.name.trim()).map((x, i) => ({ id: `i${i + 1}`, name: x.name.trim(), qty: Number(x.qty) || 0, unit: x.unit.trim() || "units", category: x.category, location: x.location.trim() || undefined, unitCost: num(x.unitCost), spoilagePct: num(x.spoilage) }));
     const parcelRows = rows.filter((r) => r.name.trim()).map((r) => ({ ...r, crop: canonCrop(r.crop) }));
-    const updated = buildFarm({ id: farm.id, name, location, lat: farm.lat, lon: farm.lon, plan: farm.plan, timezone: farm.timezone }, parcelRows, { members: memberObjs, resources, inventory: invObjs });
+    const updated = buildFarm({ id: farm.id, name, location, lat: farm.lat, lon: farm.lon, plan: farm.plan, timezone: farm.timezone, areaUnit }, parcelRows, { members: memberObjs, resources, inventory: invObjs });
     saveFarm(updated);
     toast("Farm saved.");
   }

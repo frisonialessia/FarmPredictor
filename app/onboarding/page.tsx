@@ -37,7 +37,7 @@ function OnboardingForm() {
   const [tempUnit, setTempUnit] = useState("F");
   const [timezone, setTimezone] = useState("America/Chicago");
 
-  const [parcels, setParcels] = useState<ParcelRow[]>([{ name: "", crop: "Grain sorghum", area: "" }]);
+  const [parcels, setParcels] = useState<ParcelRow[]>([{ name: "", crop: "", area: "" }]);
   const [members, setMembers] = useState<MemberRow[]>([{ name: "", role: "owner" }]);
   const [machines, setMachines] = useState<MachineRow[]>([{ name: "Harvester #1", machineType: "Combine harvester", year: "", diesel: "", downtime: "" }]);
   const [crews, setCrews] = useState<CrewRow[]>([{ name: "Crew A", workers: "" }]);
@@ -69,7 +69,7 @@ function OnboardingForm() {
       const invObjs: InventoryItem[] = inventory.filter((x) => x.name.trim()).map((x, i) => ({ id: `i${i + 1}`, name: x.name.trim(), qty: Number(x.qty) || 0, unit: x.unit.trim() || "units", category: x.category, location: x.location.trim() || undefined, unitCost: num(x.unitCost), spoilagePct: num(x.spoilage) }));
       const rows = parcels.filter((p) => p.name.trim()).map((p) => ({ ...p, crop: canonCrop(p.crop) }));
 
-      const farm: Farm = buildFarm({ id: `user_${Date.now()}`, name, location, lat: 31.0, lon: -100.0, timezone }, rows, { members: memberObjs, resources, inventory: invObjs });
+      const farm: Farm = buildFarm({ id: `user_${Date.now()}`, name, location, lat: 31.0, lon: -100.0, timezone, areaUnit }, rows, { members: memberObjs, resources, inventory: invObjs });
       const existing = JSON.parse(window.localStorage.getItem("fp_farms") || "[]") as Farm[];
       existing.push(farm);
       window.localStorage.setItem("fp_farms", JSON.stringify(existing));
@@ -151,14 +151,14 @@ function OnboardingForm() {
                 {parcels.map((p, i) => (
                   <div key={i} className="grid grid-cols-12 gap-2 items-center">
                     <input className="setinput col-span-12 sm:col-span-4" value={p.name} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} placeholder={t("Name")} />
-                    <input list="crops" className="setinput col-span-6 sm:col-span-5" value={p.crop} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, crop: e.target.value } : x))} placeholder={t("Crop")} />
-                    <input className="setinput col-span-4 sm:col-span-2" value={p.area} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, area: e.target.value } : x))} placeholder="ac" inputMode="numeric" />
+                    <input list="crops" className="setinput col-span-6 sm:col-span-5" value={p.crop} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, crop: e.target.value } : x))} placeholder={t("Crop (type or pick)")} />
+                    <input className="setinput col-span-4 sm:col-span-2" value={p.area} onChange={(e) => setParcels((r) => r.map((x, j) => j === i ? { ...x, area: e.target.value } : x))} placeholder={areaUnit} inputMode="numeric" />
                     <button onClick={() => setParcels((r) => r.length > 1 ? r.filter((_, j) => j !== i) : r)} className="col-span-2 sm:col-span-1 grid place-items-center h-9 rounded-lg hover:bg-bg btn-press" style={{ color: "var(--muted)" }} aria-label={t("Remove")}><Icon name="x" size={15} /></button>
                   </div>
                 ))}
               </div>
               {errors.parcels && <p className="text-xs mt-2" style={{ color: "var(--warn)" }}>{errors.parcels}</p>}
-              <button onClick={() => setParcels((r) => [...r, { name: "", crop: "Grain sorghum", area: "" }])} className="mt-4 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add parcel")}</button>
+              <button onClick={() => setParcels((r) => [...r, { name: "", crop: "", area: "" }])} className="mt-4 text-sm font-semibold btn-press" style={{ color: "var(--green-deep)" }}>{t("+ Add parcel")}</button>
             </>
           )}
 
@@ -253,7 +253,7 @@ function OnboardingForm() {
               <div className="rounded-xl border border-line p-4 space-y-3">
                 <div><p className="kpi-label">{t("Farm")}</p><p className="font-bold mt-1">{name} <span className="text-muted font-normal">· {location} · {currency} · {timezone}</span></p></div>
                 <div><p className="kpi-label">{t("Parcels")} ({parcels.filter((p) => p.name.trim()).length})</p>
-                  <div className="mt-1 space-y-1">{parcels.filter((p) => p.name.trim()).map((p, i) => <div key={i} className="flex justify-between text-sm"><span className="font-medium">{p.name}</span><span className="text-muted">{t(canonCrop(p.crop))} · {p.area} ac</span></div>)}</div>
+                  <div className="mt-1 space-y-1">{parcels.filter((p) => p.name.trim()).map((p, i) => <div key={i} className="flex justify-between text-sm"><span className="font-medium">{p.name}</span><span className="text-muted">{t(canonCrop(p.crop))} · {p.area} {areaUnit}</span></div>)}</div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-sm">
                   <div><p className="kpi-label">{t("Team")}</p><p className="font-bold mt-1">{members.filter((m) => m.name.trim()).length}</p></div>
