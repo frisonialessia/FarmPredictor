@@ -38,7 +38,7 @@ export default function SignupPage() {
         </Field>
         <button type="submit" className="w-full mt-2 rounded-full py-3 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Create account")}</button>
       </form>
-      <p className="text-[11px] text-muted mt-3 text-center">{t("No credit card. Demo data to start.")}</p>
+      <p className="text-[11px] text-muted mt-3 text-center">{t("No credit card · you'll build your own farm next")}</p>
       <p className="text-sm text-muted mt-6 text-center">
         {t("Already have an account?")} <Link href="/login" className="font-semibold" style={{ color: "var(--green-deep)" }}>{t("Sign in")}</Link>
       </p>

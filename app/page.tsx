@@ -42,9 +42,10 @@ export default function Landing() {
             <h1 className="text-white font-extrabold leading-[1.03] tracking-tight" style={{ fontSize: "clamp(2.6rem,6vw,5rem)" }}>{t("It's not")} <span style={{ color: "var(--lime)" }}>{t("when")}</span> {t("you should harvest.")}<br />{t("It's when you")} <span style={{ color: "var(--lime)" }}>{t("can.")}</span></h1>
             <p className="mt-6 text-lg max-w-xl" style={{ color: "rgba(255,255,255,.85)" }}>{t("FarmPredictor crosses your optimal harvest windows with the machinery, crews, supplies and weather you actually have. The gap between the two is margin — and we help you close it.")}</p>
             <div className="flex flex-wrap gap-3 mt-9">
-              <Link href="/dashboard" className="rounded-full px-7 py-3.5 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("See it live →")}</Link>
+              <Link href="/login" className="rounded-full px-7 py-3.5 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Try the live demo →")}</Link>
               <a href="#how" className="rounded-full px-7 py-3.5 text-sm font-semibold border grid place-items-center btn-press" style={{ borderColor: "rgba(255,255,255,.28)", color: "#fff" }}>{t("How it works")}</a>
             </div>
+            <p className="text-xs mt-3" style={{ color: "rgba(255,255,255,.55)" }}>{t("No sign-up needed — explore with sample data.")}</p>
             <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mt-12">
               {[["$6,240", t("recoverable this week")], ["2.3 d", t("avg. optimal vs. actual")], ["1 engine", t("plan + simulator, one truth")]].map(([n, l]) => (
                 <div key={l} className="flex items-baseline gap-2">
@@ -86,7 +87,7 @@ export default function Landing() {
           <div className="max-w-2xl mb-10"><p className="text-sm font-semibold uppercase tracking-widest mb-3 text-green">{t("The product")}</p><h2 className="font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{t("Your whole operation, on one screen.")}</h2><p className="text-muted mt-4 text-lg">{t("Margin at risk, today's decisions and the season trend — in your currency, no jargon.")}</p></div>
           <DashboardMockup />
           <div className="text-center mt-10">
-            <Link href="/dashboard" className="inline-block rounded-full px-8 py-4 text-sm font-semibold btn-press" style={{ background: "var(--ink)", color: "#fff" }}>{t("Open the live dashboard →")}</Link>
+            <Link href="/login" className="inline-block rounded-full px-8 py-4 text-sm font-semibold btn-press" style={{ background: "var(--ink)", color: "#fff" }}>{t("Try the live demo →")}</Link>
           </div>
         </div>
       </section>
@@ -96,7 +97,11 @@ export default function Landing() {
           <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "url(/hero.jpg)", backgroundSize: "cover", backgroundPosition: "center" }} />
           <div className="relative">
             <h2 className="text-white font-extrabold tracking-tight leading-tight" style={{ fontSize: "clamp(2rem,4.5vw,3.4rem)" }}>{t("See your margin before")}<br />{t("it walks off the field.")}</h2>
-            <Link href="/dashboard" className="inline-block rounded-full px-8 py-4 text-sm font-semibold mt-8 btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Open the live dashboard →")}</Link>
+            <div className="flex flex-wrap gap-3 justify-center mt-8">
+              <Link href="/login" className="inline-block rounded-full px-8 py-4 text-sm font-semibold btn-press" style={{ background: "var(--green)", color: "var(--ink)" }}>{t("Try the live demo →")}</Link>
+              <Link href="/signup" className="inline-block rounded-full px-8 py-4 text-sm font-semibold border btn-press" style={{ borderColor: "rgba(255,255,255,.3)", color: "#fff" }}>{t("Create your farm →")}</Link>
+            </div>
+            <p className="text-xs mt-4" style={{ color: "rgba(255,255,255,.7)" }}>{t("Explore with sample data, or build your own farm in 5 minutes.")}</p>
           </div>
         </div>
       </section>

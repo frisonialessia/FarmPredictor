@@ -43,6 +43,10 @@ export default function LoginPage() {
         ))}
       </div>
 
+      {mode === "magic" && (
+        <p className="text-xs text-muted -mt-3 mb-5 text-center">{t("Explore the dashboard with sample data — any email works.")}</p>
+      )}
+
       <form onSubmit={submit} noValidate>
         <Field label={t("Email")} error={errors.email}>
           <input className="setinput" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@farm.com" autoComplete="email" />

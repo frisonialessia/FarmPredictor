@@ -463,6 +463,12 @@ export const ES: Record<string, string> = {
   "Set up your farm in under 5 minutes.": "Configura tu granja en menos de 5 minutos.",
   "Create account": "Crear cuenta",
   "No credit card. Demo data to start.": "Sin tarjeta. Datos demo para empezar.",
+  "Try the live demo →": "Prueba la demo en vivo →",
+  "Create your farm →": "Crea tu granja →",
+  "No sign-up needed — explore with sample data.": "Sin registro — explora con datos de ejemplo.",
+  "Explore with sample data, or build your own farm in 5 minutes.": "Explora con datos de ejemplo o arma tu propia granja en 5 minutos.",
+  "Explore the dashboard with sample data — any email works.": "Explora el panel con datos de ejemplo — cualquier correo funciona.",
+  "No credit card · you'll build your own farm next": "Sin tarjeta · luego armas tu propia granja",
   "At least 8 characters": "Al menos 8 caracteres",
   "Already have an account?": "¿Ya tienes cuenta?",
   // ── Onboarding ────────────────────────────────────────────────────
