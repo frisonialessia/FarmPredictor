@@ -47,11 +47,12 @@ function initialsOf(name: string): string {
 function kpisFromParcels(parcels: Parcel[], rows: ParcelRow[], unit: string = "ac"): KPI[] {
   const totalAc = rows.reduce((s, p) => s + (Number(p.area) || 0), 0);
   const crops = new Set(rows.map((p) => p.crop)).size;
+  // Margin at risk leads (it's the headline metric); the Overview shows the top 3.
   return [
+    { label: "Margin at risk", value: "—", sub: "connect data to compute", highlight: true },
     { label: "Parcels", value: String(parcels.length), sub: "in this farm" },
     { label: "Total area", value: `${totalAc} ${unit}`, sub: "under management" },
     { label: "Crops", value: String(crops), sub: "tracked" },
-    { label: "Margin at risk", value: "—", sub: "connect data to compute", highlight: true },
   ];
 }
 

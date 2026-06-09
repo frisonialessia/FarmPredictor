@@ -80,8 +80,8 @@ export function Overview() {
 
   return (
     <div className="fade-in">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        {farm.kpis.map((k) => (
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        {farm.kpis.slice(0, 3).map((k) => (
           <div key={k.label} className="card card-hover p-5">
             <p className="kpi-label">{t(k.label)}</p>
             <p className={`mono text-2xl font-bold mt-2 ${k.highlight ? "text-green" : ""}`}>{k.value}</p>
