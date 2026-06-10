@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { AreaChart } from "@/components/Charts";
@@ -68,7 +68,11 @@ export function DashboardMockup() {
   const resolved = LEVERS.filter((l) => on[l.id]).length;
   const delayCost = delay * 380;
   const net = BASE + recovered - delayCost;
-  const todayLabel = new Date().toLocaleDateString(lang === "es" ? "es-ES" : "en-US", { weekday: "long", month: "long", day: "numeric" });
+  // Computed after mount to avoid a hydration mismatch on the statically-rendered page.
+  const [todayLabel, setTodayLabel] = useState("");
+  useEffect(() => {
+    setTodayLabel(new Date().toLocaleDateString(lang === "es" ? "es-ES" : "en-US", { weekday: "long", month: "long", day: "numeric" }));
+  }, [lang]);
 
   const HEAD: Record<View, [string, string]> = {
     overview: ["Overview", todayLabel],
