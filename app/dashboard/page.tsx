@@ -10,6 +10,7 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { AccountMenu } from "@/components/AccountMenu";
 import { Toaster } from "@/components/Toaster";
 import { GuidedTour } from "@/components/GuidedTour";
+import { WelcomeModal } from "@/components/WelcomeModal";
 import { BrandMark } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 import { Overview } from "@/components/views/Overview";
@@ -66,8 +67,17 @@ function MobileFarmSwitcher() {
 function DashboardInner() {
   const [active, setActive] = useState("overview");
   const [tourOpen, setTourOpen] = useState(false);
+  const [welcome, setWelcome] = useState(false);
   const { toast, role, lang } = useApp();
   const t = useT();
+  // First-run welcome: show once, then remember.
+  useEffect(() => {
+    try { if (!localStorage.getItem("fp_welcomed")) setWelcome(true); } catch { /* ignore */ }
+  }, []);
+  const dismissWelcome = () => {
+    setWelcome(false);
+    try { localStorage.setItem("fp_welcomed", "1"); } catch { /* ignore */ }
+  };
   // Real dates so the demo never looks frozen on a hardcoded "June 9".
   const loc = lang === "es" ? "es-ES" : "en-US";
   const today = new Date();
@@ -123,6 +133,7 @@ function DashboardInner() {
       </main>
       <MobileNav active={active} onNavigate={setActive} />
       <Toaster />
+      {welcome && <WelcomeModal onTour={() => { dismissWelcome(); setTourOpen(true); }} onClose={dismissWelcome} />}
       {tourOpen && <GuidedTour setView={setActive} onExit={() => setTourOpen(false)} />}
     </div>
   );
