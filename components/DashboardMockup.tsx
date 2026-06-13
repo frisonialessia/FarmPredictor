@@ -99,7 +99,7 @@ export function DashboardMockup() {
 
       <div className="flex">
         {/* mini rail */}
-        <div className="hidden sm:flex flex-col items-center gap-2 py-4 px-2.5 border-r border-line shrink-0" style={{ width: 64 }}>
+        <div className="flex flex-col items-center gap-2 py-4 px-1.5 sm:px-2.5 border-r border-line shrink-0" style={{ width: 56 }}>
           <BrandMark size={26} />
           <div className="mt-2 flex flex-col gap-1.5">
             {RAIL.map((item) => {
@@ -180,7 +180,8 @@ export function DashboardMockup() {
                   </div>
                   <span className="text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: "rgba(194,65,12,.1)", color: "var(--warn)" }}>1 {t("conflict")}</span>
                 </div>
-                <div className="flex-1 flex flex-col justify-center min-h-0">
+                <div className="flex-1 flex flex-col justify-center min-h-0 overflow-x-auto no-scrollbar">
+                  <div className="min-w-[360px]">
                   <div className="grid text-[9px] text-muted mb-1" style={{ gridTemplateColumns: "84px repeat(7,1fr)" }}>
                     <div />
                     {PLAN_DAYS.map((d, i) => <div key={i} className="text-center font-semibold">{t(d).slice(0, 1)}</div>)}
@@ -203,6 +204,7 @@ export function DashboardMockup() {
                       })}
                     </div>
                   ))}
+                  </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2 text-[10px] text-muted shrink-0">
                   <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded" style={{ background: "var(--ink)" }} />{t("Scheduled")}</span>
