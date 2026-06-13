@@ -12,10 +12,11 @@ import type { WeatherDay } from "@/lib/types";
 
 interface Msg { role: "user" | "assistant"; text: string }
 
-const SUGGESTIONS = [
-  "What should I do today to protect my margin?",
-  "Which weather risk costs me the most this week?",
-  "Can I sell any pen right now?",
+const SUGGESTIONS: { chip: string; q: string }[] = [
+  { chip: "Today's best move", q: "What should I do today to protect my margin?" },
+  { chip: "Biggest weather risk", q: "Which weather risk costs me the most this week?" },
+  { chip: "Can I sell a pen?", q: "Can I sell any pen right now?" },
+  { chip: "Where am I losing margin?", q: "Where is my margin leaking and how do I stop it?" },
 ];
 
 export function Assistant() {
@@ -95,7 +96,7 @@ export function Assistant() {
               <p className="mb-3">{t("Ask anything about today's decisions. For example:")}</p>
               <div className="flex flex-col gap-2">
                 {SUGGESTIONS.map((s) => (
-                  <button key={s} onClick={() => ask(s)} className="text-left rounded-xl border border-line px-3 py-2 text-sm row-hover btn-press" style={{ background: "#fff" }}>{t(s)}</button>
+                  <button key={s.chip} onClick={() => ask(s.q)} className="text-left rounded-xl border border-line px-3 py-2 text-sm row-hover btn-press" style={{ background: "#fff" }}>{t(s.q)}</button>
                 ))}
               </div>
             </div>
@@ -113,7 +114,14 @@ export function Assistant() {
           <div ref={endRef} />
         </div>
 
-        <div className="border-t border-line p-3 flex items-center gap-2">
+        {messages.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar px-3 pt-3 border-t border-line">
+            {SUGGESTIONS.map((s) => (
+              <button key={s.chip} onClick={() => ask(s.q)} disabled={busy} className="shrink-0 rounded-full border border-line px-3 py-1.5 text-[12px] font-semibold row-hover btn-press disabled:opacity-50" style={{ background: "#fff" }}>{t(s.chip)}</button>
+            ))}
+          </div>
+        )}
+        <div className={`p-3 flex items-center gap-2 ${messages.length > 0 ? "" : "border-t border-line"}`}>
           <input
             className="setinput"
             aria-label={t("Ask your farm")}
