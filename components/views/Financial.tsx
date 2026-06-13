@@ -3,6 +3,7 @@ import { useFarm, useApp } from "@/lib/store";
 import { useT } from "@/lib/i18n";
 import { AreaChart } from "@/components/Charts";
 import { formatMoney } from "@/lib/format";
+import { isDemoFarm } from "@/lib/demo";
 
 const FINK = [
   { l: "Projected revenue", base: 228000, s: "this season" },
@@ -21,7 +22,8 @@ export function Financial() {
   const farm = useFarm();
   const { currency } = useApp();
   const t = useT();
-  const maxM = Math.max(...farm.parcels.map((p) => p.marginPerAcre));
+  const demo = isDemoFarm(farm.id);
+  const maxM = Math.max(...farm.parcels.map((p) => p.marginPerAcre), 1);
   return (
     <div className="fade-in">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
@@ -47,15 +49,19 @@ export function Financial() {
       </div>
       <div className="card p-6">
         <h4 className="text-[15px] font-bold mb-1">{t("Sales contracts")}</h4><p className="text-xs mb-4 text-muted">{t("Committed volume vs. open")}</p>
-        <div>
-          {CONTRACTS.map((c, i) => (
-            <div key={i} className={`flex items-center gap-4 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
-              <div className="flex-1"><p className="text-sm font-semibold">{t(c[0])}</p><p className="text-xs text-muted">{t(c[1])} · {t(c[2])}</p></div>
-              <div className="w-32"><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${c[3]}%`, background: "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>
-              <span className="mono text-xs font-bold w-10 text-right">{c[3]}%</span>
-            </div>
-          ))}
-        </div>
+        {demo ? (
+          <div>
+            {CONTRACTS.map((c, i) => (
+              <div key={i} className={`flex items-center gap-4 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
+                <div className="flex-1"><p className="text-sm font-semibold">{t(c[0])}</p><p className="text-xs text-muted">{t(c[1])} · {t(c[2])}</p></div>
+                <div className="w-32"><div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--line-soft)" }}><div className="h-full rounded-full" style={{ width: `${c[3]}%`, background: "linear-gradient(90deg,var(--green-deep),var(--green))" }} /></div></div>
+                <span className="mono text-xs font-bold w-10 text-right">{c[3]}%</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2.5 text-sm text-muted py-2"><span className="h-2 w-2 rounded-full" style={{ background: "var(--green)" }} />{t("No contracts yet — add buyers to track committed vs. open volume.")}</div>
+        )}
       </div>
     </div>
   );

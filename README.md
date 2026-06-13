@@ -70,19 +70,35 @@ rewriting the UI.
 
 ## 🚀 Getting started
 
+**It runs with zero configuration** — no keys, no database. You get the full
+demo on simulated data, with **real weather** and the **free assistant mock**.
+
 ```bash
+git clone https://github.com/frisonialessia/farmpredictor.git
+cd farmpredictor
 npm install
-npm run dev        # http://localhost:3000
-npm run build      # production build
-npm test           # engine unit tests (Vitest)
+cp .env.example .env.local   # optional — every var can stay empty
+npm run dev                  # → http://localhost:3000
 ```
 
-Optional environment variables:
+Other scripts:
 
-| Variable | Purpose |
-|---|---|
-| `ANTHROPIC_API_KEY` | enables real AI answers in the assistant (else free mock) |
-| `NEXT_PUBLIC_SITE_URL` | absolute URL for Open Graph / sitemap |
+```bash
+npm run build       # production build
+npm test            # engine unit tests (Vitest)
+npm run lint        # ESLint
+npm run typecheck   # tsc --noEmit
+```
+
+The environment variables below only **upgrade** parts of the app — none are
+required to run it (see `.env.example`):
+
+| Variable | What it turns on | If unset |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | real Claude answers in the assistant | free deterministic mock |
+| `NEXT_PUBLIC_OPTIMIZER_URL` | the Python/OR-Tools optimizer (`optimizer/`) | built-in TS heuristic |
+| `NEXT_PUBLIC_SITE_URL` | absolute URL for Open Graph / sitemap | Vercel URL, else `localhost` |
+| `NEXT_PUBLIC_SENTRY_DSN` | forwards errors to Sentry | local console only |
 
 ---
 
@@ -93,10 +109,12 @@ app/            routes — landing, /dashboard, /login, /signup, /onboarding,
                 /pricing, opengraph-image, sitemap, robots, /api/assistant
 components/     Sidebar, views/ (Overview, Planner, Simulator, Operations,
                 Livestock, Financial, Activity, Digest, Assistant, …), charts
-lib/            engines (engine, risk, timing, herd, machinery, inventory),
-                repo/ (data boundary), store, i18n, weather, farmFactory, planGen
+lib/            engines (engine, risk, timing, herd, machinery, inventory,
+                cropTiming), repo/ (data boundary), permissions (RBAC), auth,
+                env, observability, store, i18n, weather, farmFactory, planGen
 data/           simulated, typed data (farms, planner, crops, livestock)
-supabase/       multi-tenant schema + RLS + seed (designed, not yet connected)
+supabase/       multi-tenant schema + RLS + seed + CONNECT.md (not yet connected)
+optimizer/      Python FastAPI + OR-Tools microservice (Phase 3, not deployed)
 ```
 
 ---
@@ -105,8 +123,33 @@ supabase/       multi-tenant schema + RLS + seed (designed, not yet connected)
 
 This is a **proof of concept with simulated data** — deliberately, to prove one
 claim convincingly: *an optimal harvest you can’t execute costs measurable
-money.* **Weather is already real** (Open-Meteo). The calculation engines are
-pure functions, ready to receive real data without UI changes.
+money.* The calculation engines are pure functions, ready to receive real data
+without UI changes.
+
+---
+
+## 🔌 What’s live vs. what’s still to connect
+
+Everything works **today, offline and free** on simulated data. Here’s exactly
+what’s real, what’s mocked, and how to wire each part for production:
+
+| Capability | Today | How to connect for real |
+|---|---|---|
+| **Weather** | 🟢 **Live** (Open-Meteo, no key) | already real |
+| **Margin / timing / economics engines** | 🟢 **Real logic** on simulated inputs | feed real data via the repository (below) |
+| **AI assistant** | 🟡 Free deterministic mock | set `ANTHROPIC_API_KEY` → Claude |
+| **Farm / parcel / market data** | 🟡 In-memory (`data/`) + your browser | swap `MemoryRepository` → `SupabaseRepository` — one file (`lib/repo/index.ts`) |
+| **Accounts & auth** | 🟡 Mock (localStorage; any email signs in) | Supabase Auth (cookie sessions + middleware) |
+| **Data persistence** | 🟡 Per-browser `localStorage` | Supabase Postgres (multi-tenant + **RLS**) |
+| **Scheduling optimizer** | 🟡 TypeScript heuristic | deploy [`optimizer/`](optimizer/) (Python + OR-Tools), set `NEXT_PUBLIC_OPTIMIZER_URL` |
+| **Payments / billing** | 🔴 UI + DB schema only | Stripe (tables already in `supabase/`) |
+| **Error tracking** | 🔴 Console only | set `NEXT_PUBLIC_SENTRY_DSN` + wire `lib/observability.ts` |
+
+**The backend is the next step, and it’s low-risk by design:** the app reads all
+domain data through one async `DataRepository` interface, so going live is mostly
+implementing `SupabaseRepository`. Follow the step-by-step
+**[Supabase connection runbook →](supabase/CONNECT.md)** (schema, RLS, auth and
+env are already written).
 
 ---
 

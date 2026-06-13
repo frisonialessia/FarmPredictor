@@ -112,6 +112,7 @@ export const ES: Record<string, string> = {
   "Can I sell a pen?": "¿Puedo vender un corral?",
   "Where am I losing margin?": "¿Dónde pierdo margen?",
   "Where is my margin leaking and how do I stop it?": "¿Por dónde se me escapa el margen y cómo lo detengo?",
+  "No contracts yet — add buyers to track committed vs. open volume.": "Aún no hay contratos — agrega compradores para ver volumen comprometido vs. abierto.",
   "More in the app": "Más en la app",
   "This week's schedule": "Agenda de esta semana",
   "Tap a harvest. Conflicts show in red.": "Toca una cosecha. Los conflictos salen en rojo.",
