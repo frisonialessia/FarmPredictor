@@ -1,7 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
+
+// Explicit viewport so phones render at device width (not a zoomed-out desktop).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0B0F0C",
+};
 
 const title = "FarmPredictor — Harvest when you actually can";
 const description =

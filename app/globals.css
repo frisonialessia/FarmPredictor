@@ -12,6 +12,8 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Kill any stray horizontal overflow so the page can't drift sideways on mobile. */
+html, body { overflow-x: hidden; max-width: 100%; }
 body { background: var(--bg); color: var(--ink); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 .mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
 .card { background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow: var(--shadow-sm); }
