@@ -29,8 +29,8 @@ export function Planner() {
   const canEdit = caps(role).canEditPlan;
   const showCalEvents = isDemoFarm(farm.id);
   const [dragId, setDragId] = useState<string | null>(null);
-  const [calMonth, setCalMonth] = useState(5);
-  const [calYear, setCalYear] = useState(2026);
+  const [calMonth, setCalMonth] = useState(() => new Date().getMonth());
+  const [calYear, setCalYear] = useState(() => new Date().getFullYear());
 
   const result = useMemo(() => evaluatePlan(plan, blocked), [plan, blocked]);
   const diff = result.planMargin - result.grossOptimal;
@@ -106,8 +106,11 @@ export function Planner() {
           {Array.from({ length: startDow }).map((_, i) => <div key={`e${i}`} className="rounded-lg" style={{ background: "var(--bg)", opacity: 0.4, minHeight: 74 }} />)}
           {Array.from({ length: days }).map((_, idx) => {
             const d = idx + 1;
-            const ev = showCalEvents && calMonth === 5 && calYear === 2026 ? CAL_EVENTS[d] || [] : [];
-            const isToday = d === 9 && calMonth === 5 && calYear === 2026;
+            const today = new Date();
+            const isCurrentMonth = calMonth === today.getMonth() && calYear === today.getFullYear();
+            // Demo events ride along on the current month so the calendar never looks frozen.
+            const ev = showCalEvents && isCurrentMonth ? CAL_EVENTS[d] || [] : [];
+            const isToday = isCurrentMonth && d === today.getDate();
             return (
               <div key={d} className="rounded-lg p-1.5 border" style={{ minHeight: 74, borderColor: isToday ? "var(--green)" : "var(--line)", background: "#fff" }}>
                 <span className="text-[11px] font-semibold" style={{ color: isToday ? "var(--green)" : "var(--ink)" }}>{d}</span>
